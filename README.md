@@ -31,6 +31,7 @@ If your tutorial requires any lengthy download or install procedures please let 
 * show some use cases
 * discuss pros/cons
 
+You may use any presentation technology, although [reveal.js](https://github.com/hakimel/reveal.js) is particularly fitting as an open source javascript library, and supports code blocks. :gem:
 
 ### Tutorial Section
 
@@ -63,11 +64,6 @@ Here's a resource for [github markdown](https://guides.github.com/features/maste
 
 (~5-10 minutes)
 
-* lead open discussion of the technology
+* lead short discussion
 * answer questions
 * individual teams share results
-
-
-## To Turn In
-
-After your presentation turn in a link to your slides and your tutorial github repository.
