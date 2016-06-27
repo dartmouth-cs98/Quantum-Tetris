@@ -2,7 +2,7 @@
 
 ![](http://i.giphy.com/eUh8NINbZf9Ys.gif)
 
-Each workshop session will be ~60 minutes on a web technology, tool, framework, or concept. It will consist of both a short presentation as well as a tutorial. The tutorial will be a written online document in the form of a markdown readme file in a git repo — you can start by forking this very repo. During the tutorial section the class will work in teams of 3 following along with the instructions in the document. The team presenting will answer questions and help the individual teams along.
+Each workshop session will be ~60 minutes on a web technology, tool, framework, or concept. It will consist of both a short presentation as well as a tutorial. The tutorial will be a written online document in the form of a [markdown](https://guides.github.com/features/mastering-markdown/) readme file in a git repo — you can start by forking this very repo. During the tutorial section the class will work in teams of 3 following along with the instructions in the document. The team presenting will answer questions and help the individual teams along.
 
 
 ## Workshop Overview
@@ -14,6 +14,10 @@ Each workshop session will be ~60 minutes on a web technology, tool, framework, 
 ## Teams
 
 Teams of ~5 will be formed around dates and a set of potential topics. Your and your team may chose 1 or 2 technologies from the list or may suggest alternative related technologies/topics.
+
+## Setup
+
+If your tutorial requires any lengthy download or install procedures please let the class know at least 2 days in advance.
 
 ## Details
 
@@ -52,6 +56,8 @@ Remember to explain any notation you are using.
 ![screen shots are helpful](img/screenshot.png)
 
 :sunglasses: GitHub markdown files [support emoji notation](http://www.emoji-cheat-sheet.com/)
+
+Here's a resource for [github markdown](https://guides.github.com/features/mastering-markdown/).
 
 ### Wrap-Up Discussion Section
 
