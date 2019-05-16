@@ -7,7 +7,7 @@
 Today you are going to build a CRUD blog using Flask.  While you are working through this workshop, please pay attention to the similarities and differences between what you learned when completing the blog lab.
 [Slides](https://docs.google.com/presentation/d/1v1XC6wuX_SOszyiKSqosMqEx33uaNXA5nm2-_v3kgZo/edit?usp=sharing)
 
-Since Flask uses Python, you also may be able to see different cases where it may be advntageous for you to use Python for your backend.  For example, many of us in this class have experience writing in Python.  There may be library components that you are familiar with in Python that you want to incorporate with some of your backend ocmponents.
+Since Flask uses Python, you also may be able to see different cases where it may be advantageous for you to use Python for your backend.  For example, many of us in this class have experience writing in Python.  There may be library components that you are familiar with in Python that you want to incorporate with some of your backend components, in which case it might be necessary for you to use a backend server framework.
 
 Please work through the steps of this workshop and flag one of us over if you have any questions.
 
@@ -15,9 +15,11 @@ This is what your site should look like when you are done: [link](https://cs52-f
 
 ## Installation Instructions
 
-NOTE: Please install and use Python3 with this tutorial
+### Python
+You will need Python3 to complete this tutorial.  Try running `python3` in your terminal. If your terminal jumps to a python prompt, you have Python3.  Otherwise please install python3 here: 
+https://www.python.org/downloads/
 
-Today, we are gonna use pip as our package-management system. pip should already be installed if you are using Python 2 >=2.7.9 or Python 3 >=3.4 downloaded from python.org. You can run the command ```pip``` in your terminal to check if you have pip installed. If not, please follow this [link](https://pip.pypa.io/en/stable/installing/) and install pip.
+Today, we are gonna use pip as our package-management system. You can think of pip as the Python equivalent of the yarn package manager we used in the labs. Pip should already be installed since we are using Python 3  downloaded from python.org. However, you can run the command ```pip``` in your terminal to check if you have pip installed. If not, please follow this [link](https://pip.pypa.io/en/stable/installing/) and install pip.
 
 Run this command to setup the environment
 
@@ -25,13 +27,13 @@ Run this command to setup the environment
 python3 -m venv venv
 ```
 
-Activate the environment with this command:
+Create the environment:
 
 ```
 virtualenv venv
 ```
 
-Active the environment:
+Activate the environment.  The below command will activate a Flask environment (sort of like a shell within a shell).  You'll need to execute all Flask commands from within this Flask environment:
 
 ```
 . venv/bin/activate
@@ -39,7 +41,7 @@ Active the environment:
 
 ## Flask Application Setup
 
-Create a directory called app.  In this directory, create a new file called ```__init__.py``` and add the following code:
+Create a directory called app.  In this directory, create a new file called ```__init__.py```.  This file is sort of like the server.js file we used with the Express.js framework in the labs.  ```__init__.py``` is where we initialize the app and tell the app where to look for important files.  The file should have the below code:
 
 ```python
 import os
@@ -95,13 +97,13 @@ flask run
 
 <!-- TODO: it may also be beneficial here to explain how to use / install a Python linter; some people may find this userful in addition to the Linter they are already using -->
 
-In VSCode, use the **flake8** Python linter to determine any linting issues.  This will help you with your code like the JavaScript linters that we have been using so far in class.  It is importanto to check that the indentation is done properly when running this Python code.
+In VSCode, use the **pylint** Python linter to determine any linting issues.  This will help you with your code like the JavaScript linters that we have been using so far in class.  It is important to to check that the indentation is done properly when running Python code.  VSCode will likely prompt you to install a linter when you open your first .py file.  If it does not, please open the marketplace tab and install the **pylint** linter.
 
 ## Database Setup
 
 Like our blog lab, you will only focus on adding and removing posts. For the database component, you need to define the structure for the blog posts. Under your app folder, find the file called db.py. 
 
-Our blog will use a SQLite database to store users and posts. Python comes with built-in support for SQLite in the sqlite3 module. If you are curious about SQLite and want to learn more about it, follow this [link](https://sqlite.org/lang.html).
+To mix things up a bit, instead of MongoDB / Mongoose, our blog will use a SQLite database to store users and posts with no object relational mapping (i.e. no Mongoose). Python comes with built-in support for SQLite in the sqlite3 module. If you are curious about SQLite and want to learn more about it, follow this [link](https://sqlite.org/lang.html).
 
 First we need to create a connection to the database. Any queries and operations are performed using the connection, which is closed after the work is finished. In web applications this connection is typically tied to the request. It is created at some point when handling a request, and closed before the response is sent.
 
@@ -128,9 +130,27 @@ def get_db():
 
 def close_db(e=None):
     db = g.pop('db', None)
-
     if db is not None:
         db.close()
+
+
+def init_db():
+    db = get_db()
+    with current_app.open_resource('schema.sql') as f:
+        db.executescript(f.read().decode('utf8'))
+
+
+@click.command('init-db')
+@with_appcontext
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    init_db()
+    click.echo('Initialized the database.')
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
 
 ```
 
@@ -159,7 +179,7 @@ CREATE TABLE post (
 );
 ```
 
-Now we need to tell our *db.py* file to run these SQL commands. Add the code below to your *db.py* file.
+Now we need to tell our *db.py* file to run these SQL commands. The code below that you already added to your *db.py* file will handle running this SQL commands. The `@click.command('init-db')` syntax creates a flask command `flask init-db` that we can call from our Flask environment shell to initialize the databse whenever we want.
 
 ```python
 def init_db():
@@ -177,7 +197,7 @@ def init_db_command():
     click.echo('Initialized the database.')
 ```
 
-Finally, we need to tell our main application to use this database, more specifically our init_db() and init_db_command() functions. To do that, we write a function in *db.py* that takes the application and does the registration for us.
+Finally, we need to tell our main application to use this database, more specifically our init_db() and init_db_command() functions. To do that, we have a function in *db.py* that takes the application and does the registration for us.  This code should already be in your db.py.
 
 ```python
 def init_app(app):
@@ -200,7 +220,7 @@ flask init-db
 
 ## Blueprint
 
-Under app, find the file, ```auth.py``` (similar to the user_model from our blog project) and add the following code:
+Flask blueprint files are written in Python and they are sort of like combining the route.js and controller files we used in Express. Unlike our Express backend in the labs where we responded with JSON, we will be responding with server rendered html/css in this tutorial.   Under app, find the file, ```auth.py``` (similar to the user_model from our blog project) and add the following code:
 
 ```python
 import functools
@@ -215,17 +235,13 @@ from app.db import get_db
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 ```
 
-To access the blueprint, it has to be register with the app. Please copy the following code to your ```__init__.py``` file:
+To access the blueprint, it has to be register with the app. Please copy the following code to your ```__init__.py``` file just above the `return app` statement:
 
 ```python
-def create_app():
-    app = ...
-    # existing code omitted
 
-    from . import auth
-    app.register_blueprint(auth.bp)
+from . import auth
+app.register_blueprint(auth.bp)
 
-    return app
 ```
 
 Great, now we want to render HTML with a form for the users to fill out when they register.  Return to ```auth.py``` and add the following code to handle login requests by the user:
