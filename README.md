@@ -450,8 +450,8 @@ So now we are done with both the blueprint and the templates of authentication, 
 
 ```python
 from . import blog
-    app.register_blueprint(blog.bp)
-    app.add_url_rule('/', endpoint='index')
+app.register_blueprint(blog.bp)
+app.add_url_rule('/', endpoint='index')
 ```
 
 ### Home Page
