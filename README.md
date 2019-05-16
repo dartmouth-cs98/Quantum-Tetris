@@ -420,36 +420,7 @@ We are done with templates for now!
 
 ## Styling!
 
-Now your blog website should have the basic authentication functions and displays. Let's style it up a little bit. You would style flask web apps with CSS. Yay you can flex your CSS skills again. Open the *style.css* file under the static folder. This is where flask goes to find the styling, since we already had that in your *base.html* file. Below is a styling we provided, but feel free to change up things and spice it up!
-
-```css
-html { font-family: sans-serif; background: #eee; padding: 1rem; }
-body { max-width: 960px; margin: 0 auto; background: white; }
-h1 { font-family: serif; color: #377ba8; margin: 1rem 0; }
-a { color: #377ba8; }
-hr { border: none; border-top: 1px solid lightgray; }
-nav { background: lightgray; display: flex; align-items: center; padding: 0 0.5rem; }
-nav h1 { flex: auto; margin: 0; }
-nav h1 a { text-decoration: none; padding: 0.25rem 0.5rem; }
-nav ul  { display: flex; list-style: none; margin: 0; padding: 0; }
-nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
-.content { padding: 0 1rem 1rem; }
-.content > header { border-bottom: 1px solid lightgray; display: flex; align-items: flex-end; }
-.content > header h1 { flex: auto; margin: 1rem 0 0.25rem 0; }
-.flash { margin: 1em 0; padding: 1em; background: #cae6f6; border: 1px solid #377ba8; }
-.post > header { display: flex; align-items: flex-end; font-size: 0.85em; }
-.post > header > div:first-of-type { flex: auto; }
-.post > header h1 { font-size: 1.5em; margin-bottom: 0; }
-.post .about { color: slategray; font-style: italic; }
-.post .body { white-space: pre-line; }
-.content:last-child { margin-bottom: 0; }
-.content form { margin: 1em 0; display: flex; flex-direction: column; }
-.content label { font-weight: bold; margin-bottom: 0.5em; }
-.content input, .content textarea { margin-bottom: 1em; }
-.content textarea { min-height: 12em; resize: vertical; }
-input.danger { color: #cc2f2e; }
-input[type=submit] { align-self: start; min-width: 10em; }
-```
+Now your blog website should have the basic authentication functions and displays. Let's style it up a little bit. You would style flask web apps with CSS. Yay you can flex your CSS skills again. Open the *style.css* file under the static folder. This is where flask goes to find the styling, since we already had that in your *base.html* file. We provided the styling for you already, since our focus for this workshop is not CSS, but feel free to spice it up!
 
 ## Blog functions!
 
@@ -589,9 +560,13 @@ def get_post(id, check_author=True):
     return post
 ```
 
-Now you are ready to implement the updating function. You will need to write both a function in blog.py and a template.
+Now you are ready to implement the updating function. You will need to write both a function in blog.py and a template. Our update function would be very similar to our create function, but instead of INSERT we will use UPDATE.
 
-At the end, this would be your updating function in your blog.py.
+<details>
+<summary>Are you done with both the blueprint function and the template? Let's check your answers!</summary>
+
+
+Your function in blog.py should look like this:
 
 ```python
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
@@ -601,6 +576,7 @@ def update(id):
 
     if request.method == 'POST':
         title = request.form['title']
+        image_url = request.form['image_url']
         body = request.form['body']
         error = None
 
@@ -612,15 +588,13 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE post SET title = ?, body = ?'
-                ' WHERE id = ?',
-                (title, body, id)
+                'UPDATE post SET title = ?, body = ?, image_url = ? WHERE id = ?',
+                (title, body, image_url, id)
             )
             db.commit()
             return redirect(url_for('blog.index'))
-
-    return render_template('blog/update.html', post=post)
 ```
+
 
 And your template update.html should be like this:
 
@@ -646,6 +620,8 @@ And your template update.html should be like this:
   </form>
 {% endblock %}
 ```
+
+</details>
 
 ### Delete
 
