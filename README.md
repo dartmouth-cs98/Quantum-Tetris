@@ -19,7 +19,13 @@ This is what your site should look like when you are done: [link](https://cs52-f
 You will need Python3 to complete this tutorial.  Try running `python3` in your terminal. If your terminal jumps to a python prompt, you have Python3.  Otherwise please install python3 here: 
 https://www.python.org/downloads/
 
-Today, we are gonna use pip as our package-management system. You can think of pip as the Python equivalent of the yarn package manager we used in the labs. Pip should already be installed since we are using Python 3  downloaded from python.org. However, you can run the command ```pip``` in your terminal to check if you have pip installed. If not, please follow this [link](https://pip.pypa.io/en/stable/installing/) and install pip.
+Today, we are gonna use pip as our package-management system. You can think of pip as the Python equivalent of the yarn package manager we used in the labs. Pip should already be installed since we are using Python 3  downloaded from python.org. However, you can run the command ```pip``` in your terminal to check if you have pip installed. If not, please follow this [link](https://pip.pypa.io/en/stable/installing/) and install pip. Then, you need to pip install flask.
+
+Run this command to pip install flask
+
+```
+pip install flask
+```
 
 Run this command to setup the environment
 
