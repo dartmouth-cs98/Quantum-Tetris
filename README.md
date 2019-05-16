@@ -656,11 +656,7 @@ heroku create YOUR_APP_NAME
 
 Now heroku automatically creates the app under your account, and you can just do ```git push heroku master``` to push up your code like you did before. However, before we are ready to do that, we need to setup a couple of things.
 
-First, when deploying a Python app, heroku looks for a requirements.txt, which includes all the dependencies it needs to install before running the app. **We have provided the file for you already**, but later on if you use flask on your own, you can generate the file using
-
-```
-pip freeze > requirements.txt
-```
+First, when deploying a Python app, heroku looks for a requirements.txt, which includes all the dependencies it needs to install before running the app. **We have provided the file for you already**, but later on if you use flask on your own, you can generate the file using ```pip freeze > requirements.txt```.
 
 We also need a web service to get our app running. gunicorn is commonly used with Flask so let's install that first.
 
