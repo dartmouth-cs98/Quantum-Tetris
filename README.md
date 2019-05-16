@@ -103,7 +103,7 @@ In VSCode, use the **pylint** Python linter to help you with your code like the 
 
 Like our blog lab, you will only focus on adding and removing posts. For the database component, you need to define the structure for the blog posts. Under your app folder, find the file called db.py. 
 
-To mix things up a bit, instead of MongoDB / Mongoose, our blog will use a SQLite database to store users and posts with no object relational mapping (i.e. no Mongoose). Python comes with built-in support for SQLite in the sqlite3 module. If you are curious about SQLite and want to learn more about it, follow this [link](https://sqlite.org/lang.html).
+To mix things up a bit, instead of MongoDB / Mongoose, our blog will use a SQLite database to store users and posts with no object relational mapping (i.e. no Mongoose). In the SQL workshop we did on Tuesday, we used an Object Relational Mapper which handled writing the actual SQL commands for us. In this tutorial, since we are not using an ORM, you will write (or more accurately paste) actual SQL commands. Python comes with built-in support for SQLite in the sqlite3 module. If you are curious about SQLite and want to learn more about it, follow this [link](https://sqlite.org/lang.html).
 
 First we need to create a connection to the database. Any queries and operations are performed using the connection, which is closed after the work is finished. In web applications this connection is typically tied to the request. It is created at some point when handling a request, and closed before the response is sent.
 
