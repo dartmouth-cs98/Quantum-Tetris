@@ -717,6 +717,15 @@ heroku ps:scale web=1
 
 You can either go to the link or do ```heroku open``` to see your app running in the browser. We are done!
 
+## What you should have at this point
+
+* [ ] Made blog interface 
+* [ ] Styled nicely
+* [ ] Built page for viewing posts
+* [ ] Built page for making a post
+* [ ] Built page for editing a post
+* [ ] Deployed to heroku
+
 ## Summary / What you Learned
 
 *In this workshop, you learned how to create a blog framework similar to that made during the blog lab.  Here, you used an alternative framework, Flask, to achieve the same purpose.  In addition, you learned the following specific skills:*
@@ -730,7 +739,7 @@ You can either go to the link or do ```heroku open``` to see your app running in
 *Please answer the following two reflection questions for this workshop on Flask:*
 
 * [ ] What parallels did you see between the code that you assembled in Flask and the code that you have been writing for this course thusfar with React and other libraries?
-* [ ] What are the advantages and disadvantagese to using Flask over other server frameworks?  Did you enjoy being able to write more of the backend in Python?  How could this open other possibilties for you in the backend?
+* [ ] What are the advantages and disadvantagese to using Flask over other server frameworks?  
 
 ## Resources
 
