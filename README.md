@@ -27,33 +27,15 @@ Run this command to pip install flask
 pip install flask
 ```
 
-Run this command to setup the environment
-
-```
-python3 -m venv venv
-```
-
-Create the environment:
-
-```
-virtualenv venv
-```
-
-Activate the environment.  The below command will activate a Flask environment (sort of like a shell within a shell).  All Flask commands (e.g. to run the app) must be executed from within a Flask environment:
-
-```
-. venv/bin/activate
-```
+Now we are ready to go!
 
 ## Flask Application Setup
 
-Create a directory called app.  In this directory, create a new file called ```__init__.py```.  This file is sort of like the server.js file we used with the Express.js framework in the labs - where we initialize the app and tell the app where to look for important files.  The file should have the below code:
+We have already created the folder structure for you.  In the app directory, find ```__init__.py```.  This file is sort of like the server.js file we used with the Express.js framework in the labs - where we initialize the app and tell the app where to look for important files.  The file should have the below code:
 
 ```python
 import os
-
 from flask import Flask
-
 
 def create_app(test_config=None):
     # create and configure the app
@@ -116,13 +98,6 @@ First we need to create a connection to the database. Any queries and operations
 You now should add the following code to your db.py file in order to establish the connection and close it after we are done.
 
 ```python
-import sqlite3
-
-import click
-from flask import current_app, g
-from flask.cli import with_appcontext
-
-
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
@@ -224,22 +199,11 @@ We can now use the flask command to initialize our database. Run this in your te
 flask init-db
 ```
 
+Now you should see an folder titled instance, and under it a file called *app.sqlite*.
+
 ## Blueprint
 
-Flask blueprint files are written in Python and they are sort of like combining the route.js and controller files we used in Express. Unlike our Express backend in the labs where we responded with JSON, we will be responding with server rendered html/css in this tutorial.   Under app, find the file, ```auth.py``` (similar to the user_model from our blog project) and add the following code:
-
-```python
-import functools
-
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
-from werkzeug.security import check_password_hash, generate_password_hash
-
-from app.db import get_db
-
-bp = Blueprint('auth', __name__, url_prefix='/auth')
-```
+Flask blueprint files are written in Python and they are sort of like combining the route.js and controller files we used in Express. Unlike our Express backend in the labs where we responded with JSON, we will be responding with server rendered html/css in this tutorial.   Under app, find the file, ```auth.py``` (similar to the user_model from our blog project). We have initialized the blueprint for you there already.
 
 To access the blueprint, it has to be register with the app. Please copy the following code to your ```__init__.py``` file just above the `return app` statement:
 
@@ -389,7 +353,7 @@ Every single page of ours should share a very similar layout. To avoid rewriting
 </section>
 ```
 
-As you can see, this is just some good old HTML, but we do have a few things we should notice. First of all, all the {} are part of the jinja syntax. They allow us to create placeholders for dynamic data in static HTML, or even run some simple if statements and for loops. For instance, if you look inside the nav component, you will see that we are rendering the nav bar differently based on whether we have a logged in user (```{% if g.user %}```). The ```{% block header %}``` and ```{% block content %}``` parts will get replaced by whatever we write in our other templates. Again, you can follow the jinja link above if you want to find out more about it!
+As you can see, this is just some good old HTML, but we do have a few things we should notice. First of all, all the {} are part of the jinja syntax. They allow us to create placeholders for dynamic data in static HTML, or even run some simple if statements and for loops. For instance, if you look inside the nav component, you will see that we are rendering the nav bar differently based on whether we have a logged in user (```{% if g.user %}```). The ```{% block header %}``` and ```{% block content %}``` parts will get replaced by whatever we write in our other templates. However, the nav bar will be the same for each page. Again, you can follow the jinja link above if you want to find out more about it!
 
 Now we are ready to write other templates! Create a auth folder under templates to store all the authentication related templates. Let's write one for the registration page and in register.html. 
 
@@ -437,8 +401,9 @@ Now go ahead and try the log in page, login.html! This should be very similar to
 ```
 </details>
 
-
 We are done with templates for now!
+
+**Note: at this point, we haven't written our landing page yet, so all you will see on the localhost is still just "Hello World!" Don't worry, we are getting to that very soon!**
 
 ## Styling!
 
@@ -453,6 +418,8 @@ from . import blog
 app.register_blueprint(blog.bp)
 app.add_url_rule('/', endpoint='index')
 ```
+
+This also tells flask that the home page '/' connects to index. But now we also have "Hello World" at the home page '/'. Don't worry. We are taking care of that, but first, let's actually write the page index.
 
 ### Home Page
 
@@ -503,6 +470,16 @@ Now we add the corresponding template code in *index.html*.
   {% endfor %}
 {% endblock %}
 ```
+
+Now are you ready to see the page? Go to *__init__.py*, and comment out the hello world function
+
+```python
+@app.route('/')
+def hello():
+    return 'Hello, World!'
+```
+
+You should be able to see the index page right now. If not, maybe restart your page using ```flask run```. 
 
 ### Create
 
