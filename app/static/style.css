@@ -132,3 +132,9 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+.post-image {
+    max-width: 300px;
+    max-height: 300px;
+    margin: 20px 0px 0px 0px;
+}

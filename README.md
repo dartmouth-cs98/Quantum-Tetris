@@ -463,7 +463,7 @@ The homepage will just show a list view of all the posts. Add this to our *blog.
 def index():
     db = get_db()
     posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
+        'SELECT p.id, title, image_url, body, created, author_id, username'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY created DESC'
     ).fetchall()
@@ -494,6 +494,7 @@ Now we add the corresponding template code in *index.html*.
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
         {% endif %}
       </header>
+      <img class="post-image" src="{{ post['image_url'] }}"/>
       <p class="body">{{ post['body'] }}</p>
     </article>
     {% if not loop.last %}
@@ -634,6 +635,8 @@ And your template update.html should be like this:
     <label for="title">Title</label>
     <input name="title" id="title"
       value="{{ request.form['title'] or post['title'] }}" required>
+    <label for="image_url">Image URL</label>
+    <input name="image_url" id="image_url" value="{{ request.form['image_url'] or post['image_url'] }}" >
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
     <input type="submit" value="Save">
