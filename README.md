@@ -52,7 +52,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
     )
 
     if test_config is None:
@@ -79,7 +79,7 @@ def create_app(test_config=None):
 Now that you are in the Flask environment (if you are not in Flask environment, please repeate the last step of the installation instructions), you are ready to initialize Flask.  Run the following commands (these will allow you to run Flask in development mode):
 
 ```
-export FLASK_APP=flaskr
+export FLASK_APP=app
 export FLASK_ENV=development
 flask run
 ```
@@ -88,7 +88,7 @@ flask run
 
 ```
 . venv/bin/activate
-export FLASK_APP=flaskr
+export FLASK_APP=app
 export FLASK_ENV=development
 flask run
 ```
@@ -99,7 +99,7 @@ In VSCode, use the **flake8** Python linter to determine any linting issues.  Th
 
 ## Database Setup
 
-Like our blog lab, you will only focus on adding and removing posts. For the database component, you need to define the structure for the blog posts. Under your app folder, create a new file called db.py. 
+Like our blog lab, you will only focus on adding and removing posts. For the database component, you need to define the structure for the blog posts. Under your app folder, find the file called db.py. 
 
 Our blog will use a SQLite database to store users and posts. Python comes with built-in support for SQLite in the sqlite3 module. If you are curious about SQLite and want to learn more about it, follow this [link](https://sqlite.org/lang.html).
 
@@ -136,7 +136,7 @@ def close_db(e=None):
 
 Now we need to create the actual datastructure to store the posts. In SQLite, this is done with tables. We need two tables, one for user, which stores id, username and password, and one for post, which stores all attributes associated with a post. In this tutorial, we will link each post to an author, and only the author who created the post can edit/delete the post. Pretty cool right?!
 
-Now in your app folder, create a file called *schema.sql* to establish those two tables. Since this is done in SQL, we are gonna provide the code below. If you are already familiar with SQL, feel free to try it yourself!
+Now in your app folder, find the file called *schema.sql* to establish those two tables. Since this is done in SQL, we are gonna provide the code below. If you are already familiar with SQL, feel free to try it yourself!
 
 ```sql
 DROP TABLE IF EXISTS user;
@@ -154,6 +154,7 @@ CREATE TABLE post (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
+  image_url TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 ```
@@ -192,13 +193,14 @@ db.init_app(app)
 ```
 
 We can now use the flask command to initialize our database. Run this in your terminal:
+
 ```
 flask init-db
 ```
 
 ## Blueprint
 
-Under app, create a new file, ```auth.py``` (similar to the user_model from our blog project) with the following code:
+Under app, find the file, ```auth.py``` (similar to the user_model from our blog project) and add the following code:
 
 ```python
 import functools
@@ -208,12 +210,12 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flaskr.db import get_db
+from app.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 ```
 
-To access the blueprint, it has to be register with the app.  Please copy the following code to your ```__init__.py``` file:
+To access the blueprint, it has to be register with the app. Please copy the following code to your ```__init__.py``` file:
 
 ```python
 def create_app():
@@ -334,16 +336,16 @@ Now you have the authentication part and the user should be able to sign in and 
 
 ## Templates
 
-So you have called the function render_template() in your python code, but we haven't written any templates yet. So let's go ahead and do that. Create a new folder in your app folder called templates. Templates is what flask uses to display content. Think of it as something that loads the static webpage, but also tells the dynamic data where they should be. Therefore, we will write our templates pretty much just like HTML, with a few modifications. Flask uses [jinja](http://jinja.pocoo.org/docs/2.10/templates/) to render the templates. You can click on the link if you want to find out more about the syntax and usage!
+So you have called the function render_template() in your python code, but we haven't written any templates yet. So let's go ahead and do that. Find the folder called templates in your app folder. Templates is what flask uses to display content. Think of it as something that loads the static webpage, but also tells the dynamic data where they should be. Therefore, we will write our templates pretty much just like HTML, with a few modifications. Flask uses [jinja](http://jinja.pocoo.org/docs/2.10/templates/) to render the templates. You can click on the link if you want to find out more about the syntax and usage!
 
-Every single page of ours should share a very similar layout. To avoid rewriting HTML code, we can create a base.html file, and have every other template extend that. Create a base.htmml file and put in the following code for now.
+Every single page of ours should share a very similar layout. To avoid rewriting HTML code, we can create a base.html file, and have every other template extend that. In the base.htmml file put in the following code for now.
 
 ```html
 <!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
+<title>{% block title %}{% endblock %} - Posts</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-  <h1>Flaskr</h1>
+  <h1>Posts</h1>
   <ul>
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
@@ -367,7 +369,7 @@ Every single page of ours should share a very similar layout. To avoid rewriting
 
 As you can see, this is just some good old HTML, but we do have a few things we should notice. First of all, all the {} are part of the jinja syntax. They allow us to create placeholders for dynamic data in static HTML, or even run some simple if statements and for loops. For instance, if you look inside the nav component, you will see that we are rendering the nav bar differently based on whether we have a logged in user (```{% if g.user %}```). The ```{% block header %}``` and ```{% block content %}``` parts will get replaced by whatever we write in our other templates. Again, you can follow the jinja link above if you want to find out more about it!
 
-Now we are ready to write other templates! Create a auth folder under templates to store all the authentication related templates. Let's write one for the registration page and call it register.html. 
+Now we are ready to write other templates! Create a auth folder under templates to store all the authentication related templates. Let's write one for the registration page and in register.html. 
 
 ```html
 {% extends 'base.html' %}
@@ -389,7 +391,10 @@ Now we are ready to write other templates! Create a auth folder under templates 
 
 As you can see, we are just extending the base.html file and filling in the ```{% block header %}``` and ```{% block content %}``` parts. 
 
-Now go ahead and try the log in page, login.html! This should be very similar to the registration page. At the end, it should look something like this:
+Now go ahead and try the log in page, login.html! This should be very similar to the registration page. 
+
+<details>
+<summary>Did you finish? Let's double check.</summary>
 
 ```html
 {% extends 'base.html' %}
@@ -408,6 +413,8 @@ Now go ahead and try the log in page, login.html! This should be very similar to
   </form>
 {% endblock %}
 ```
+</details>
+
 
 We are done with templates for now!
 
