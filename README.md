@@ -7,7 +7,7 @@
 Today you are going to build a CRUD blog using Flask.  While you are working through this workshop, please pay attention to the similarities and differences between what you learned when completing the blog lab.
 [Slides](https://docs.google.com/presentation/d/1v1XC6wuX_SOszyiKSqosMqEx33uaNXA5nm2-_v3kgZo/edit?usp=sharing)
 
-Since Flask uses Python, you also may be able to see different cases where it may be advantageous for you to use Python for your backend.  For example, many of us in this class have experience writing in Python.  There may be library components that you are familiar with in Python that you want to incorporate with some of your backend components, in which case it might be necessary for you to use a backend server framework.
+Since Flask uses Python, you also may be able to see different cases where it may be advantageous for you to use Python for your backend.  For example, many of us in this class have experience writing in Python.  Also, there may be library components that you are familiar with in Python that you want to incorporate with some of your backend components, in which case it might be necessary for you to use a backend server framework.
 
 Please work through the steps of this workshop and flag one of us over if you have any questions.
 
@@ -33,7 +33,7 @@ Create the environment:
 virtualenv venv
 ```
 
-Activate the environment.  The below command will activate a Flask environment (sort of like a shell within a shell).  You'll need to execute all Flask commands from within this Flask environment:
+Activate the environment.  The below command will activate a Flask environment (sort of like a shell within a shell).  All Flask commands (e.g. to run the app) must be executed from within a Flask environment:
 
 ```
 . venv/bin/activate
@@ -41,7 +41,7 @@ Activate the environment.  The below command will activate a Flask environment (
 
 ## Flask Application Setup
 
-Create a directory called app.  In this directory, create a new file called ```__init__.py```.  This file is sort of like the server.js file we used with the Express.js framework in the labs.  ```__init__.py``` is where we initialize the app and tell the app where to look for important files.  The file should have the below code:
+Create a directory called app.  In this directory, create a new file called ```__init__.py```.  This file is sort of like the server.js file we used with the Express.js framework in the labs - where we initialize the app and tell the app where to look for important files.  The file should have the below code:
 
 ```python
 import os
@@ -97,7 +97,7 @@ flask run
 
 <!-- TODO: it may also be beneficial here to explain how to use / install a Python linter; some people may find this userful in addition to the Linter they are already using -->
 
-In VSCode, use the **pylint** Python linter to determine any linting issues.  This will help you with your code like the JavaScript linters that we have been using so far in class.  It is important to to check that the indentation is done properly when running Python code.  VSCode will likely prompt you to install a linter when you open your first .py file.  If it does not, please open the marketplace tab and install the **pylint** linter.
+In VSCode, use the **pylint** Python linter to help you with your code like the JavaScript linters that we have been using so far in class.  It is important to to check that indentation is correct when running Python code.  VSCode will likely prompt you to install a linter when you open your first .py file.  If it does not, please open the marketplace tab and install the **pylint** linter.
 
 ## Database Setup
 
