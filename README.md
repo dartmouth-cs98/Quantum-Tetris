@@ -1,6 +1,7 @@
 # 19f-quantum-gaming
 
 ## How to Set Up Backend
+* Navigate to the flask directory
 * Make sure you have python3 installed if not install it here https://www.python.org/downloads/
 * Run this command to install flask 
 ```
