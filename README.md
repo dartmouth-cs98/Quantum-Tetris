@@ -37,5 +37,5 @@ pip install pygame==1.9.2
 
 ## Resources
 
-* https://github.com/dartmouth-cs98/19f-quantum-gaming.wiki.git
-* <https://github.com/dartmouth-cs98/19f-quantum-gaming/wiki/Game-Libraries-Research>
+* Quantum Computing Notes: https://github.com/dartmouth-cs98/19f-quantum-gaming/wiki/Quantum-Computing-Notes
+* Game Library Notes: https://github.com/dartmouth-cs98/19f-quantum-gaming/wiki/Game-Libraries-Research
