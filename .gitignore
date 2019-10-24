@@ -1,4 +1,5 @@
-.idea
 venv
 app/__pycache__/*
 .vscode/*
+**/.idea/workspace.xml 
+**/.idea/tasks.xml
