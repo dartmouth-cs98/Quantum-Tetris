@@ -1,6 +1,23 @@
 # Quantum-Tetris
 
-## How to Set Up Backend
+TODO: super short project description, some sample screenshots or mockups that you keep up-to-date.
+
+## Architecture
+
+TODO:  overall descriptions of code organization and tools and libraries used
+
+## Setup
+
+### How to Set Up Front End
+* Navigate to the Landing Page directory
+* Run the following commands
+```
+yarn
+yarn start
+```
+* NOTE: This is a remnant of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the front end
+
+### How to Set Up Backend
 * Navigate to the flask directory
 * Make sure you have python3 installed if not install it here https://www.python.org/downloads/
 * Run this command to install flask 
@@ -14,9 +31,9 @@ export FLASK_ENV=development
 python -m flask run
 ```
 * NOTE: This is a remanent of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the backend
-## Dev Environmental Setup Notes
+### Dev Environmental Setup Notes
 
-### Conda
+#### Conda
 * Within your conda environment run the following commands
 ```
 conda update --name base conda
@@ -25,15 +42,25 @@ pip install qiskit
 pip install pygame==1.9.2
 ```
 
-### PyCharm
+#### PyCharm
 * Within PyCharm go to `Pycharm -> Preferences -> Project:[ProjectName] -> Project Interpreter`
 * Then click on the `gear icon` on the top right and click `Add Local`. Navigate to the file `/anaconda3/envs/[ProjectName]/bin/python3.7`
 * Click on this file and click add
+
+## Deployment
+
 ### Running The Files
 #### Tetris
 * You should now be able to run the sample code for tetris using pygame. Once run using the green arrow, you should be able to click on the pop up'ed windown and play the tetris
 #### Qiskit
 * You should be able to run the basic qiskit code using the green arrow. The output should display the some vectors of the circuit.
+
+## Authors
+
+TODO: list of authors
+
+## Acknowledgments
+Tim Tregubov and Charles Palmer
 
 ## Resources
 
