@@ -1,5 +1,14 @@
 # Quantum-Tetris
 
+## How to Set Up Front End
+* Navigate to the Landing Page directory
+* Run the following commands
+```
+yarn
+yarn start
+```
+* NOTE: This is a remnant of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the front end
+
 ## How to Set Up Backend
 * Navigate to the flask directory
 * Make sure you have python3 installed if not install it here https://www.python.org/downloads/
