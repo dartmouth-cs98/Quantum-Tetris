@@ -21,4 +21,5 @@ pip install pygame==1.9.2
 #### Qiskit
 * You should be able to run the basic qiskit code using the green arrow. The output should display the some vectors of the circuit.
 
-
+## Resources
+* https://github.com/dartmouth-cs98/19f-quantum-gaming.wiki.git
