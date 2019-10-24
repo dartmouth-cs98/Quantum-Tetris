@@ -11,7 +11,7 @@ pip install flask
 ```
 export FLASK_APP=app
 export FLASK_ENV=development
-flask run
+python -m flask run
 ```
 * NOTE: This is a remanent of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the backend
 ## Resources
