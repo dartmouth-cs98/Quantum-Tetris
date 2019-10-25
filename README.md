@@ -1,10 +1,9 @@
 # Quantum-Tetris
 
-TODO: super short project description, some sample screenshots or mockups that you keep up-to-date.
-
+Quantum Tetris is your traditional tetris game game with several twists based on quantum mechanics and using a REAL quantum computer. Link to mockups https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1
 ## Architecture
 
-TODO:  overall descriptions of code organization and tools and libraries used
+So far the architecture of our project consists of a backend flask server and frontend react webpage. More to come with the exact architecture.
 
 ## Setup
 
@@ -57,7 +56,7 @@ pip install pygame==1.9.2
 
 ## Authors
 
-TODO: list of authors
+Trevor Glasgow, Oliver Levy, Henry Hilton and Rafael Brantley
 
 ## Acknowledgments
 Tim Tregubov and Charles Palmer
