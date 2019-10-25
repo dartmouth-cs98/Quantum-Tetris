@@ -1,18 +1,1 @@
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
-
-CREATE TABLE user (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
-);
-
-CREATE TABLE post (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  author_id INTEGER NOT NULL,
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  title TEXT NOT NULL,
-  body TEXT NOT NULL,
-  image_url TEXT,
-  FOREIGN KEY (author_id) REFERENCES user (id)
-);
+/* This where our schema will once we have decided on it officially */
