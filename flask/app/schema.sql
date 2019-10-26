@@ -1,1 +1,16 @@
-/* This where our schema will once we have decided on it officially */
+CREATE TABLE IF NOT EXISTS player (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  hiscore TEXT
+);
+
+CREATE TABLE IF NOT EXISTS game (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  currScore INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS settings {
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  gameMode INTEGER NOT NULL,
+  fallSpeed INTEGER NOT NULL
+}
