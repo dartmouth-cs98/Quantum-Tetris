@@ -32,9 +32,18 @@ class Controls extends Component {
       <div>
         <input type="input" onChange={this.onUserChange} value={this.state.username} />
         <button type="button" onClick={this.onUserCreate}>New Player</button>
+        <h1>Current User</h1>
+        <p>Name: {this.props.currUser.username}</p>
+        <p>High Score: {this.props.currUser.hiscore}</p>
       </div>
     );
   }
 }
 
-export default withRouter(connect(null, { createPlayer })(Controls));
+const mapStateToProps = state => (
+  {
+    currUser: state.count.user,
+  }
+);
+
+export default withRouter(connect(mapStateToProps, { createPlayer })(Controls));

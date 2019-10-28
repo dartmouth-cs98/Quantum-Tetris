@@ -26,13 +26,13 @@ def createPlayer():
         flash(error)
 
     return render_template('mainMenu.html')
-@bp.route('/<int:id>/fetchPlayer', methods=('GET'))
-def fetchPlayer(id):
+@bp.route('/<string:name>/fetchPlayer', methods=('GET'))
+def fetchPlayer(name):
     player = get_db().execute(
         'SELECT username, hiscore'
         ' FROM player'
-        ' WHERE id = ?',
-        (id,)
+        ' WHERE username= ?',
+        (name,)
     ).fetchone()
 
     if player is None:
