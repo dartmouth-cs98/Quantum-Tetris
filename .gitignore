@@ -5,3 +5,4 @@ venv
 **/.idea/tasks.xml
 **/app/*.pyc
 node_modules
+*/instance/

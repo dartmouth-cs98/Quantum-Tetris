@@ -25,7 +25,7 @@ def create_app(test_config=None):
         pass
 
     # Commented out so that we can run everything without a db for now
-    # db.init_app(app)
+    db.init_app(app)
     app.register_blueprint(game.bp)
     app.add_url_rule('/', endpoint='game')
     return app
