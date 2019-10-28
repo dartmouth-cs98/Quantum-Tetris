@@ -37,8 +37,14 @@ python -m flask run
 ```
 conda update --name base conda
 conda install python==3.7
-pip install qiskit
+python3 -m pip install --user qiskit
 pip install pygame==1.9.2
+```
+###### Note:
+If you get an error regarding an "ssl" error run the following commands
+```
+brew uninstall openssl
+brew install openssl
 ```
 
 #### PyCharm

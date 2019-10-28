@@ -1,5 +1,7 @@
 venv
-app/__pycache__/*
+*/app/__pycache__/*.pyc
 .vscode/*
 **/.idea/workspace.xml 
 **/.idea/tasks.xml
+**/app/*.pyc
+node_modules
