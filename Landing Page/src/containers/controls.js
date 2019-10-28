@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 
-import { increment, decrement } from '../actions';
+import { createPlayer } from '../actions';
 
-const Controls = (props) => {
-  return (
-    <div>
-      <button type="button" onClick={props.increment}>+</button>
-      <button type="button" onClick={props.decrement}>-</button>
-    </div>
-  );
-};
+class Controls extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+    };
+  }
 
-export default withRouter(connect(null, { increment, decrement })(Controls));
+  onUserChange = (event) => {
+    event.preventDefault();
+    this.setState({ username: event.target.value });
+  }
+
+  onUserCreate = (event) => {
+    event.preventDefault();
+    this.props.createPlayer({
+      username: this.state.username,
+      hiscore: 0,
+    });
+  }
+
+
+  render() {
+    return (
+      <div>
+        <input type="input" onChange={this.onUserChange} value={this.state.username} />
+        <button type="button" onClick={this.onUserCreate}>New Player</button>
+      </div>
+    );
+  }
+}
+
+export default withRouter(connect(null, { createPlayer })(Controls));
