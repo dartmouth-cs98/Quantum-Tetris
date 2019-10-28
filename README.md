@@ -27,6 +27,7 @@ pip install flask
 ```
 export FLASK_APP=app
 export FLASK_ENV=development
+pip install flask-cors
 python -m flask init-db
 python -m flask run
 ```

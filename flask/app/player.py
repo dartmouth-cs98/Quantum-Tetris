@@ -1,4 +1,4 @@
-@bp.route('/createPlayer', methods=('POST'))
+@bp.route('/api/createPlayer', methods=('POST'))
 def createPlayer():
     if request.method == 'POST':
         username = request.form['username']
@@ -26,7 +26,7 @@ def createPlayer():
         flash(error)
 
     return render_template('mainMenu.html')
-@bp.route('/<string:name>/fetchPlayer', methods=('GET'))
+@bp.route('/api/<string:name>/fetchPlayer', methods=('GET'))
 def fetchPlayer(name):
     player = get_db().execute(
         'SELECT username, hiscore'
@@ -39,7 +39,7 @@ def fetchPlayer(name):
         abort(404, "Player id {0} doesn't exist.".format(id))
 
     return player
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/api/<int:id>/delete', methods=('POST',))
 def delete(id):
     player = fetchPlayer(id)
     db = get_db()

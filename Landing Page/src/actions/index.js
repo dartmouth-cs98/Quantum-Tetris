@@ -3,7 +3,7 @@ import axios from 'axios';
 // keys for actiontypes
 
 
-const ROOT_URL = 'http://127.0.0.1:5000/';
+const ROOT_URL = 'http://localhost:5000/api';
 
 export const ActionTypes = {
   INCREMENT: 'INCREMENT',

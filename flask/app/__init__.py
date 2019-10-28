@@ -1,11 +1,13 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 from . import db
 from . import game
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'app.sqlite'),

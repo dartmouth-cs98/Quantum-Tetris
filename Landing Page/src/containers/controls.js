@@ -26,7 +26,6 @@ class Controls extends Component {
     });
   }
 
-
   render() {
     return (
       <div>

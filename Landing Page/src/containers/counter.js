@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 const Counter = (props) => {
   return (
     <div>
-      Current Count: {props.count}
+      Current Count: {props.count.hiscore}
     </div>
   );
 };
@@ -14,7 +14,7 @@ const Counter = (props) => {
 // connects particular parts of redux state to this components props
 const mapStateToProps = state => (
   {
-    count: state.count,
+    count: state.count.user,
   }
 );
 
