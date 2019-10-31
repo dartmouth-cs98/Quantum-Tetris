@@ -6,6 +6,8 @@ import {
 import Counter from '../containers/counter';
 import Controls from '../containers/controls';
 
+import Game from '../containers/game';
+
 const App = () => {
   const About = () => {
     return (
@@ -38,6 +40,18 @@ const App = () => {
     );
   };
 
+  // THE GAME
+
+  const Game = () => {
+
+    return (
+      // GAME HTML
+      <div>
+        <Game />
+      </div>
+    );
+  }
+
   const FallBack = () => {
     return (
       <div>
@@ -56,6 +70,7 @@ const App = () => {
           <li><NavLink to="/about" exact>About</NavLink></li>
           <li><NavLink to="/test/id1">test id1</NavLink></li>
           <li><NavLink to="/test/id2">test id2</NavLink></li>
+          <li><NavLink to="/game">game</NavLink></li>
         </ul>
       </nav>
     );
@@ -69,6 +84,7 @@ const App = () => {
           <Route path="/about" component={About} />
           <Route exact path="/test/:id" component={Test} />
           <Route component={FallBack} />
+          <Route path="/game" component={Game} />
         </Switch>
       </div>
     </Router>
