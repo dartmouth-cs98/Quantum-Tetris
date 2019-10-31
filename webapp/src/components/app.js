@@ -38,7 +38,7 @@ const App = () => {
 
   // THE GAME
 
-  const Game = () => {
+  const theGame = () => {
 
     return (
       // GAME HTML
@@ -79,7 +79,7 @@ const App = () => {
           <Route path="/about" component={About} />
           <Route exact path="/test/:id" component={Test} />
           <Route component={FallBack} />
-          <Route path="/game" component={Game} />
+          <Route path="/game" component={theGame} />
         </Switch>
       </div>
     </Router>
