@@ -18,7 +18,7 @@ export function createPlayer(newPlayer) {
   return (dispatch) => {
     axios.post(`${ROOT_URL}/createPlayer`, newPlayer)
       .then((response) => {
-        dispatch({ type: ActionTypes.CREATE_PLAYER });
+        dispatch({ type: ActionTypes.CREATE_PLAYER, payload: response.data });
       })
       .catch((error) => {
         dispatch({ type: ActionTypes.ERROR_ACTION, error });

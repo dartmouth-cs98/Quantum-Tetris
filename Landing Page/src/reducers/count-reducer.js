@@ -8,7 +8,7 @@ const CountReducer = (state = {
 }, action) => {
   switch (action.type) {
     case ActionTypes.CREATE_PLAYER:
-      return state;
+      return Object.assign({}, state, { user: action.payload });
     case ActionTypes.GET_PLAYER:
       return Object.assign({}, state, { user: action.payload });
     case ActionTypes.INCREMENT:
