@@ -1,9 +1,9 @@
 import os
-from flask import Flask, request, make_response,render_template
+from flask import Flask, request
 from flask_cors import CORS
 from . import db
 from . import game
-from app.player import  Player
+from app.player import Player
 
 def create_app(test_config=None):
     # create and configure the app
@@ -39,18 +39,21 @@ def create_app(test_config=None):
             params=request.get_json()
             username = params['username']
             hiscore = params['hiscore']
-            response =player.createPlayer(username,hiscore)
+            response = player.createPlayer(username, hiscore)
+            return response
         print("CreatePlayer")
 
-        return response
 
+    @app.route('/api/fetchPlayer', methods=['GET'])
+    def fetchPlayer():
+        if request.method == 'GET':
+            username = request.username
+            response = player.fetchPlayer(username)
+            return response
+        print("FetchPlayer")
 
-    @app.route('/api/<string:name>/fetchPlayer', methods=['GET'])
-    def fetchPlayer(self,name):
-
-        return player
-    @app.route('/api/<int:id>/delete', methods=['POST'])
-    def delete(self,id):
+    @app.route('/api/deletePlayer', methods=['DELETE'])
+    def delete():
 
         return player
 

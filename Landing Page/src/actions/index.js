@@ -9,7 +9,8 @@ export const ActionTypes = {
   INCREMENT: 'INCREMENT',
   DECREMENT: 'DECREMENT',
   CREATE_PLAYER: 'CREATE_PLAYER',
-  GET_PLAYER: 'GET_PLAYER',
+  FETCH_PLAYER: 'FETCH_PLAYER',
+  DELETE_PLAYER: 'DELETE_PLAYER',
   ERROR_ACTION: 'ERROR_ACTION',
 };
 
@@ -25,12 +26,25 @@ export function createPlayer(newPlayer) {
       });
   };
 }
-// get player
-export function getPlayer(username) {
+// fetch player
+export function fetchPlayer(username) {
   return (dispatch) => {
-    axios.get(`${ROOT_URL}/${username}/createPlayer`)
+    axios.get(`${ROOT_URL}/fetchPlayer`, username)
       .then((response) => {
-        dispatch({ type: ActionTypes.GET_PLAYER, payload: response.data });
+        dispatch({ type: ActionTypes.FETCH_PLAYER, payload: response.data });
+      })
+      .catch((error) => {
+        dispatch({ type: ActionTypes.ERROR_ACTION, error });
+      });
+  };
+}
+
+// delete player
+export function deletePlayer(username) {
+  return (dispatch) => {
+    axios.delete(`${ROOT_URL}/deletePlayer`, username)
+      .then((response) => {
+        dispatch({ type: ActionTypes.DELETE_PLAYER, payload: response.data });
       })
       .catch((error) => {
         dispatch({ type: ActionTypes.ERROR_ACTION, error });

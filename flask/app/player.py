@@ -33,7 +33,7 @@ class Player:
 
         return error
 
-    def fetchPlayer(self,name):
+    def fetchPlayer(self, name):
         player = self.db.execute(
             'SELECT username, hiscore'
             ' FROM player'
@@ -44,7 +44,11 @@ class Player:
         if player is None:
             return None
 
-        return player
+        return jsonify(
+            username=player.username,
+            hiscore=player.hiscore,
+            id=player.id,
+        )
 
     def delete(self,id):
         player = self.fetchPlayer(id)
