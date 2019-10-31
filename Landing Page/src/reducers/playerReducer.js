@@ -1,6 +1,6 @@
 import { ActionTypes } from '../actions';
 
-const CountReducer = (state = {
+const PlayerReducer = (state = {
   user: {
     username: 'Oliver',
     hiscore: 7,
@@ -20,4 +20,4 @@ const CountReducer = (state = {
   }
 };
 
-export default CountReducer;
+export default PlayerReducer;
