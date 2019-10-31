@@ -1,48 +1,53 @@
-@bp.route('/api/createPlayer', methods=('POST'))
-def createPlayer():
-    if request.method == 'POST':
-        username = request.form['username']
-        hiscore = request.form['hiscore']
-        db = get_db()
-        error = None
+from . import db
+from flask import jsonify
 
+class Player:
+    def __init__(self):
+        self.db = db
+        pass
+
+    def createPlayer(self, username, hiscore):
+
+        cur = self.db.get_db().cursor()
+
+        error = None
         if not username:
             error = 'Username is required.'
-        elif not password:
+        elif hiscore != 0 and not hiscore :
             error = 'HiScore is required.'
-        elif db.execute(
-            'SELECT id FROM user WHERE username = ?', (username,)
+        elif cur.execute(
+            'SELECT id FROM player WHERE username = ?', (username,)
         ).fetchone() is not None:
             error = 'Player {} is already registered.'.format(username)
 
         if error is None:
-            db.execute(
+            cur.execute(
                 'INSERT INTO player (username, hiscore) VALUES (?, ?)',
                 (username, hiscore)
             )
-            db.commit()
-            return redirect(url_for('game'))
+            return jsonify(
+                username=username,
+                hiscore=hiscore,
+                id=cur.lastrowid,
+            )
 
-        flash(error)
+        return error
 
-    return render_template('mainMenu.html')
-@bp.route('/api/<string:name>/fetchPlayer', methods=('GET'))
-def fetchPlayer(name):
-    player = get_db().execute(
-        'SELECT username, hiscore'
-        ' FROM player'
-        ' WHERE username= ?',
-        (name,)
-    ).fetchone()
+    def fetchPlayer(self,name):
+        player = self.db.execute(
+            'SELECT username, hiscore'
+            ' FROM player'
+            ' WHERE username= ?',
+            (name,)
+        ).fetchone()
 
-    if player is None:
-        abort(404, "Player id {0} doesn't exist.".format(id))
+        if player is None:
+            return None
 
-    return player
-@bp.route('/api/<int:id>/delete', methods=('POST',))
-def delete(id):
-    player = fetchPlayer(id)
-    db = get_db()
-    db.execute('DELETE FROM player WHERE id = ?', (id,))
-    db.commit()
-    return player
+        return player
+
+    def delete(self,id):
+        player = self.fetchPlayer(id)
+        self.db.execute('DELETE FROM player WHERE id = ?', (id,))
+        self.db.commit()
+        return player

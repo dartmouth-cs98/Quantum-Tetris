@@ -1,8 +1,9 @@
 import os
-from flask import Flask
+from flask import Flask, request, make_response,render_template
 from flask_cors import CORS
 from . import db
 from . import game
+from app.player import  Player
 
 def create_app(test_config=None):
     # create and configure the app
@@ -12,7 +13,6 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
     )
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
@@ -30,4 +30,28 @@ def create_app(test_config=None):
     db.init_app(app)
     app.register_blueprint(game.bp)
     app.add_url_rule('/', endpoint='game')
+
+
+    player=Player()
+    @app.route('/api/createPlayer', methods=['POST'])
+    def createPlayer():
+        if request.method == 'POST':
+            params=request.get_json()
+            username = params['username']
+            hiscore = params['hiscore']
+            response =player.createPlayer(username,hiscore)
+        print("CreatePlayer")
+
+        return response
+
+
+    @app.route('/api/<string:name>/fetchPlayer', methods=['GET'])
+    def fetchPlayer(self,name):
+
+        return player
+    @app.route('/api/<int:id>/delete', methods=['POST'])
+    def delete(self,id):
+
+        return player
+
     return app
