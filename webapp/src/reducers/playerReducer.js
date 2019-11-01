@@ -10,7 +10,7 @@ const PlayerReducer = (state = {
   switch (action.type) {
     case ActionTypes.CREATE_PLAYER:
       return Object.assign({}, state, { user: action.payload, error: '' });
-    case ActionTypes.GET_PLAYER:
+    case ActionTypes.FETCH_PLAYER:
       return Object.assign({}, state, { user: action.payload, error: '' });
     case ActionTypes.ERROR:
       return Object.assign({}, state, { error: action.error.response.data });

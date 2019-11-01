@@ -39,19 +39,19 @@ class Player():
         if self.cur is None:
             self.cur = self.db.get_db().cursor()
         player = self.cur.execute(
-            'SELECT username, hiscore'
+            'SELECT *'
             ' FROM player'
             ' WHERE username= ?',
             (name,)
         ).fetchone()
 
         if player is None:
-            return None
+            return abort(make_response(jsonify('Player {} does not exist.'.format(name)), 400))
 
         return jsonify(
-            username=player.username,
-            hiscore=player.hiscore,
-            id=player.id,
+            id=player[0],
+            username=player[1],
+            hiscore=player[2],
         )
 
     def delete(self,id):
