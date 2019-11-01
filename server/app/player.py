@@ -1,8 +1,9 @@
-from app import db
-from flask import jsonify, app
+from werkzeug.exceptions import abort
 
-class Player(db.Model):
-    def __init__(self):
+from flask import make_response, jsonify
+
+class Player():
+    def __init__(self, db):
         self.db = db
         self.cur = None
 
@@ -25,14 +26,14 @@ class Player(db.Model):
             self.cur.execute(
                 'INSERT INTO player (username, hiscore) VALUES (?, ?)',
                 (username, hiscore)
-            ).commit()
+            )
             return jsonify(
                 username=username,
                 hiscore=hiscore,
                 id=self.cur.lastrowid,
             )
 
-        return error
+        return abort(make_response(jsonify(error), 400))
 
     def fetchPlayer(self, name):
         if self.cur is None:

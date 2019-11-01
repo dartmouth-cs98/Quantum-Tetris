@@ -1,8 +1,6 @@
 import axios from 'axios';
 
 // keys for actiontypes
-
-
 const ROOT_URL = 'http://localhost:5000/api';
 
 export const ActionTypes = {
@@ -11,7 +9,7 @@ export const ActionTypes = {
   CREATE_PLAYER: 'CREATE_PLAYER',
   FETCH_PLAYER: 'FETCH_PLAYER',
   DELETE_PLAYER: 'DELETE_PLAYER',
-  ERROR_ACTION: 'ERROR_ACTION',
+  ERROR: 'ERROR',
 };
 
 // create player
@@ -22,7 +20,7 @@ export function createPlayer(newPlayer) {
         dispatch({ type: ActionTypes.CREATE_PLAYER, payload: response.data });
       })
       .catch((error) => {
-        dispatch({ type: ActionTypes.ERROR_ACTION, error });
+        dispatch({ type: ActionTypes.ERROR, error });
       });
   };
 }
@@ -34,7 +32,7 @@ export function fetchPlayer(username) {
         dispatch({ type: ActionTypes.FETCH_PLAYER, payload: response.data });
       })
       .catch((error) => {
-        dispatch({ type: ActionTypes.ERROR_ACTION, error });
+        dispatch({ type: ActionTypes.ERROR, error });
       });
   };
 }
@@ -47,22 +45,7 @@ export function deletePlayer(username) {
         dispatch({ type: ActionTypes.DELETE_PLAYER, payload: response.data });
       })
       .catch((error) => {
-        dispatch({ type: ActionTypes.ERROR_ACTION, error });
+        dispatch({ type: ActionTypes.ERROR, error });
       });
-  };
-}
-
-
-export function increment() {
-  return {
-    type: ActionTypes.INCREMENT,
-    payload: null,
-  };
-}
-
-export function decrement() {
-  return {
-    type: ActionTypes.DECREMENT,
-    payload: null,
   };
 }

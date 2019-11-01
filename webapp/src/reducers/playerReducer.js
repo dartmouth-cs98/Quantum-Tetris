@@ -5,16 +5,15 @@ const PlayerReducer = (state = {
     username: 'Oliver',
     hiscore: 7,
   },
+  error: '',
 }, action) => {
   switch (action.type) {
     case ActionTypes.CREATE_PLAYER:
-      return Object.assign({}, state, { user: action.payload });
+      return Object.assign({}, state, { user: action.payload, error: '' });
     case ActionTypes.GET_PLAYER:
-      return Object.assign({}, state, { user: action.payload });
-    case ActionTypes.INCREMENT:
-      return state + 1;
-    case ActionTypes.DECREMENT:
-      return state - 1;
+      return Object.assign({}, state, { user: action.payload, error: '' });
+    case ActionTypes.ERROR:
+      return Object.assign({}, state, { error: action.error.response.data });
     default:
       return state;
   }
