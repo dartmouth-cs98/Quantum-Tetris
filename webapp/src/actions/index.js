@@ -40,7 +40,7 @@ export function fetchPlayer(username) {
 // delete player
 export function deletePlayer(username) {
   return (dispatch) => {
-    axios.delete(`${ROOT_URL}/deletePlayer`, username)
+    axios.delete(`${ROOT_URL}/deletePlayer/?username=${username}`)
       .then((response) => {
         dispatch({ type: ActionTypes.DELETE_PLAYER, payload: response.data });
       })

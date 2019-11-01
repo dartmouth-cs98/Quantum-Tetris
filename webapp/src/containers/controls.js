@@ -51,9 +51,7 @@ class Controls extends Component {
 
   onUserDelete = (event) => {
     event.preventDefault();
-    this.props.deletePlayer({
-      username: this.state.deleteUsername,
-    });
+    this.props.deletePlayer(this.state.deleteUsername);
   }
 
   render() {

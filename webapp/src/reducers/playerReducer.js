@@ -12,8 +12,10 @@ const PlayerReducer = (state = {
       return Object.assign({}, state, { user: action.payload, error: '' });
     case ActionTypes.FETCH_PLAYER:
       return Object.assign({}, state, { user: action.payload, error: '' });
+    case ActionTypes.DELETE_PLAYER:
+      return Object.assign({}, state, { user: '', error: '' });
     case ActionTypes.ERROR:
-      return Object.assign({}, state, { error: action.error.response.data });
+      return Object.assign({}, state, { error: action.error.response ? action.error.response.data : action.error.message });
     default:
       return state;
   }

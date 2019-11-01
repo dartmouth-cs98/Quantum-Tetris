@@ -35,18 +35,18 @@ class Player():
 
         return abort(make_response(jsonify(error), 400))
 
-    def fetchPlayer(self, name):
+    def fetchPlayer(self, playerName):
         if self.cur is None:
             self.cur = self.db.get_db().cursor()
         player = self.cur.execute(
             'SELECT *'
             ' FROM player'
             ' WHERE username= ?',
-            (name,)
+            (playerName,)
         ).fetchone()
 
         if player is None:
-            return abort(make_response(jsonify('Player {} does not exist.'.format(name)), 400))
+            return abort(make_response(jsonify('Player {} does not exist.'.format(playerName)), 400))
 
         return jsonify(
             id=player[0],
@@ -54,8 +54,13 @@ class Player():
             hiscore=player[2],
         )
 
-    def delete(self,id):
-        player = self.fetchPlayer(id)
-        self.db.execute('DELETE FROM player WHERE id = ?', (id,))
-        self.db.commit()
-        return player
+    def delete(self, playerName):
+        if self.cur is None:
+            self.cur = self.db.get_db().cursor()
+        player = self.fetchPlayer(playerName)
+        self.cur.execute('DELETE FROM player WHERE id = ?', (player.json['id'],))
+        return jsonify(
+            id=player.json['id'],
+            username=player.json['username'],
+            hiscore=player.json['hiscore'],
+        )

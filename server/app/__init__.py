@@ -32,7 +32,9 @@ def create_app(test_config=None):
     app.add_url_rule('/', endpoint='game')
 
 
+    #************** PLAYER ENDPOINTS *****************
     player=Player(db)
+
     @app.route('/api/createPlayer', methods=['POST'])
     def createPlayer():
         if request.method == 'POST':
@@ -46,7 +48,7 @@ def create_app(test_config=None):
 
 
     @app.route('/api/fetchPlayer/', methods=['GET'])
-    def fetchPlayer(username=None):
+    def fetchPlayer():
         if request.method == 'GET':
             username = request.args.get('username', default= None, type= str)
             response = player.fetchPlayer(username)
@@ -54,9 +56,13 @@ def create_app(test_config=None):
         print("FetchPlayer")
         return None
 
-    @app.route('/api/deletePlayer', methods=['DELETE'])
+    @app.route('/api/deletePlayer/', methods=['DELETE'])
     def delete():
-
-        return player
+        if request.method == 'DELETE':
+            username = request.args.get('username', default= None, type= str)
+            response = player.delete(username)
+            return response
+        print("DeletePlayer")
+        return None
 
     return app
