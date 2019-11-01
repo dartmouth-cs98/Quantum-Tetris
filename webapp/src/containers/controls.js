@@ -46,9 +46,7 @@ class Controls extends Component {
 
   onUserFetch = (event) => {
     event.preventDefault();
-    this.props.fetchPlayer({
-      username: this.state.fetchUsername,
-    });
+    this.props.fetchPlayer(this.state.fetchUsername);
   }
 
   onUserDelete = (event) => {

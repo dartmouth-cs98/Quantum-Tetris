@@ -4,6 +4,8 @@ from flask_cors import CORS
 from . import db
 from . import game
 from app.player import Player
+from flask_sqlalchemy import SQLAlchemy
+import json
 
 def create_app(test_config=None):
     # create and configure the app
@@ -27,7 +29,7 @@ def create_app(test_config=None):
         pass
 
     # Commented out so that we can run everything without a db for now
-    db.init_app(application)
+    db = SQLAlchemy(application)
     application.register_blueprint(game.bp)
     application.add_url_rule('/', endpoint='game')
 
@@ -42,15 +44,17 @@ def create_app(test_config=None):
             response = player.createPlayer(username, hiscore)
             return response
         print("CreatePlayer")
+        return None
 
 
-    @application.route('/api/fetchPlayer', methods=['GET'])
-    def fetchPlayer():
+    @application.route('/api/fetchPlayer/', methods=['GET'])
+    def fetchPlayer(username=None):
         if request.method == 'GET':
-            username = request.username
+            username = request.args.get('username', default= None, type= str)
             response = player.fetchPlayer(username)
             return response
         print("FetchPlayer")
+        return None
 
     @application.route('/api/deletePlayer', methods=['DELETE'])
     def delete():

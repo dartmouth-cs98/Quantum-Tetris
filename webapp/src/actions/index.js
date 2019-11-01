@@ -29,7 +29,7 @@ export function createPlayer(newPlayer) {
 // fetch player
 export function fetchPlayer(username) {
   return (dispatch) => {
-    axios.get(`${ROOT_URL}/fetchPlayer`, username)
+    axios.get(`${ROOT_URL}/fetchPlayer/?username=${username}`)
       .then((response) => {
         dispatch({ type: ActionTypes.FETCH_PLAYER, payload: response.data });
       })
