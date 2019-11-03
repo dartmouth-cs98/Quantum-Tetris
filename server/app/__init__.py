@@ -2,7 +2,7 @@ import os
 from flask import Flask, request
 from flask_cors import CORS
 from . import db
-from . import game
+from app.quantum import Quantum
 from app.player import Player
 
 def create_app(test_config=None):
@@ -28,9 +28,6 @@ def create_app(test_config=None):
 
     # Commented out so that we can run everything without a db for now
     db.init_app(app)
-    app.register_blueprint(game.bp)
-    app.add_url_rule('/', endpoint='game')
-
 
     #************** PLAYER ENDPOINTS *****************
     player=Player(db)
@@ -63,6 +60,15 @@ def create_app(test_config=None):
             response = player.delete(username)
             return response
         print("DeletePlayer")
+        return None
+    #************** QUANTUM ENDPOINTS *****************
+    quantum=Quantum(db)
+    @app.route('/api/generateRandomNumber/', methods=['GET'])
+    def generateRandomNumber():
+        if request.method == 'GET':
+            response = quantum.generateRandomNumber()
+            return response
+        print("GenerateRandomNumber")
         return None
 
     return app

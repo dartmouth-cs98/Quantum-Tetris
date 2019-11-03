@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 
-import { createPlayer, fetchPlayer, deletePlayer } from '../actions';
+import {
+  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber,
+} from '../actions';
 
 class Controls extends Component {
   constructor(props) {
@@ -61,13 +63,23 @@ class Controls extends Component {
           <h1>Current User</h1>
           <p>Name: {this.props.currUser.username}</p>
           <p>High Score: {this.props.currUser.hiscore}</p>
+        </div>
+        <div>
           <input type="input" onChange={this.onNewUserChange} value={this.state.newUsername} />
           <input type="input" onChange={this.onNewHiscoreChange} value={this.state.newHiscore} />
           <button type="button" onClick={this.onUserCreate}>New Player</button>
+        </div>
+        <div>
           <input type="input" onChange={this.onFetchUserChange} value={this.state.fetchUsername} />
           <button type="button" onClick={this.onUserFetch}>Fetch Player</button>
+        </div>
+        <div>
           <input type="input" onChange={this.onDeleteUserChange} value={this.state.deleteUsername} />
           <button type="button" onClick={this.onUserDelete}>Delete Player</button>
+        </div>
+        <div>
+          <button type="button" onClick={this.props.generateRandomNumber}>Generate Random Int</button>
+          <p>{this.props.randNum}</p>
         </div>
         <div>
           <h4>Errors:{this.props.error} </h4>
@@ -80,8 +92,11 @@ class Controls extends Component {
 const mapStateToProps = state => (
   {
     currUser: state.player.user,
+    randNum: state.quantum.randomNumber,
     error: state.player.error,
   }
 );
 
-export default withRouter(connect(mapStateToProps, { createPlayer, fetchPlayer, deletePlayer })(Controls));
+export default withRouter(connect(mapStateToProps, {
+  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber,
+})(Controls));

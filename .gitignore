@@ -3,6 +3,7 @@ venv
 .vscode/*
 **/.idea/workspace.xml 
 **/.idea/tasks.xml
+**/.idea/vcs.xml
 **/app/*.pyc
 node_modules
 */instance/
