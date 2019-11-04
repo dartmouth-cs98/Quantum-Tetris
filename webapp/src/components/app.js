@@ -46,7 +46,7 @@ const App = () => {
         <Game />
       </div>
     );
-  }
+  };
 
   const FallBack = () => {
     return (
