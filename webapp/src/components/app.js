@@ -37,9 +37,7 @@ const App = () => {
   };
 
   // THE GAME
-
   const theGame = () => {
-
     return (
       // GAME HTML
       <div>
@@ -65,7 +63,7 @@ const App = () => {
           <li><NavLink to="/about" exact>About</NavLink></li>
           <li><NavLink to="/test/id1">test id1</NavLink></li>
           <li><NavLink to="/test/id2">test id2</NavLink></li>
-          <li><NavLink to="/game">game</NavLink></li>
+          <li><NavLink to="/game">Game</NavLink></li>
         </ul>
       </nav>
     );
@@ -78,8 +76,8 @@ const App = () => {
           <Route exact path="/" component={Welcome} />
           <Route path="/about" component={About} />
           <Route exact path="/test/:id" component={Test} />
-          <Route component={FallBack} />
           <Route path="/game" component={theGame} />
+          <Route component={FallBack} />
         </Switch>
       </div>
     </Router>
