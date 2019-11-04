@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Route, Switch, NavLink,
 } from 'react-router-dom';
-import Counter from '../containers/counter';
 import Controls from '../containers/controls';
 
 const App = () => {
@@ -11,7 +10,6 @@ const App = () => {
     return (
       <div>
         All there is to know about me
-        <Counter />
         <Controls />
       </div>
     );
@@ -21,7 +19,6 @@ const App = () => {
     return (
       <div>
         Welcome
-        <Counter />
         <Controls />
       </div>
 
@@ -32,7 +29,6 @@ const App = () => {
     return (
       <div>
         ID: {props.match.params.id};
-        <Counter />
         <Controls />
       </div>
     );
@@ -42,7 +38,6 @@ const App = () => {
     return (
       <div>
         URL Not Found
-        <Counter />
         <Controls />
       </div>
     );

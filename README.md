@@ -8,7 +8,7 @@ So far the architecture of our project consists of a backend flask server and fr
 ## Setup
 
 ### How to Set Up Front End
-* Navigate to the Landing Page directory
+* Navigate to the webapp directory
 * Run the following commands
 ```
 yarn
@@ -17,7 +17,7 @@ yarn start
 * NOTE: This is a remnant of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the front end
 
 ### How to Set Up Backend
-* Navigate to the flask directory
+* Navigate to the server directory
 * Make sure you have python3 installed if not install it here https://www.python.org/downloads/
 * Run this command to install flask 
 ```
@@ -27,6 +27,7 @@ pip install flask
 ```
 export FLASK_APP=app
 export FLASK_ENV=development
+pip install flask-cors
 python -m flask init-db
 python -m flask run
 ```
@@ -47,6 +48,8 @@ If you get an error regarding an "ssl" error run the following commands
 brew uninstall openssl
 brew install openssl
 ```
+
+If you get an error trying to run the server in Pycharm like "ModuleNotFoundError: No module named 'app'" ensure than the folder "server" is marked as a source root
 
 #### PyCharm
 * Within PyCharm go to `Pycharm -> Preferences -> Project:[ProjectName] -> Project Interpreter`
