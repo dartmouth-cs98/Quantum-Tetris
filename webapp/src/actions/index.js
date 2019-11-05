@@ -54,9 +54,9 @@ export function deletePlayer(username) {
 /* *************** QUANTUM ENDPOINTS ****************** */
 
 // Get a random number NOTE: at the moment does not produce an actual random number
-export function generateRandomNumber() {
+export function generateRandomNumber(randInt) {
   return (dispatch) => {
-    axios.get(`${ROOT_URL}/generateRandomNumber/`)
+    axios.get(`${ROOT_URL}/generateRandomNumber/?randInt=${randInt}`)
       .then((response) => {
         dispatch({ type: ActionTypes.RANDOM_NUMBER, payload: response.data });
       })

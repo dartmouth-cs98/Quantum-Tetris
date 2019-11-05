@@ -66,7 +66,8 @@ def create_app(test_config=None):
     @app.route('/api/generateRandomNumber/', methods=['GET'])
     def generateRandomNumber():
         if request.method == 'GET':
-            response = quantum.generateRandomNumber()
+            maxNum = request.args.get('randInt', default= None, type= int)
+            response = quantum.generateRandomNumber(maxNum)
             return response
         print("GenerateRandomNumber")
         return None

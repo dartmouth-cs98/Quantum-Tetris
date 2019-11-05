@@ -2,48 +2,72 @@ from werkzeug.exceptions import abort
 
 from flask import make_response, jsonify
 from qiskit import *
-from qiskit import Aer
+import math
 
 class Quantum():
+
+	MAX_QUBITS = 5
+	machineName = 'qasm_simulator'
+
 	def __init__(self, db):
 		self.db = db
 		self.cur = None
 
 
-	# This code at the moment does not produce a random number this is just for testing
-	def generateRandomNumber(self):
+	# Code adapted from https://blog.red-badger.com/2018/9/24/generate-true-random-numbers-with-a-quantum-computer
+	def generateRandomNumber(self, maxInt):
 
-		circ = QuantumCircuit(3)
-
-		# Add a H gate on qubit 0, putting this qubit in superposition.
-
-		circ.h(0)
-		# Add a CX (CNOT) gate on control qubit 0 and target qubit 1, putting
-		# the qubits in a Bell state.
-		circ.cx(0, 1)
-		# Add a CX (CNOT) gate on control qubit 0 and target qubit 2, putting
-		# the qubits in a GHZ state.
-		circ.cx(0, 2)
-
-		circ.draw()
-
-		# Run the quantum circuit on a statevector simulator backend
-		backend = Aer.get_backend('statevector_simulator')
-
-		# Create a Quantum Program for execution
-		job = execute(circ, backend)
-
-		result = job.result()
-
-		outputState = result.get_statevector(circ, decimals=3)
+		result = self.getRandNum(maxInt)
 
 		error = None
-		if outputState is None:
+		if result is None:
 			error = "Error in fetching quantum result"
 
 		if error is None:
 			return jsonify(
-				output=outputState.size,
+				randomInt=result,
 			)
 
 		return abort(make_response(jsonify(error), 400))
+
+	def getRandNum(self, maxInt):
+		result = self.random_int(self.nextPowerOf2(maxInt))
+		while result > maxInt:
+			result = self.random_int(self.nextPowerOf2(maxInt))
+		return result
+
+
+	def random_int(self, maxInt):
+		bits = ''
+		n_bits = self.numBits(maxInt - 1)
+		register_sizes = self.getRegisterSizes(n_bits, self.MAX_QUBITS)
+		simulator = Aer.get_backend(self.machineName)
+
+		for x in register_sizes:
+			q = QuantumRegister(x)
+			c = ClassicalRegister(x)
+			qc = QuantumCircuit(q, c)
+
+			qc.h(q)
+			qc.measure(q, c)
+
+			job_sim = execute(qc, backend = simulator, shots=1)
+			sim_result = job_sim.result()
+			counts = sim_result.get_counts(qc)
+
+			bits += self.bitFromCounts(counts)
+		return int(bits, 2)
+
+	def nextPowerOf2(self, n):
+		return int(math.pow(2, math.ceil(math.log(n, 2))))
+
+	def bitFromCounts(self, counts):
+		return [k for k, v in counts.items() if v == 1][0]
+
+	def numBits(self, n):
+		return math.floor(math.log(n, 2)) + 1 if n != 0 else 1
+
+	def getRegisterSizes(self, n, max_qubits):
+		register_sizes = [max_qubits for i in range(int(n / max_qubits))]
+		remainder = n % max_qubits
+		return register_sizes if remainder == 0 else register_sizes + [remainder]

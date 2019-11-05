@@ -15,6 +15,7 @@ class Controls extends Component {
       newHiscore: 0,
       fetchUsername: '',
       deleteUsername: '',
+      randInt: 0,
     };
   }
 
@@ -38,6 +39,11 @@ class Controls extends Component {
     this.setState({ deleteUsername: event.target.value });
   }
 
+  onRandIntChange = (event) => {
+    event.preventDefault();
+    this.setState({ randInt: event.target.value });
+  }
+
   onUserCreate = (event) => {
     event.preventDefault();
     this.props.createPlayer({
@@ -54,6 +60,11 @@ class Controls extends Component {
   onUserDelete = (event) => {
     event.preventDefault();
     this.props.deletePlayer(this.state.deleteUsername);
+  }
+
+  onGenRandInt = (event) => {
+    event.preventDefault();
+    this.props.generateRandomNumber(this.state.randInt);
   }
 
   render() {
@@ -78,7 +89,8 @@ class Controls extends Component {
           <button type="button" onClick={this.onUserDelete}>Delete Player</button>
         </div>
         <div>
-          <button type="button" onClick={this.props.generateRandomNumber}>Generate Random Int</button>
+          <input type="input" onChange={this.onRandIntChange} value={this.state.randInt} />
+          <button type="button" onClick={this.onGenRandInt}>Generate Random Int</button>
           <p>{this.props.randNum}</p>
         </div>
         <div>

@@ -6,7 +6,7 @@ const QuantumReducer = (state = {
 }, action) => {
   switch (action.type) {
     case ActionTypes.RANDOM_NUMBER:
-      return Object.assign({}, state, { randomNumber: action.payload.output, error: '' });
+      return Object.assign({}, state, { randomNumber: action.payload.randomInt, error: '' });
     case ActionTypes.ERROR:
       return Object.assign({}, state, { error: action.error.response ? action.error.response.data : action.error.message });
     default:
