@@ -53,6 +53,29 @@ class Player():
             username=player[1],
             hiscore=player[2],
         )
+    def updatePlayer(self, username, hiscore):
+        if self.cur is None:
+            self.cur = self.db.get_db().cursor()
+
+
+        error = None
+        if not username:
+            error = 'Username is required.'
+        elif hiscore != 0 and not hiscore :
+            error = 'HiScore is required.'
+
+        if error is None:
+            self.cur.execute(
+                'UPDATE player SET hiscore = ? WHERE username = ?',
+                (hiscore, username)
+            )
+            return jsonify(
+                username=username,
+                hiscore=hiscore,
+                id=self.cur.lastrowid,
+            )
+
+        return abort(make_response(jsonify(error), 400))
 
     def delete(self, playerName):
         if self.cur is None:

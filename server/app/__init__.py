@@ -53,6 +53,17 @@ def create_app(test_config=None):
         print("FetchPlayer")
         return None
 
+    @app.route('/api/updatePlayer', methods=['PUT'])
+    def updatePlayerr():
+        if request.method == 'PUT':
+            params=request.get_json()
+            username = params['username']
+            hiscore = params['hiscore']
+            response = player.updatePlayer(username, hiscore)
+            return response
+        print("CreatePlayer")
+        return None
+
     @app.route('/api/deletePlayer/', methods=['DELETE'])
     def delete():
         if request.method == 'DELETE':

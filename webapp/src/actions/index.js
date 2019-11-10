@@ -8,6 +8,7 @@ export const ActionTypes = {
   DECREMENT: 'DECREMENT',
   CREATE_PLAYER: 'CREATE_PLAYER',
   FETCH_PLAYER: 'FETCH_PLAYER',
+  UPDATE_PLAYER: 'UPDATE_PLAYER',
   DELETE_PLAYER: 'DELETE_PLAYER',
   RANDOM_NUMBER: 'RANDOM_NUMBER',
   ERROR: 'ERROR',
@@ -32,6 +33,19 @@ export function fetchPlayer(username) {
     axios.get(`${ROOT_URL}/fetchPlayer/?username=${username}`)
       .then((response) => {
         dispatch({ type: ActionTypes.FETCH_PLAYER, payload: response.data });
+      })
+      .catch((error) => {
+        dispatch({ type: ActionTypes.ERROR, error });
+      });
+  };
+}
+
+// update player
+export function updatePlayer(newPlayer) {
+  return (dispatch) => {
+    axios.put(`${ROOT_URL}/updatePlayer`, newPlayer)
+      .then((response) => {
+        dispatch({ type: ActionTypes.UPDATE_PLAYER, payload: response.data });
       })
       .catch((error) => {
         dispatch({ type: ActionTypes.ERROR, error });

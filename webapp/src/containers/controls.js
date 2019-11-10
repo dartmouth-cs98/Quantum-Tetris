@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 
 import {
-  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber,
+  createPlayer, fetchPlayer, updatePlayer, deletePlayer, generateRandomNumber,
 } from '../actions';
 
 class Controls extends Component {
@@ -52,6 +52,14 @@ class Controls extends Component {
     });
   }
 
+  onUserUpdate = (event) => {
+    event.preventDefault();
+    this.props.updatePlayer({
+      username: this.state.newUsername,
+      hiscore: this.state.newHiscore,
+    });
+  }
+
   onUserFetch = (event) => {
     event.preventDefault();
     this.props.fetchPlayer(this.state.fetchUsername);
@@ -85,6 +93,11 @@ class Controls extends Component {
           <button type="button" onClick={this.onUserFetch}>Fetch Player</button>
         </div>
         <div>
+          <input type="input" onChange={this.onNewUserChange} value={this.state.newUsername} />
+          <input type="input" onChange={this.onNewHiscoreChange} value={this.state.newHiscore} />
+          <button type="button" onClick={this.onUserUpdate}>Update Player</button>
+        </div>
+        <div>
           <input type="input" onChange={this.onDeleteUserChange} value={this.state.deleteUsername} />
           <button type="button" onClick={this.onUserDelete}>Delete Player</button>
         </div>
@@ -110,5 +123,5 @@ const mapStateToProps = state => (
 );
 
 export default withRouter(connect(mapStateToProps, {
-  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber,
+  createPlayer, fetchPlayer, updatePlayer, deletePlayer, generateRandomNumber,
 })(Controls));
