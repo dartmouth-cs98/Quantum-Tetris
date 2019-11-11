@@ -15,9 +15,10 @@ module.exports = {
   devServer: {
     hot: true,
     historyApiFallback: true,
-    proxy: {
-      '/': 'http://localhost:8000'
-    },
+    proxy: [{
+      context: ['/Tetris.pck', '/Tetris.png', '/Tetris.wasm'],
+      target: 'http://localhost:8000',
+    }],
   },
   module: {
     rules: [
