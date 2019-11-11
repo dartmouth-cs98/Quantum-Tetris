@@ -15,6 +15,10 @@ module.exports = {
   devServer: {
     hot: true,
     historyApiFallback: true,
+    proxy: [{
+      context: ['/Tetris.pck', '/Tetris.png', '/Tetris.wasm'],
+      target: 'http://localhost:8000',
+    }],
   },
   module: {
     rules: [
@@ -25,6 +29,12 @@ module.exports = {
           { loader: 'babel-loader' },
           { loader: 'eslint-loader' },
         ],
+      },
+      {
+        test: /\.html$/,
+        use: [
+          { loader: 'html-loader' }
+        ]
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/,
