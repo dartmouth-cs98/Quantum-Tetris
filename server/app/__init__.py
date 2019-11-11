@@ -53,6 +53,17 @@ def create_app(test_config=None):
         print("FetchPlayer")
         return None
 
+    @app.route('/api/updatePlayer', methods=['PUT'])
+    def updatePlayerr():
+        if request.method == 'PUT':
+            params=request.get_json()
+            username = params['username']
+            hiscore = params['hiscore']
+            response = player.updatePlayer(username, hiscore)
+            return response
+        print("CreatePlayer")
+        return None
+
     @app.route('/api/deletePlayer/', methods=['DELETE'])
     def delete():
         if request.method == 'DELETE':
@@ -66,7 +77,8 @@ def create_app(test_config=None):
     @app.route('/api/generateRandomNumber/', methods=['GET'])
     def generateRandomNumber():
         if request.method == 'GET':
-            response = quantum.generateRandomNumber()
+            maxNum = request.args.get('randInt', default= None, type= int)
+            response = quantum.generateRandomNumber(maxNum)
             return response
         print("GenerateRandomNumber")
         return None

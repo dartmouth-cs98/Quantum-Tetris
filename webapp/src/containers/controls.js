@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 
 import {
-  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber,
+  createPlayer, fetchPlayer, updatePlayer, deletePlayer, generateRandomNumber,
 } from '../actions';
 
 class Controls extends Component {
@@ -15,6 +15,7 @@ class Controls extends Component {
       newHiscore: 0,
       fetchUsername: '',
       deleteUsername: '',
+      randInt: 0,
     };
   }
 
@@ -38,9 +39,22 @@ class Controls extends Component {
     this.setState({ deleteUsername: event.target.value });
   }
 
+  onRandIntChange = (event) => {
+    event.preventDefault();
+    this.setState({ randInt: event.target.value });
+  }
+
   onUserCreate = (event) => {
     event.preventDefault();
     this.props.createPlayer({
+      username: this.state.newUsername,
+      hiscore: this.state.newHiscore,
+    });
+  }
+
+  onUserUpdate = (event) => {
+    event.preventDefault();
+    this.props.updatePlayer({
       username: this.state.newUsername,
       hiscore: this.state.newHiscore,
     });
@@ -54,6 +68,11 @@ class Controls extends Component {
   onUserDelete = (event) => {
     event.preventDefault();
     this.props.deletePlayer(this.state.deleteUsername);
+  }
+
+  onGenRandInt = (event) => {
+    event.preventDefault();
+    this.props.generateRandomNumber(this.state.randInt);
   }
 
   render() {
@@ -74,11 +93,17 @@ class Controls extends Component {
           <button type="button" onClick={this.onUserFetch}>Fetch Player</button>
         </div>
         <div>
+          <input type="input" onChange={this.onNewUserChange} value={this.state.newUsername} />
+          <input type="input" onChange={this.onNewHiscoreChange} value={this.state.newHiscore} />
+          <button type="button" onClick={this.onUserUpdate}>Update Player</button>
+        </div>
+        <div>
           <input type="input" onChange={this.onDeleteUserChange} value={this.state.deleteUsername} />
           <button type="button" onClick={this.onUserDelete}>Delete Player</button>
         </div>
         <div>
-          <button type="button" onClick={this.props.generateRandomNumber}>Generate Random Int</button>
+          <input type="input" onChange={this.onRandIntChange} value={this.state.randInt} />
+          <button type="button" onClick={this.onGenRandInt}>Generate Random Int</button>
           <p>{this.props.randNum}</p>
         </div>
         <div>
@@ -98,5 +123,5 @@ const mapStateToProps = state => (
 );
 
 export default withRouter(connect(mapStateToProps, {
-  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber,
+  createPlayer, fetchPlayer, updatePlayer, deletePlayer, generateRandomNumber,
 })(Controls));

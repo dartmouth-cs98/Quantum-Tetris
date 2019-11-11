@@ -8,6 +8,7 @@ export const ActionTypes = {
   DECREMENT: 'DECREMENT',
   CREATE_PLAYER: 'CREATE_PLAYER',
   FETCH_PLAYER: 'FETCH_PLAYER',
+  UPDATE_PLAYER: 'UPDATE_PLAYER',
   DELETE_PLAYER: 'DELETE_PLAYER',
   RANDOM_NUMBER: 'RANDOM_NUMBER',
   ERROR: 'ERROR',
@@ -39,6 +40,19 @@ export function fetchPlayer(username) {
   };
 }
 
+// update player
+export function updatePlayer(newPlayer) {
+  return (dispatch) => {
+    axios.put(`${ROOT_URL}/updatePlayer`, newPlayer)
+      .then((response) => {
+        dispatch({ type: ActionTypes.UPDATE_PLAYER, payload: response.data });
+      })
+      .catch((error) => {
+        dispatch({ type: ActionTypes.ERROR, error });
+      });
+  };
+}
+
 // delete player
 export function deletePlayer(username) {
   return (dispatch) => {
@@ -54,9 +68,9 @@ export function deletePlayer(username) {
 /* *************** QUANTUM ENDPOINTS ****************** */
 
 // Get a random number NOTE: at the moment does not produce an actual random number
-export function generateRandomNumber() {
+export function generateRandomNumber(randInt) {
   return (dispatch) => {
-    axios.get(`${ROOT_URL}/generateRandomNumber/`)
+    axios.get(`${ROOT_URL}/generateRandomNumber/?randInt=${randInt}`)
       .then((response) => {
         dispatch({ type: ActionTypes.RANDOM_NUMBER, payload: response.data });
       })

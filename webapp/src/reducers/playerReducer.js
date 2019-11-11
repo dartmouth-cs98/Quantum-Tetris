@@ -12,6 +12,8 @@ const PlayerReducer = (state = {
       return Object.assign({}, state, { user: action.payload, error: '' });
     case ActionTypes.FETCH_PLAYER:
       return Object.assign({}, state, { user: action.payload, error: '' });
+    case ActionTypes.UPDATE_PLAYER:
+      return Object.assign({}, state, { user: action.payload, error: '' });
     case ActionTypes.DELETE_PLAYER:
       return Object.assign({}, state, { user: '', error: '' });
     case ActionTypes.ERROR:
