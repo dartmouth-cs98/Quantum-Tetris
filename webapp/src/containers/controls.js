@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 
 import {
-  createPlayer, fetchPlayer, updatePlayer, deletePlayer, generateRandomNumber,
+  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber, determineSuperposition,
 } from '../actions';
 
 class Controls extends Component {
@@ -75,6 +75,20 @@ class Controls extends Component {
     this.props.generateRandomNumber(this.state.randInt);
   }
 
+  onSuperposition = (event) => {
+    event.preventDefault();
+    this.props.determineSuperposition({
+      piece1: {
+        name: 'Red',
+        blocks: 5,
+      },
+      piece2: {
+        name: 'Blue',
+        blocks: 4,
+      },
+    });
+  }
+
   render() {
     return (
       <div>
@@ -107,6 +121,10 @@ class Controls extends Component {
           <p>{this.props.randNum}</p>
         </div>
         <div>
+          <button type="button" onClick={this.onSuperposition}>Pick State</button>
+          <p>{this.props.piece ? this.props.piece.name : 'No Piece Selected'}</p>
+        </div>
+        <div>
           <h4>Errors:{this.props.error} </h4>
         </div>
       </div>
@@ -118,10 +136,11 @@ const mapStateToProps = state => (
   {
     currUser: state.player.user,
     randNum: state.quantum.randomNumber,
+    piece: state.quantum.superposition,
     error: state.player.error,
   }
 );
 
 export default withRouter(connect(mapStateToProps, {
-  createPlayer, fetchPlayer, updatePlayer, deletePlayer, generateRandomNumber,
+  createPlayer, fetchPlayer, deletePlayer, generateRandomNumber, determineSuperposition,
 })(Controls));
