@@ -1,0 +1,108 @@
+/* Main Colors
+--------------------------------- */
+
+/* primary color */
+.hero-section-2 .second-headline span,
+.hero-section-video-dark .second-headline span,
+.hero-section-yt-dark .second-headline span,
+.about-icons li .icon .material-icons,
+.quote-bottom .container h3 span,
+.service-headline h2 span,
+.service .text a:hover,
+.service-2 .text a:hover,
+.service .icons i,
+.service-2 .icons i,
+.info-line .info-icon i,
+footer p a:hover,
+.portfolio-icons li a i,
+.service-icons li a i {
+    color: #9600f4;
+}
+
+.social-icons li a:hover,
+.contact-form .btn-default:hover,
+.portfolio-icons li a:hover,
+.service-icons li a:hover,
+.service-form .btn-default:hover,
+.portfolio-form .btn-default:hover {
+    background-color: #9600f4;
+}
+
+.contact-form .btn-default:hover,
+.service-form .btn-default:hover,
+.portfolio-form .btn-default:hover {
+    border-color: #9600f4;
+}
+
+/* primary color 2 */
+.st-nav-trigger {
+    box-shadow: 0 0 10px #7100B7;
+}
+
+#st-nav #st-main-nav ul.is-visible {
+    box-shadow: 0 0 10px #7100B7;
+}
+
+.st-nav-trigger span,
+.st-nav-trigger.menu-is-open span::before,
+.st-nav-trigger.menu-is-open span::after,
+.image-section .btn-lg,
+.social-icons li a,
+.portfolio-headline .btn-default {
+    background: #7100B7;
+}
+
+/* primary color 3 */
+.sweep-icon a .fa {
+    color: #B649FF;
+}
+
+/* secondary color */
+.our-work-section .new-style p a {
+    color: #00F2FF;
+}
+
+.sweep-layer h3 a:hover {
+    color: #00F2FF;
+}
+
+/* Gradients */
+/* secondary and secondary 2 */
+.call-to-section .btn-default {
+    background-image: -ms-linear-gradient(left, #00F2FF 0%, #00BBFF 100%);
+    background-image: -moz-linear-gradient(left, #00F2FF 0%, #00BBFF 100%);
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #00F2FF), color-stop(1, #00BBFF));
+    background-image: -webkit-linear-gradient(left, #00F2FF, #00BBFF 100%);
+    background-image: linear-gradient(to right, #00F2FF, #00BBFF 100%);
+    border: 1px solid #00F2FF;
+}
+
+/* secondary and primary 2 */
+.hero-layer,
+.call-to-layer {
+    background-image: -ms-linear-gradient(left, #00F2FF 0%, #7100B7 100%);
+    background-image: -moz-linear-gradient(left, #00F2FF 0%, #7100B7 100%);
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #00F2FF), color-stop(1, #7100B7));
+    background-image: -webkit-linear-gradient(left, #00F2FF, #7100B7 100%);
+    background-image: linear-gradient(to right, #00F2FF, #7100B7 100%);
+}
+
+.portfolio-img .sweep-left,
+.portfolio-img .sweep-right {
+    background-image: -ms-linear-gradient(left, #7100B7 0%, #00F2FF 100%);
+    background-image: -moz-linear-gradient(left, #7100B7 0%, #00F2FF 100%);
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #7100B7), color-stop(1, #00F2FF));
+    background-image: -webkit-linear-gradient(left, #7100B7, #00F2FF 100%);
+    background-image: linear-gradient(to right, #7100B7, #00F2FF 100%);
+}
+
+/* secondary 2 and primary 4 */
+.gradient {
+    background-image: -ms-linear-gradient(left, #00BBFF 0%, #D42BFF 100%);
+    background-image: -moz-linear-gradient(left, #00BBFF 0%, #D42BFF 100%);
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #00BBFF), color-stop(1, #D42BFF));
+    background-image: -webkit-linear-gradient(left, #00BBFF, #D42BFF 100%);
+    background-image: linear-gradient(to right, #00BBFF, #D42BFF 100%);
+}
+
+
