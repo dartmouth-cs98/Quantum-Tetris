@@ -11,6 +11,7 @@ export const ActionTypes = {
   UPDATE_PLAYER: 'UPDATE_PLAYER',
   DELETE_PLAYER: 'DELETE_PLAYER',
   RANDOM_NUMBER: 'RANDOM_NUMBER',
+  FIND_SUPERPOSITION: 'FIND_SUPERPOSITION',
   ERROR: 'ERROR',
 };
 
@@ -67,12 +68,25 @@ export function deletePlayer(username) {
 }
 /* *************** QUANTUM ENDPOINTS ****************** */
 
-// Get a random number NOTE: at the moment does not produce an actual random number
-export function generateRandomNumber(randInt) {
+// Get a random number using 'maxNum' as a cap for the random number
+export function generateRandomNumber(maxNum) {
   return (dispatch) => {
-    axios.get(`${ROOT_URL}/generateRandomNumber/?randInt=${randInt}`)
+    axios.get(`${ROOT_URL}/generateRandomNumber/?randInt=${maxNum}`)
       .then((response) => {
         dispatch({ type: ActionTypes.RANDOM_NUMBER, payload: response.data });
+      })
+      .catch((error) => {
+        dispatch({ type: ActionTypes.ERROR, error });
+      });
+  };
+}
+
+// Get a random number
+export function determineSuperposition(pieces) {
+  return (dispatch) => {
+    axios.post(`${ROOT_URL}/determineSuperposition/`, pieces)
+      .then((response) => {
+        dispatch({ type: ActionTypes.FIND_SUPERPOSITION, payload: response.data });
       })
       .catch((error) => {
         dispatch({ type: ActionTypes.ERROR, error });

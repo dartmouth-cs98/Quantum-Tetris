@@ -83,4 +83,15 @@ def create_app(test_config=None):
         print("GenerateRandomNumber")
         return None
 
+    @app.route('/api/determineSuperposition/', methods=['POST'])
+    def determineSuperposition():
+        if request.method == 'POST':
+            params=request.get_json()
+            piece1 = params['piece1']
+            piece2 = params['piece2']
+            response = quantum.determineSuperposition(piece1, piece2)
+            return response
+        print("DetermineSuperposition")
+        return None
+
     return app
