@@ -14,10 +14,6 @@ class Game extends Component {
     };
   }
 
-  static getHTML() {
-    return ({ __html: '<div>Hello</div>' });
-  }
-
   componentDidMount() {
     const script = document.createElement('script');
     script.type = 'text/javascript';
@@ -29,7 +25,6 @@ class Game extends Component {
   render() {
     return (
       <div>
-        The Game
         <div dangerouslySetInnerHTML={{ __html: gameHTML }} />
       </div>
     );
@@ -42,3 +37,12 @@ class Game extends Component {
 // react-redux glue -- outputs Container that know state in props
 // also with an optional HOC withRouter
 export default withRouter(connect(null, null)(Game));
+
+/*
+  Jumps:
+    1) Serving static HTML
+    2) Running the scripts
+    3) Scripts in both .js and .html!
+    4) Serve .pck .png and .wasm off backend
+    5) Proxy to backend
+*/
