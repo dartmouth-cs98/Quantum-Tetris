@@ -63,7 +63,7 @@ const App = () => {
           <li><NavLink to="/about" exact>About</NavLink></li>
           <li><NavLink to="/test/id1">test id1</NavLink></li>
           <li><NavLink to="/test/id2">test id2</NavLink></li>
-          <li><NavLink to="/game">Game</NavLink></li>
+          <li><NavLink to="/game">Component Game</NavLink></li>
         </ul>
       </nav>
     );
