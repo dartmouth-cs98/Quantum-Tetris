@@ -416,44 +416,56 @@ header #st-logo img {
 }
 
 .hero-logo {
-    margin-top: 330px;
+    margin-top: 260px;
     overflow: hidden;
 }
 
 .hero-section-video #particles-js {
-    width: 950px;
-    height: 280px;
+    width: 500px;
+    height: 200px;
     position: absolute;
     margin-left: auto;
     margin-right: auto;
     left: 0;
     right: 0;
-    top: 330px;
+    top: 450px;
 }
 
 .hero-section-video .typed-text {
-    height: 50px;
+    height: 80px;
 }
 
 .hero-section-video .typed-text .skilltechtypetext {
     color: #ffffff;
     font-weight: 700;
-    font-size: 50px;
-    line-height: 50px;
+    font-size: 80px;
+    line-height: 100px;
 }
 
 .hero-section-video .typed-text .typed-cursor,
 .typed-headline .typed-cursor {
     opacity: 1;
-    -webkit-animation: blink 0.7s infinite;
-    -moz-animation: blink 0.7s infinite;
-    animation: blink 0.7s infinite;
+    -webkit-animation: blink 1s infinite;
+    -moz-animation: blink 1s infinite;
+    animation: blink 1s infinite;
     color: #ffffff;
 }
 
 .hero-section-video .typed-text .typed-cursor {
-    font-size: 50px;
-    line-height: 50px;
+    font-size: 80px;
+    line-height: 80px;
+}
+
+.hero-section-video .btn-lg {
+    width: 180px;
+    height: 50px;
+    color: #ffffff;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: 100px;
 }
 
 @keyframes blink {
@@ -535,6 +547,7 @@ header #st-logo img {
     font-weight: 400;
     margin-top: 25px;
 }
+
 
 /* Sweep To Right */
 .image-section .hvr-sweep-to-right {
