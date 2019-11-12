@@ -1,0 +1,22 @@
+[gd_scene format=2]
+
+[node name="SideGUI" type="MarginContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 40.0
+margin_bottom = 14.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 40.0
+margin_bottom = 18.0
+
+[node name="Sprite" type="Sprite" parent="VBoxContainer/VBoxContainer"]
+
+[node name="Sprite2" type="Sprite" parent="VBoxContainer/VBoxContainer"]
