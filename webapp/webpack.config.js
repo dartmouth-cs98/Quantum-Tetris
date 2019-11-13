@@ -1,6 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const autoprefixer = require('autoprefixer');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'development';
 // set to 'production' or 'development' in your env
@@ -15,10 +16,6 @@ module.exports = {
   devServer: {
     hot: true,
     historyApiFallback: true,
-    proxy: [{
-      context: ['/Tetris.pck', '/Tetris.png', '/Tetris.wasm'],
-      target: 'http://localhost:8000',
-    }],
   },
   module: {
     rules: [
@@ -31,13 +28,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.html$/,
-        use: [
-          { loader: 'html-loader' }
-        ]
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/,
+        test: /\.(jpe?g|png|gif|svg|mp4)$/,
         use: [
           {
             loader: 'file-loader',
@@ -57,6 +48,9 @@ module.exports = {
             options: {
               sourceMap: true,
             },
+          },
+          {
+            loader: 'style-loader',
           },
           {
             loader: 'postcss-loader',
@@ -85,5 +79,8 @@ module.exports = {
       template: './src/index.html',
       filename: './200.html',
     }),
+    new CopyPlugin([
+      { from: './src/assets', to: './assets' },
+    ]),
   ],
 };
