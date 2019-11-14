@@ -1,4 +1,6 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://tilesets/tiles.tres" type="TileSet" id=1]
 
 [node name="SideGUI" type="MarginContainer"]
 margin_right = 40.0
@@ -20,3 +22,7 @@ margin_bottom = 18.0
 [node name="Sprite" type="Sprite" parent="VBoxContainer/VBoxContainer"]
 
 [node name="Sprite2" type="Sprite" parent="VBoxContainer/VBoxContainer"]
+
+[node name="TileMap" type="TileMap" parent="VBoxContainer/VBoxContainer"]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 16, 16 )

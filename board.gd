@@ -50,10 +50,10 @@ export(Vector2) var board_size = Vector2(10, 20) setget _set_size
 
 ### Variables for Physics and Game Control
 # Upcoming blocks, not shown 
+# Is array type
 var _block_queue
 # Block currently on screen
 var _block
-
 
 var _max_block_time
 var _block_time
@@ -211,9 +211,10 @@ func _spawn_block():
 	if _block_queue.empty():
 		_generate_block_queue()
 
-	var index = randi() % _block_queue.size()
-	_block = _block_queue[index].instance()
-	_block_queue.remove(index)
+	#var index = randi() % _block_queue.size()
+	#_block = _block_queue[index].instance()
+	#_block_queue.remove(index)
+	_block = _block_queue.pop_front().instance()
 	add_child(_block)
 
 	var block_rect = _block.get_rect()
@@ -227,12 +228,16 @@ func _spawn_block():
 	if not _is_block_space_empty(block_pos, 0):
 		_set_game_over()
 
+## _generate_block_queue
+# Add a certain number of blocks of each type
+# Randomize the list
 func _generate_block_queue():
 	for b in _block_types:
 		#warning-ignore:unused_variable
 		for i in range(BLOCKS_PER_QUEUE):
 			_block_queue.append(b)
-
+	_block_queue.shuffle()
+	
 
 ########################### Control Blocks Functions
 ## Generate the commands to control the block
@@ -315,6 +320,7 @@ func _check_for_completed_lines():
 			if $board_tiles.get_cell(x, y) == -1:
 				complete = false
 				break
+		#Move lines to completed lines scene
 		if complete:
 			_completed_lines.append(y)
 			$TopGUI._update_score( _completed_lines.size())
@@ -328,7 +334,9 @@ func _check_for_completed_lines():
 	if not _completed_lines.empty():
 		_show_completed_lines()
 
-## Game over animation
+########################### Level Completed Functions
+
+## Level over animation
 func _show_completed_lines():
 	# Change game state
 	_game_state = GameState.COMPLETED_LINES
@@ -364,20 +372,26 @@ func _on_completed_animation_animation_finished( anim_name ):
 
 	_game_state = GameState.RUNNING
 
+########################### Game Over Functions
+## _spawn_falling_blocks
+# Is this spinning tile shit.
+func _spawn_falling_blocks():
+	for x in range(1, board_size.x + 1):
+		for y in range(1, board_size.y + 1):
+			# -1 means space is occupied
+			if $board_tiles.get_cell(x, y) != -1:
+				# Set the found tile to a falling_block instance
+				var tile = FallingTile.instance()
+				tile.set_tile($board_tiles, Vector2(x, y))
+				$falling_tiles.add_child(tile)
+				# set the space to occupied
+				$board_tiles.set_cell(x, y, -1)
+
 func _set_game_over():
 	_end_block()
 	_game_state = GameState.OVER
 	_spawn_falling_blocks()
 
-func _spawn_falling_blocks():
-	for x in range(1, board_size.x + 1):
-		for y in range(1, board_size.y + 1):
-			if $board_tiles.get_cell(x, y) != -1:
-				var tile = FallingTile.instance()
-				tile.set_tile($board_tiles, Vector2(x, y))
-				$falling_tiles.add_child(tile)
-
-				$board_tiles.set_cell(x, y, -1)
 
 func end_game():
 	if _block != null:
