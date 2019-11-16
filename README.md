@@ -28,8 +28,11 @@ pip install flask
 export FLASK_APP=app
 export FLASK_ENV=development
 pip install flask-cors
-python -m flask init-db
-python -m flask run
+pip install sqlalchemy
+python -m application.manage db init
+python -m application.manage db migrate
+python -m application.manage db update
+python -m application.manage runserver
 ```
 * NOTE: This is a remanent of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the backend
 ### Dev Environmental Setup Notes
@@ -40,7 +43,6 @@ python -m flask run
 conda update --name base conda
 conda install python==3.7
 python3 -m pip install --user qiskit
-pip install pygame==1.9.2
 ```
 ###### Note:
 If you get an error regarding an "ssl" error run the following commands

@@ -1,5 +1,7 @@
 venv
-*/app/__pycache__/*.pyc
+*.pyc
+*.db
+*/migrations/
 .vscode/*
 **/.idea/workspace.xml 
 **/.idea/tasks.xml
