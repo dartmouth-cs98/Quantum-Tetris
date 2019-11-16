@@ -32,7 +32,7 @@ pip install sqlalchemy
 python -m application.manage db init
 python -m application.manage db migrate
 python -m application.manage db update
-flask run
+python -m application.manage runserver
 ```
 * NOTE: This is a remanent of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the backend
 ### Dev Environmental Setup Notes
