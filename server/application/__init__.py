@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -7,7 +8,7 @@ from application.config import DevelopmentConfig
 # create and configure the application
 app = Flask(__name__, instance_relative_config=True)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-app.config.from_object(DevelopmentConfig)
+app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.init_app(app)

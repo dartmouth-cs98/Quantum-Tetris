@@ -1,22 +1,12 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
-POSTGRES = {
-    'user': 'postgres',
-    'pw': 'quantum-is-rad',
-    'db': 'quantum_tetris',
-    'host': 'localhost',
-    'port': '5432',
-}
-
 class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'quantum-is-cool'
-    SQLALCHEMY_DATABASE_URI =  'postgresql://%(user)s:\
-%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 
 
 class ProductionConfig(Config):
