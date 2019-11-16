@@ -9,9 +9,8 @@ class Quantum():
 	MAX_QUBITS = 5
 	machineName = 'qasm_simulator'
 
-	def __init__(self, db):
-		self.db = db
-		self.cur = None
+	def __init__(self):
+		pass
 
 
 	# Code adapted from https://blog.red-badger.com/2018/9/24/generate-true-random-numbers-with-a-quantum-computer

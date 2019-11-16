@@ -1,11 +1,9 @@
 from flask import Flask, request
 from flask_cors import CORS
 from . import database_setup
-from application.quantum import Quantum
-from application.player import Player
 from flask_sqlalchemy import SQLAlchemy
-from application.config import DevelopmentConfig
 from application import models
+from application.config import DevelopmentConfig
 
 # create and configure the application
 app = Flask(__name__, instance_relative_config=True)
@@ -15,17 +13,18 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.init_app(app)
 
+from . import quantum as q
+from . import player as p
+
 #************** PLAYER ENDPOINTS *****************
-player=Player(database_setup)
+player=p.Player()
 
 @app.route('/api/createPlayer', methods=['POST'])
 def createPlayer():
     if request.method == 'POST':
         params=request.get_json()
-        username = params['username']
-        hiscore = params['hiscore']
-
-        response = player.createPlayer(username, hiscore)
+        newPlayer = models.PlayerModel(params['username'], params['hiscore'])
+        response = player.createPlayer(newPlayer)
         return response
     print("CreatePlayer")
     return None
@@ -61,7 +60,7 @@ def delete():
     return None
 
 #************** QUANTUM ENDPOINTS *****************
-quantum=Quantum(database_setup)
+quantum=q.Quantum()
 @app.route('/api/generateRandomNumber/', methods=['GET'])
 def generateRandomNumber():
     if request.method == 'GET':

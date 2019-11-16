@@ -1,4 +1,4 @@
-from .__init__ import db
+from application.__init__ import db
 import datetime
 
 # Base models found from https://blog.theodo.com/2017/03/developping-a-flask-web-app-with-a-postresql-database-making-all-the-possible-errors/
@@ -29,6 +29,7 @@ class BaseModel(db.Model):
 
 class PlayerModel(db.Model):
     __tablename__ = 'players'
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
