@@ -1,6 +1,14 @@
 tool
 extends Node2D
 
+#########################   Notes   ##########################
+
+##### Ugh Notes
+## Spawn block checks for game over, set that to process and top row of program
+## What does grace do?
+## Set up board speed function
+## Figure out what result from block.gd encodes.
+## See 211, 212
 #########################   Signals, Constants, Variables   ##########################
 
 
@@ -18,19 +26,20 @@ enum GameState {RUNNING, COMPLETED_LINES, OVER, STOPPED}
 #Load Falling Tile scene
 const FallingTile = preload("res://falling_tile.tscn")
 
-### Constants for Physics and Game Control
+########## Constants for Physics and Game Control
 const START_BLOCK_TIME = 1
 const BLOCK_ACCEL = 0.1
 const LINES_PER_LEVEL = 10
 
 const MOVE_TIME = 0.2
 
+########## Constants for Board Setup and Block Queue
 const BORDER_TILE_NAME = "grey"
 const COMPLETED_TILE_NAME = "white"
 
 const BLOCKS_PER_QUEUE = 7
 
-## Array of block shapes held as scenes
+########## Array of block shapes held as scenes
 var _block_types = [
 	preload("res://blocks/i.tscn"),
 	preload("res://blocks/j.tscn"),
@@ -41,22 +50,26 @@ var _block_types = [
 	preload("res://blocks/z.tscn")
 ]
 
-## Export board_size
+########## Export board_size
 # Allow board_size to be visible in the inspector 
 # setget defines a _set_size method that will be called to set the variable instead
 #of allowing other functions to modify it themselves.
 export(Vector2) var board_size = Vector2(10, 20) setget _set_size
 
 
-### Variables for Physics and Game Control
-# Upcoming blocks, not shown 
-# Is array type
+########## Variables for block queue
+# Upcoming blocks, not shown. Is array type
 var _block_queue
 # Block currently on screen
 var _block
 
+########## Variables for moving a block down a notch
+# Max time between block movements
 var _max_block_time
+# Current time between block movements
 var _block_time
+
+
 var _grace
 
 
@@ -134,14 +147,6 @@ func start_game():
 	_spawn_block()
 
 ########################### Input and Process Functions
-
-##### Current Actions and Mappings
-##
-##
-##
-##
-##
-
 func _input(event):
 	if not Engine.editor_hint and (_game_state == GameState.RUNNING):
 		if event.is_action_pressed("cancel"):
@@ -172,14 +177,17 @@ func _process(delta):
 	if not Engine.editor_hint and (_game_state != GameState.STOPPED):
 		if _game_state == GameState.RUNNING:
 			var block_dropped = false
-
+			# Decrement block time
 			_block_time -= delta
+			# If the block time has run out, move the block down a cell or generate a new one.
 			if _block_time <= 0:
+				# If the block exists, drop it by one cell
 				if _block:
 					_drop_block()
 					block_dropped = true
-				else:
-					_spawn_block()
+				# Spawn a new block if it doesn't exist
+#				else:
+#					_spawn_block()
 				_block_time += _max_block_time
 
 			if _block:
@@ -201,9 +209,18 @@ func _process(delta):
 
 				if can_move:
 					_move_time += MOVE_TIME
+			# By putting this here, the program gets a new block as soon as the old one hits
+			# the problem with reading if it hit or not has to do with time values
+			else:
+				_spawn_block()
+		## If the falling block animation is over, end the game.
 		elif _game_state == GameState.OVER:
+			# If all falling tiles are off screen
 			if $falling_tiles.get_child_count() == 0:
 				end_game()
+#### FILLL INNN
+func change_board_speed(value):
+	pass
 
 ########################### Manage Block Queue
 
@@ -219,12 +236,15 @@ func _spawn_block():
 
 	var block_rect = _block.get_rect()
 
+	#Find the middle of the board and block
 	var board_middle = int(board_size.x / 2)
 	var block_middle = int(block_rect.size.x / 2)
 
+	#BLock will spawn in the middle of the board
 	var block_pos = Vector2(board_middle - block_middle + 1, 1)
 	_block.block_position = block_pos
 
+	#If the spawn point is blocked, then game over.
 	if not _is_block_space_empty(block_pos, 0):
 		_set_game_over()
 
@@ -268,10 +288,14 @@ func _move_block(pos, rot):
 	if _is_block_space_empty(new_pos, new_rot):
 		_block.block_position = new_pos
 		_block.block_rotation = new_rot
-
+## _drop_block
+# Move the block down one unit
 func _drop_block():
+	# Move the block down a unit
 	_move_block(Vector2(0, 1), 0)
 
+	# If the space below this block isnt empty
+	####### Optimize this function??
 	if not _is_block_space_empty(_block.block_position + Vector2(0, 1),
 			_block.block_rotation):
 		if _grace:
@@ -373,12 +397,19 @@ func _on_completed_animation_animation_finished( anim_name ):
 	_game_state = GameState.RUNNING
 
 ########################### Game Over Functions
+## _set_game_over()
+# Called if spawn point if filled. Start end_game animation
+func _set_game_over():
+	_end_block()
+	_game_state = GameState.OVER
+	_spawn_falling_blocks()
+
 ## _spawn_falling_blocks
 # Is this spinning tile shit.
 func _spawn_falling_blocks():
 	for x in range(1, board_size.x + 1):
 		for y in range(1, board_size.y + 1):
-			# -1 means space is occupied
+			# Find all cells in tileset (all have unqiue integer id not -1)
 			if $board_tiles.get_cell(x, y) != -1:
 				# Set the found tile to a falling_block instance
 				var tile = FallingTile.instance()
@@ -387,13 +418,10 @@ func _spawn_falling_blocks():
 				# set the space to occupied
 				$board_tiles.set_cell(x, y, -1)
 
-func _set_game_over():
-	_end_block()
-	_game_state = GameState.OVER
-	_spawn_falling_blocks()
-
-
+## end_game
+# After animation is over, finish ending the game
 func end_game():
+	#Error catching?
 	if _block != null:
 		_end_block()
 	for x in range(1, board_size.x + 1):

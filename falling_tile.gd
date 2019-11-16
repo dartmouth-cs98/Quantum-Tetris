@@ -1,12 +1,11 @@
 extends Sprite
 
+################################# Notes ################################ 
+
 ######## About TileMaps and Sets
 ##### TileMaps use TileSets to create a grid
 ##### TileSets contains a list of tiles, each consisting of a sprite and optional collision shapes.
-### Tiles are referenced by a unique integer ID.
-
-
-
+### Tiles are referenced by a unique integer ID. Any cell without a tile has a value of -1
 
 
 ##### Notes
@@ -14,22 +13,14 @@ extends Sprite
 ### VisibilityNotifier2D: detects when the node is visible on screen.
 # VisibilityNotifier2D has 
 
-
+############################ Variables and Constants ##########################
 
 const SPIN_SPEED = deg2rad(500)
-
-
 var fall_speed = 800
 
-## set_fall_speed
-# changes the fall speed by a preset multiplier.
-# Set up a button in one of the GUIs, have board function that changes the instance
-#based on some presets
-func set_fall_speed(speed):
-	fall_speed = fall_speed* speed
+############################ Functions ##########################
 
 ## set_tile
-
 func set_tile(tilemap, tile):
 	## Finds position
 	#get_cell returns the tile index of the given cell
