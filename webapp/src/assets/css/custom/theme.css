@@ -32,6 +32,7 @@ body {
     height: 100%;
     overflow-x: hidden;
     font-family: 'Titillium Web', sans-serif;
+    background-color: rgba(12, 22, 30, 0.9);
 }
 
 a,
@@ -53,9 +54,10 @@ a:focus {
 .YT_video {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+
 }
 
 /* 2. Navigation
@@ -408,7 +410,7 @@ header #st-logo img {
     top: 0;
     left: 0;
     background: url('../../images/overlay-pattern.png') repeat;
-    opacity: 0.6;
+    opacity: 0.0;
 }
 
 .hero-video {
@@ -878,7 +880,7 @@ header #st-logo img {
 }
 
 .about-images .image-center {
-    position: absolute;
+    position: relative;
     margin-left: auto;
     margin-right: auto;
     left: 0;
