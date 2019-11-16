@@ -1,6 +1,5 @@
 from werkzeug.exceptions import abort
 from models import PlayerModel
-
 from flask import make_response, jsonify
 from application.__init__ import db
 

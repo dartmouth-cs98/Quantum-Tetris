@@ -15,7 +15,8 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'quantum-is-cool'
-    SQLALCHEMY_DATABASE_URI =  'postgres://uyssafbiyxiubm:eec00b1dbd6bd435c70d4de310a030acb27a7235138189bcd610534fd7a0fda5@ec2-54-243-44-102.compute-1.amazonaws.com:5432/d3l75bhln5utku'
+    SQLALCHEMY_DATABASE_URI =  'postgresql://%(user)s:\
+%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 
 
 class ProductionConfig(Config):
