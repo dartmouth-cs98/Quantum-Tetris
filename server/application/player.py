@@ -21,61 +21,51 @@ class Player():
             db.session.add(player)
             db.session.commit()
             return jsonify(
+                id=player.id,
                 username=player.username,
                 hiscore=player.hiscore,
             )
 
         return abort(make_response(jsonify(error), 400))
 
-    # def fetchPlayer(self, playerName):
-    #     if self.cur is None:
-    #         self.cur = self.db.get_db().cursor()
-    #     player = self.cur.execute(
-    #         'SELECT *'
-    #         ' FROM player'
-    #         ' WHERE username= ?',
-    #         (playerName,)
-    #     ).fetchone()
-	#
-    #     if player is None:
-    #         return abort(make_response(jsonify('Player {} does not exist.'.format(playerName)), 400))
-	#
-    #     return jsonify(
-    #         id=player[0],
-    #         username=player[1],
-    #         hiscore=player[2],
-    #     )
-    # def updatePlayer(self, username, hiscore):
-    #     if self.cur is None:
-    #         self.cur = self.db.get_db().cursor()
-	#
-	#
-    #     error = None
-    #     if not username:
-    #         error = 'Username is required.'
-    #     elif hiscore != 0 and not hiscore :
-    #         error = 'HiScore is required.'
-	#
-    #     if error is None:
-    #         self.cur.execute(
-    #             'UPDATE player SET hiscore = ? WHERE username = ?',
-    #             (hiscore, username)
-    #         )
-    #         return jsonify(
-    #             username=username,
-    #             hiscore=hiscore,
-    #             id=self.cur.lastrowid,
-    #         )
-	#
-    #     return abort(make_response(jsonify(error), 400))
-	#
-    # def delete(self, playerName):
-    #     if self.cur is None:
-    #         self.cur = self.db.get_db().cursor()
-    #     player = self.fetchPlayer(playerName)
-    #     self.cur.execute('DELETE FROM player WHERE id = ?', (player.json['id'],))
-    #     return jsonify(
-    #         id=player.json['id'],
-    #         username=player.json['username'],
-    #         hiscore=player.json['hiscore'],
-    #     )
+    def fetchPlayer(self, playerName):
+        player = PlayerModel.query.filter_by(username=playerName).first()
+
+        if player is None:
+            return abort(make_response(jsonify('Player {} does not exist.'.format(playerName)), 400))
+
+        return jsonify(
+            id=player.id,
+            username=player.username,
+            hiscore=player.hiscore,
+        )
+    def updateHiscore(self, player):
+
+        error = None
+        if not player.username:
+            error = 'Username is required.'
+        elif player.hiscore != 0 and not player.hiscore :
+            error = 'HiScore is required.'
+
+
+        if error is None:
+            updatedPlayer = PlayerModel.query.filter_by(username=player.username).first()
+            updatedPlayer.hiscore = player.hiscore
+            db.session.commit()
+            return jsonify(
+                username=updatedPlayer.username,
+                hiscore=updatedPlayer.hiscore,
+                id=updatedPlayer.id,
+            )
+
+        return abort(make_response(jsonify(error), 400))
+
+    def delete(self, playerName):
+        player = PlayerModel.query.filter_by(username=playerName).first()
+        db.session.delete(player)
+        db.session.commit()
+        return jsonify(
+            id=player.id,
+            username=player.username,
+            hiscore=player.hiscore,
+        )

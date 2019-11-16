@@ -39,13 +39,12 @@ def fetchPlayer():
     print("FetchPlayer")
     return None
 
-@app.route('/api/updatePlayer', methods=['PUT'])
-def updatePlayerr():
+@app.route('/api/updateHiscore', methods=['PUT'])
+def updateHiscore():
     if request.method == 'PUT':
         params=request.get_json()
-        username = params['username']
-        hiscore = params['hiscore']
-        response = player.updatePlayer(username, hiscore)
+        updatePlayer = models.PlayerModel(params['username'], params['hiscore'])
+        response = player.updateHiscore(updatePlayer)
         return response
     print("CreatePlayer")
     return None
