@@ -1,5 +1,5 @@
 from werkzeug.exceptions import abort
-from models import PlayerModel
+from application import models
 from flask import make_response, jsonify
 from application.__init__ import db
 
@@ -13,7 +13,7 @@ class Player():
             error = 'Username is required.'
         elif player.hiscore != 0 and not player.hiscore :
             error = 'HiScore is required.'
-        elif PlayerModel.query.filter_by(username=player.username).first() is not None:
+        elif models.PlayerModel.query.filter_by(username=player.username).first() is not None:
             error = 'Player {} is already registered.'.format(player.username)
 
         if error is None:
@@ -28,7 +28,7 @@ class Player():
         return abort(make_response(jsonify(error), 400))
 
     def fetchPlayer(self, playerName):
-        player = PlayerModel.query.filter_by(username=playerName).first()
+        player = models.PlayerModel.query.filter_by(username=playerName).first()
 
         if player is None:
             return abort(make_response(jsonify('Player {} does not exist.'.format(playerName)), 400))
@@ -48,7 +48,7 @@ class Player():
 
 
         if error is None:
-            updatedPlayer = PlayerModel.query.filter_by(username=player.username).first()
+            updatedPlayer = models.PlayerModel.query.filter_by(username=player.username).first()
             updatedPlayer.hiscore = player.hiscore
             db.session.commit()
             return jsonify(
@@ -60,7 +60,7 @@ class Player():
         return abort(make_response(jsonify(error), 400))
 
     def delete(self, playerName):
-        player = PlayerModel.query.filter_by(username=playerName).first()
+        player = models.PlayerModel.query.filter_by(username=playerName).first()
         db.session.delete(player)
         db.session.commit()
         return jsonify(

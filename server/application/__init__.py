@@ -1,6 +1,5 @@
 from flask import Flask, request
 from flask_cors import CORS
-from . import database_setup
 from flask_sqlalchemy import SQLAlchemy
 from application import models
 from application.config import DevelopmentConfig
