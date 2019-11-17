@@ -16,6 +16,7 @@ var Module=typeof Module!=="undefined"?Module:{};var moduleOverrides={};var key;
 };
 
 (function() {
+
 	var engine = Engine;
 
 	var DOWNLOAD_ATTEMPTS_MAX = 4;
