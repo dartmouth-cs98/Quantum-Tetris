@@ -79,3 +79,11 @@ def determineSuperposition():
         return response
     print("DetermineSuperposition")
     return None
+@app.route('/api/flipGrid', methods=['POST'])
+def flipGrid():
+    if request.method == 'POST':
+        params=request.get_json()
+        response = quantum.flipGrid(params['grid'])
+        return response
+    print("FlipGrid")
+    return None
