@@ -16,7 +16,7 @@
 footer p a:hover,
 .portfolio-icons li a i,
 .service-icons li a i {
-    color: #b784d6;
+    color: #9600f4;
 }
 
 .social-icons li a:hover,
@@ -24,7 +24,6 @@ footer p a:hover,
 .portfolio-icons li a:hover,
 .service-icons li a:hover,
 .service-form .btn-default:hover,
-.hero-section-video .btn-lg,
 .portfolio-form .btn-default:hover {
     background-color: #9600f4;
 }
@@ -47,9 +46,8 @@ footer p a:hover,
 .st-nav-trigger span,
 .st-nav-trigger.menu-is-open span::before,
 .st-nav-trigger.menu-is-open span::after,
-.image-section .btn-lg,
+.hero-section-video .btn-lg,
 .social-icons li a,
-.hero-section-video .btn-lg:hover,
 .portfolio-headline .btn-default {
     background: #7100B7;
 }
