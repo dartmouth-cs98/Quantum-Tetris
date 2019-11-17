@@ -61,6 +61,7 @@ def delete():
 
 #************** QUANTUM ENDPOINTS *****************
 quantum=q.Quantum()
+
 @app.route('/api/generateRandomNumber/', methods=['GET'])
 def generateRandomNumber():
     if request.method == 'GET':
@@ -70,13 +71,11 @@ def generateRandomNumber():
     print("GenerateRandomNumber")
     return None
 
-@app.route('/api/determineSuperposition/', methods=['POST'])
+@app.route('/api/determineSuperposition/', methods=['GET'])
 def determineSuperposition():
-    if request.method == 'POST':
-        params=request.get_json()
-        piece1 = params['piece1']
-        piece2 = params['piece2']
-        response = quantum.determineSuperposition(piece1, piece2)
+    if request.method == 'GET':
+        prob = request.args.get('prob', default= None, type= int)
+        response = quantum.determineSuperposition(prob)
         return response
     print("DetermineSuperposition")
     return None

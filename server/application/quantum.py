@@ -3,6 +3,7 @@ from werkzeug.exceptions import abort
 from flask import make_response, jsonify
 from qiskit import *
 import math
+import numpy
 
 class Quantum():
 
@@ -29,9 +30,9 @@ class Quantum():
 
 		return abort(make_response(jsonify(error), 400))
 
-	def determineSuperposition(self, piece1, piece2):
+	def determineSuperposition(self, prob):
 
-		result = self.findSuperposition(piece1, piece2)
+		result = self.findSuperposition(prob)
 
 		error = None
 		if result is None:
@@ -39,33 +40,30 @@ class Quantum():
 
 		if error is None:
 			return jsonify(
-				piece=result,
+				result=result,
 			)
 
 		return abort(make_response(jsonify(error), 400))
 
-	def findSuperposition(self, piece1, piece2):
+	def findSuperposition(self, prob):
+		probability = prob / float(100)
+		angle = numpy.arccos(math.sqrt(probability)) * 2
 
-		q = QuantumRegister(3)
+		q = QuantumRegister(1)
 		c = ClassicalRegister(1)
 		qc = QuantumCircuit(q, c)
 
-		qc.h(0)
-		qc.h(1)
-		qc.cx(0,2)
-		qc.cx(1,2)
+		qc.rx(angle, 0)
 		qc.measure(0, 0)
-		qc.measure(1, 0)
-		qc.measure(2, 0)
 
 		simulator = Aer.get_backend(self.machineName)
-		job_sim = execute(qc, backend = simulator, shots=1000)
+		job_sim = execute(qc, backend = simulator, shots=1)
 		sim_result = job_sim.result()
 		try:
 			sim_result.get_counts(qc)['0']
-			return piece1
+			return 0
 		except KeyError:
-			return piece2
+			return 1
 
 	def getRandNum(self, maxInt):
 		result = self.random_int(self.nextPowerOf2(maxInt))
