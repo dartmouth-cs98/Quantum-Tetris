@@ -16,7 +16,7 @@ extends Sprite
 ############################ Variables and Constants ##########################
 
 const SPIN_SPEED = deg2rad(500)
-var fall_speed = 800
+var fall_speed = 400
 
 ############################ Functions ##########################
 

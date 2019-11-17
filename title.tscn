@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://title.gd" type="Script" id=1]
-[ext_resource path="res://graphics/Backgrounds/QPixel.jpg" type="Texture" id=2]
-[ext_resource path="res://fonts/font_large.fnt" type="BitmapFont" id=3]
-[ext_resource path="res://themes/theme.tres" type="Theme" id=4]
+[ext_resource path="res://themes/theme.tres" type="Theme" id=1]
+[ext_resource path="res://title.gd" type="Script" id=2]
+[ext_resource path="res://graphics/Backgrounds/QPixel.jpg" type="Texture" id=3]
+[ext_resource path="res://fonts/font_large.fnt" type="BitmapFont" id=4]
 [ext_resource path="res://themes/panel_stylebox.tres" type="StyleBox" id=5]
 [ext_resource path="res://fonts/font_small.fnt" type="BitmapFont" id=6]
 
@@ -17,11 +17,12 @@ margin_top = -320.0
 margin_right = 240.0
 margin_bottom = 320.0
 mouse_filter = 1
-script = ExtResource( 1 )
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
 
 [node name="Background" type="Sprite" parent="."]
 scale = Vector2( 0.11517, 0.153577 )
-texture = ExtResource( 2 )
+texture = ExtResource( 3 )
 centered = false
 offset = Vector2( -3.47162, 3.90765 )
 __meta__ = {
@@ -38,7 +39,7 @@ custom_constants/separation = 332
 [node name="title" type="Label" parent="VBoxContainer"]
 margin_right = 265.0
 margin_bottom = 59.0
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource( 4 )
 custom_colors/font_color = Color( 0, 1, 0.0901961, 1 )
 custom_colors/font_color_shadow = Color( 0, 0.658824, 0, 1 )
 text = "Quantum
@@ -60,18 +61,20 @@ margin_bottom = 104.0
 alignment = 1
 
 [node name="Single" type="Button" parent="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer"]
+margin_top = 27.0
 margin_right = 135.0
-margin_bottom = 50.0
+margin_bottom = 77.0
 rect_min_size = Vector2( 50, 50 )
-theme = ExtResource( 4 )
+theme = ExtResource( 1 )
 text = "Single Player"
 
 [node name="Multi" type="Button" parent="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer"]
+visible = false
 margin_top = 54.0
 margin_right = 135.0
 margin_bottom = 104.0
 rect_min_size = Vector2( 50, 50 )
-theme = ExtResource( 4 )
+theme = ExtResource( 1 )
 text = "Multi Player"
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/CenterContainer/HBoxContainer"]
@@ -83,7 +86,7 @@ margin_bottom = 104.0
 margin_right = 126.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 50, 50 )
-theme = ExtResource( 4 )
+theme = ExtResource( 1 )
 text = "Instructions"
 
 [node name="quit" type="Button" parent="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer2"]
@@ -91,7 +94,7 @@ margin_top = 54.0
 margin_right = 126.0
 margin_bottom = 104.0
 rect_min_size = Vector2( 50, 50 )
-theme = ExtResource( 4 )
+theme = ExtResource( 1 )
 text = "Quit"
 
 [node name="instructions_popup" type="Popup" parent="."]

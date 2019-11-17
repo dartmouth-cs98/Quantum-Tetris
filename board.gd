@@ -27,11 +27,13 @@ enum GameState {RUNNING, COMPLETED_LINES, OVER, STOPPED}
 const FallingTile = preload("res://falling_tile.tscn")
 
 ########## Constants for Physics and Game Control
-const START_BLOCK_TIME = 1
+#Starting max amount of time before block can automatically move
+const START_BLOCK_TIME = 0.5
+# Starting max amount of time before a player can move a block
+const START_MOVE_TIME = 0.1
+#Other
 const BLOCK_ACCEL = 0.1
 const LINES_PER_LEVEL = 10
-
-const MOVE_TIME = 0.2
 
 ########## Constants for Board Setup and Block Queue
 const BORDER_TILE_NAME = "grey"
@@ -57,32 +59,40 @@ var _block_types = [
 export(Vector2) var board_size = Vector2(10, 20) setget _set_size
 
 
-########## Variables for block queue
+########## General variables for blocks and block queue
 # Upcoming blocks, not shown. Is array type
 var _block_queue
 # Block currently on screen
 var _block
 
+########## Superpositon
+# is this block a superposition
+var is_sp
+# what are the blocks
+var sp_blocks
+# counter till next superposition
+var sp_counter
+
 ########## Variables for moving a block down a notch
-# Max time between block movements
+# Max time between plater block movements
+var _max_move_time
+# Max time between automatic block movements
 var _max_block_time
-# Current time between block movements
+# Current time between automatic block movements
 var _block_time
-
-
-var _grace
-
-
-var _lines_left
-
-
+# Current time between player block movements
 var _move_time
-
-
+# Other
+var _grace
+var _lines_left
 var _completed_lines
 
-# Holds current game state
+########## Variables for Game State
 var _game_state
+
+########## Variables for Speed node
+var speeds = ["x1", "x2", "x3"]
+var speed_i = 1
 
 ##############################   Functions   ################################
 
@@ -131,18 +141,28 @@ func start_game():
 	#set game state to running, allow _input and start _process.
 	_game_state = GameState.RUNNING
 
+	# set queue variables
 	_block_queue = []
 	_generate_block_queue()
 
+	#set block variables
 	_block = null
 
+	# Set physics variables
 	_max_block_time = START_BLOCK_TIME
+	_max_move_time = START_MOVE_TIME
+	_block_time = _max_block_time
+	_move_time = _max_move_time 
+	
+	# set superposition variables
+	sp_counter = superposition_counter()
+	is_sp = false
+	
+	# set other variables
+	_grace = false
 	_lines_left = LINES_PER_LEVEL
 
-	_block_time = START_BLOCK_TIME
-	_grace = false
-
-	_move_time = MOVE_TIME
+	
 
 	_spawn_block()
 
@@ -169,7 +189,7 @@ func _input(event):
 						)
 
 				if move_left or move_right or move_down:
-					_move_time += MOVE_TIME
+					_move_time += _max_move_time
 				if move_down:
 					_block_time += _max_block_time
 
@@ -186,9 +206,10 @@ func _process(delta):
 					_drop_block()
 					block_dropped = true
 				# Spawn a new block if it doesn't exist
+				# Leave commented
 #				else:
 #					_spawn_block()
-				_block_time += _max_block_time
+					_block_time += _max_block_time
 
 			if _block:
 				_move_time -= delta
@@ -200,15 +221,14 @@ func _process(delta):
 				var move_right = Input.is_action_pressed("move_right") \
 						and can_move
 				# Don't drop block manually if it's already falling fast enough
-				# naturally.
+				# naturally. Deleted and (_max_block_time > _max_move_time)
 				var move_down = Input.is_action_pressed("move_down") \
-						and can_move and (_max_block_time > MOVE_TIME) \
-						and not block_dropped
+						and can_move and not block_dropped	
 
 				_control_block(move_left, move_right, move_down, false, false)
 
 				if can_move:
-					_move_time += MOVE_TIME
+					_move_time += _max_move_time
 			# By putting this here, the program gets a new block as soon as the old one hits
 			# the problem with reading if it hit or not has to do with time values
 			else:
@@ -218,9 +238,14 @@ func _process(delta):
 			# If all falling tiles are off screen
 			if $falling_tiles.get_child_count() == 0:
 				end_game()
-#### FILLL INNN
-func change_board_speed(value):
-	pass
+### _on_TopGUI_speed_change
+func _on_TopGUI_speed_change():
+	speed_i = wrapi(speed_i+1, 1, speeds.size()+1)
+	_max_block_time = (START_BLOCK_TIME/ float(speed_i))
+	_max_move_time = (START_MOVE_TIME/float(speed_i))
+	print(String(speed_i))
+	print(String(_max_block_time))
+	print(String(_max_move_time))
 
 ########################### Manage Block Queue
 
@@ -228,11 +253,20 @@ func _spawn_block():
 	if _block_queue.empty():
 		_generate_block_queue()
 
-	#var index = randi() % _block_queue.size()
-	#_block = _block_queue[index].instance()
-	#_block_queue.remove(index)
+	# get block from queue
 	_block = _block_queue.pop_front().instance()
 	add_child(_block)
+	
+	# if last piece was in superposition, reset it.
+	if(is_sp):
+		is_sp = !is_sp
+	
+	# determine superposition
+	if (sp_counter == 0):
+		is_sp = true
+		sp_counter = superposition_counter()
+	else:
+		sp_counter -= 1
 
 	var block_rect = _block.get_rect()
 
@@ -243,10 +277,15 @@ func _spawn_block():
 	#BLock will spawn in the middle of the board
 	var block_pos = Vector2(board_middle - block_middle + 1, 1)
 	_block.block_position = block_pos
+	
+	# Reset block time when a new block is spawned
+	_block_time = _max_block_time
 
 	#If the spawn point is blocked, then game over.
 	if not _is_block_space_empty(block_pos, 0):
 		_set_game_over()
+		
+	#set superposition
 
 ## _generate_block_queue
 # Add a certain number of blocks of each type
@@ -288,14 +327,21 @@ func _move_block(pos, rot):
 	if _is_block_space_empty(new_pos, new_rot):
 		_block.block_position = new_pos
 		_block.block_rotation = new_rot
+		_check_stop()
+			
 ## _drop_block
 # Move the block down one unit
 func _drop_block():
 	# Move the block down a unit
 	_move_block(Vector2(0, 1), 0)
-
+	_check_stop()
 	# If the space below this block isnt empty
-	####### Optimize this function??
+
+func _drop_block_fast():
+	while _block:
+		_drop_block()
+
+func _check_stop():
 	if not _is_block_space_empty(_block.block_position + Vector2(0, 1),
 			_block.block_rotation):
 		if _grace:
@@ -306,14 +352,14 @@ func _drop_block():
 			_grace = true
 			_block_time -= _max_block_time / 2.0
 
-func _drop_block_fast():
-	while _block:
-		_drop_block()
-
-## ????????
+## _is_block_space_empty
+# Given a position and rotation value, check if cells are occupied
 func _is_block_space_empty(pos, rot):
+	# Assume that block space is empty
 	var result = true
+	# for every tile position
 	for t in _block.get_tiles(pos, rot):
+		# an occupied cell has a positive integer value
 		if $board_tiles.get_cellv(t) != -1:
 			result = false
 			break
@@ -353,7 +399,7 @@ func _check_for_completed_lines():
 	while _lines_left <= 0:
 		_lines_left += LINES_PER_LEVEL
 		_max_block_time -= BLOCK_ACCEL
-		_max_block_time = max(_max_block_time, MOVE_TIME)
+		_max_block_time = max(_max_block_time, _max_move_time)
 
 	if not _completed_lines.empty():
 		_show_completed_lines()
@@ -429,3 +475,15 @@ func end_game():
 			$board_tiles.set_cell(x, y, -1)
 	_game_state = GameState.STOPPED
 	emit_signal("game_over")
+
+########################### Quantum Functions
+# set which blocks it will be
+# array holds block types right now, sp_blocks hold ints for that array
+# can make sp_blocks hold the actual blocks. How to animate this. 
+func set_superposition(block_i):
+	sp_blocks = Vector2(block_i, randi() % _block_types.size())
+	pass
+
+# will set next value for number of blocks with superposition
+func superposition_counter():
+	return((randi() % 7) + 3)

@@ -47,7 +47,8 @@ anims/completed = SubResource( 1 )
 anchor_left = 0.0
 anchor_right = 0.0
 margin_left = 4.0
-margin_top = -79.0
+margin_top = -85.0
 margin_right = 478.0
-margin_bottom = -3.0
+margin_bottom = -2.0
 [connection signal="animation_finished" from="completed_animation" to="." method="_on_completed_animation_animation_finished"]
+[connection signal="speed_change" from="TopGUI" to="." method="_on_TopGUI_speed_change"]
