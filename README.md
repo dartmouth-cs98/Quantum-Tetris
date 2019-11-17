@@ -27,6 +27,8 @@ pip install flask
 ```
 export FLASK_APP=app
 export FLASK_ENV=development
+export APP_SETTINGS="config.DevelopmentConfig"
+export DATABASE_URL="postgresql://localhost/quantum_tetris"
 pip install flask-cors
 pip install sqlalchemy
 python -m application.manage db init
