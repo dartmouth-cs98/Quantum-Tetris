@@ -18,11 +18,16 @@ from . import player as p
 
 #************** PLAYER ENDPOINTS *****************
 player=p.Player()
+# Purpose: Creates a player in database with given highscore
+# Data contract
+# username: str
+# hiscore: int
 # Sample JSON Body
 # {
 # 	"username": "player",
 # 	"hiscore": 90
 # }
+#
 #
 # Sample response
 # {
@@ -38,8 +43,12 @@ def createPlayer():
         response = player.createPlayer(newPlayer)
         return response
     return None
+# Purpose: Fetches a player in database with given username
+# Data contract
+# username: str
 # Sample request
 # [SERVER_NAME]/api/fetchPlayer?username=player
+#
 # Sample response
 # {
 #   "hiscore": 90,
@@ -54,6 +63,11 @@ def fetchPlayer():
         return response
     return None
 
+# Purpose: Updates a player's hiscore in database from given username and hiscore
+# Data contract
+# username: str
+# hiscore: int
+#
 # Sample JSON body
 # {
 # 	"username": "player",
@@ -74,8 +88,12 @@ def updateHiscore():
         return response
     return None
 
+# Purpose: Deletes a player in database with given username
+# Data contract
+# username: str
 # Sample request
 # [SERVER_NAME]/api/deletePlayer/?username=player
+#
 #
 # Sample response
 # {
@@ -94,8 +112,12 @@ def delete():
 #************** QUANTUM ENDPOINTS *****************
 quantum=q.Quantum()
 
+# Purpose: Generates random integer between 0 and provided max int
+# Data contract
+# max: int
 # Sample request
 # [SERVER_NAME]/api/generateRandomNumber/?max=10
+#
 #
 # Sample response
 # {
@@ -108,6 +130,11 @@ def generateRandomNumber():
         response = quantum.generateRandomNumber(maxNum)
         return response
     return None
+
+# Purpose: Calculates a superposition result (0 or 1) based on given probability of 0
+# Data contract
+# prob: int (1-100)
+#
 # Sample Request
 # [SERVER_NAME]/api/determineSuperposition/?prob=60
 #
@@ -124,6 +151,11 @@ def determineSuperposition():
         return response
     return None
 
+# Purpose: Flips all the values in the provided grid using entanglement
+# Data contract
+# value: int
+# x: int
+# y: int
 # Sample JSON body
 # {
 # 	"grid" : {
