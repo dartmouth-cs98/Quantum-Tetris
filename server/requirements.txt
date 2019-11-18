@@ -52,7 +52,6 @@ Flask-SQLAlchemy==2.1
 future==0.17.1
 gevent==1.4.0
 glob2==0.7
-gmpy2==2.0.8
 greenlet==0.4.15
 gunicorn==20.0.0
 h5py==2.10.0
