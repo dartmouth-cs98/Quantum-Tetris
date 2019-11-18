@@ -38,6 +38,7 @@ class Player():
             username=player.username,
             hiscore=player.hiscore,
         )
+
     def updateHiscore(self, player):
 
         error = None

@@ -46,7 +46,6 @@ class Quantum():
 		return abort(make_response(jsonify(error), 400))
 
 	def flipGrid(self, grid):
-
 		self.flipEntangledGrid(grid)
 
 		error = None
@@ -59,13 +58,14 @@ class Quantum():
 			)
 
 		return abort(make_response(jsonify(error), 400))
-	
+
 	def flipEntangledGrid(self, grid):
 		for k in grid.keys():
 			q = QuantumRegister(2)
 			c = ClassicalRegister(1)
 			qc = QuantumCircuit(q, c)
 
+			# Uses entanglement to flip the bits of the grid
 			if grid[k]['value'] == 1:
 				qc.x(1)
 			qc.x(0)
@@ -85,6 +85,8 @@ class Quantum():
 
 
 	def findSuperposition(self, prob):
+
+		# Determines angle to adjust spin based wanted probability
 		probability = prob / float(100)
 		angle = numpy.arccos(math.sqrt(probability)) * 2
 
@@ -109,7 +111,6 @@ class Quantum():
 		while result > maxInt:
 			result = self.random_int(self.nextPowerOf2(maxInt))
 		return result
-
 
 	def random_int(self, maxInt):
 		bits = ''
