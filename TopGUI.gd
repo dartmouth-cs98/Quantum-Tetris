@@ -6,7 +6,7 @@ signal speed_change
 #Variables for nodes
 var sc
 var hsc
-var playerName
+var player_name
 var speed_button
 
 # Current score
@@ -20,7 +20,7 @@ var speed_i = 0
 func _ready():
 	sc = get_node("Box/VBoxContainer/HBoxContainer2/ScoreNum")
 	hsc = get_node("Box/VBoxContainer/HBoxContainer2/HighScoreNum")
-	playerName = get_node("Box/VBoxContainer/HBoxContainer/Label")
+	player_name = get_node("Box/VBoxContainer/HBoxContainer/Label")
 	speed_button = get_node("Box/HBoxContainer/Speed")
 	
 	speed_button.text = speeds[speed_i]

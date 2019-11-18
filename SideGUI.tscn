@@ -1,37 +1,71 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://themes/theme.tres" type="Theme" id=1]
-[ext_resource path="res://fonts/ShareTechMono-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://SideGUI.gd" type="Script" id=2]
+[ext_resource path="res://fonts/ShareTechMono-Regular.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://tilesets/tiles.tres" type="TileSet" id=4]
 
 [sub_resource type="DynamicFont" id=1]
-font_data = ExtResource( 2 )
+font_data = ExtResource( 3 )
 
 [node name="SideGUI" type="MarginContainer"]
 margin_right = 40.0
 margin_bottom = 40.0
 theme = ExtResource( 1 )
+script = ExtResource( 2 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_right = 99.0
-margin_bottom = 173.0
+[node name="SideMargin" type="VBoxContainer" parent="."]
+margin_right = 117.0
+margin_bottom = 196.0
 
-[node name="Label" type="Label" parent="VBoxContainer"]
-margin_right = 99.0
-margin_bottom = 19.0
-
-[node name="NextPieces" type="VBoxContainer" parent="VBoxContainer"]
-margin_top = 23.0
-margin_right = 99.0
-margin_bottom = 173.0
+[node name="NextPieces" type="VBoxContainer" parent="SideMargin"]
+margin_right = 117.0
+margin_bottom = 150.0
 rect_min_size = Vector2( 75, 150 )
 theme = ExtResource( 1 )
 
-[node name="NextLabel" type="Label" parent="VBoxContainer/NextPieces"]
-margin_right = 99.0
+[node name="NextLabel" type="Label" parent="SideMargin/NextPieces"]
+margin_right = 117.0
 margin_bottom = 19.0
 custom_fonts/font = SubResource( 1 )
 text = "Next Pieces"
 
-[node name="Next" type="Sprite" parent="VBoxContainer/NextPieces"]
+[node name="NextTiles" type="TileMap" parent="SideMargin/NextPieces"]
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 16, 16 )
+format = 1
 
-[node name="Next2" type="Sprite" parent="VBoxContainer/NextPieces"]
+[node name="Superposition" type="VBoxContainer" parent="SideMargin"]
+margin_top = 154.0
+margin_right = 117.0
+margin_bottom = 196.0
+
+[node name="SuperLabel" type="Label" parent="SideMargin/Superposition"]
+margin_right = 117.0
+margin_bottom = 19.0
+text = "Superposition"
+
+[node name="PieceAndProb" type="HBoxContainer" parent="SideMargin/Superposition"]
+margin_top = 23.0
+margin_right = 117.0
+margin_bottom = 42.0
+
+[node name="Piece1" type="VBoxContainer" parent="SideMargin/Superposition/PieceAndProb"]
+margin_bottom = 19.0
+
+[node name="Prob1" type="Label" parent="SideMargin/Superposition/PieceAndProb/Piece1"]
+margin_bottom = 19.0
+
+[node name="Sprite1" type="TileMap" parent="SideMargin/Superposition/PieceAndProb/Piece1"]
+format = 1
+
+[node name="Piece2" type="VBoxContainer" parent="SideMargin/Superposition/PieceAndProb"]
+margin_left = 4.0
+margin_right = 4.0
+margin_bottom = 19.0
+
+[node name="Prob2" type="Label" parent="SideMargin/Superposition/PieceAndProb/Piece2"]
+margin_bottom = 19.0
+
+[node name="Sprite2" type="TileMap" parent="SideMargin/Superposition/PieceAndProb/Piece2"]
+format = 1

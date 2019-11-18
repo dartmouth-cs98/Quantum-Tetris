@@ -1,16 +1,7 @@
 tool
 extends Node2D
 
-#########################   Notes   ##########################
-
-##### Ugh Notes
-## Spawn block checks for game over, set that to process and top row of program
-## What does grace do?
-## Set up board speed function
-## Figure out what result from block.gd encodes.
-## See 211, 212
 #########################   Signals, Constants, Variables   ##########################
-
 
 ##Signals that this script will broadcast
 #Connects to _on_board_pause() in main.gd
@@ -135,7 +126,6 @@ func _set_size(value):
 			$board_tiles.set_cell(board_size.x + 1, y, border_tile)
 
 func start_game():
-	#
 	randomize()
 
 	#set game state to running, allow _input and start _process.
@@ -161,10 +151,8 @@ func start_game():
 	# set other variables
 	_grace = false
 	_lines_left = LINES_PER_LEVEL
-
-	
-
-	_spawn_block()
+	# Start the game!
+	_spawn_inter()
 
 ########################### Input and Process Functions
 func _input(event):
@@ -205,10 +193,6 @@ func _process(delta):
 				if _block:
 					_drop_block()
 					block_dropped = true
-				# Spawn a new block if it doesn't exist
-				# Leave commented
-#				else:
-#					_spawn_block()
 					_block_time += _max_block_time
 
 			if _block:
@@ -232,7 +216,7 @@ func _process(delta):
 			# By putting this here, the program gets a new block as soon as the old one hits
 			# the problem with reading if it hit or not has to do with time values
 			else:
-				_spawn_block()
+				_spawn_inter()
 		## If the falling block animation is over, end the game.
 		elif _game_state == GameState.OVER:
 			# If all falling tiles are off screen
@@ -248,25 +232,35 @@ func _on_TopGUI_speed_change():
 	print(String(_max_move_time))
 
 ########################### Manage Block Queue
+##_spawn_inter
+# this needs to: show next pieces, spawn blocks, determine superposition
 
-func _spawn_block():
-	if _block_queue.empty():
+func _spawn_inter():
+	### Check block queue size
+	if _block_queue.size()<3:
 		_generate_block_queue()
-
-	# get block from queue
-	_block = _block_queue.pop_front().instance()
-	add_child(_block)
 	
-	# if last piece was in superposition, reset it.
-	if(is_sp):
-		is_sp = !is_sp
+	### Superposition 
 	
 	# determine superposition
 	if (sp_counter == 0):
 		is_sp = true
 		sp_counter = superposition_counter()
+		set_superposition(_block_queue[0], _block_queue[1])
 	else:
 		sp_counter -= 1
+	### Spawn handle next block 
+	_spawn_block()
+	
+	### Update Nexts
+	$SideGUI.change_next(_block_queue[0], _block_queue[1])
+	
+
+func _spawn_block():
+
+	# get block from queue
+	_block = _block_queue.pop_front().instance()
+	add_child(_block)
 
 	var block_rect = _block.get_rect()
 
@@ -373,6 +367,10 @@ func _end_block():
 
 	_block.queue_free()
 	_block = null
+	# if last piece was in superposition, reset it.
+	if(is_sp):
+		is_sp = !is_sp
+		reset_superposition()
 
 	if _game_state == GameState.RUNNING:
 		_check_for_completed_lines()
@@ -479,11 +477,23 @@ func end_game():
 ########################### Quantum Functions
 # set which blocks it will be
 # array holds block types right now, sp_blocks hold ints for that array
-# can make sp_blocks hold the actual blocks. How to animate this. 
-func set_superposition(block_i):
-	sp_blocks = Vector2(block_i, randi() % _block_types.size())
-	pass
-
+# can make sp_blocks hold the actual blocks. 
 # will set next value for number of blocks with superposition
+# how to get blocks and manage queue (make sure enough blocks are there)
+# What to pass back or add superposition block with properties to thing
+# send info to side gui
+# pass to server
+# receive inputs
+# pass 
+func set_superposition(block_i, block_j):
+	#var next_block_i = (randi() % (_block_types.size()-2)) + 2
+	#sp_blocks = Vector2(block_i, _block_queue)
+	var prob1 = randi() % 100 + 1
+	var prob2 = 100 - prob1
+	$SideGUI.set_superposition_data(prob1, block_i, prob2, block_j)
+
 func superposition_counter():
 	return((randi() % 7) + 3)
+
+func reset_superposition():
+	$SideGUI.empty_superposition()
