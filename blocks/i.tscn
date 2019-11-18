@@ -3,100 +3,35 @@
 [ext_resource path="res://blocks/block.gd" type="Script" id=1]
 [ext_resource path="res://tilesets/tiles.tres" type="TileSet" id=2]
 
-[node name="i" type="Node2D" index="0"]
-
+[node name="i" type="Node2D"]
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
-block_position = Vector2( 0, 0 )
-block_rotation = 0
 
-[node name="TileMap" type="TileMap" parent="." index="0"]
-
-mode = 0
+[node name="TileMap" type="TileMap" parent="."]
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 16 )
-cell_quadrant_size = 16
-cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-cell_half_offset = 2
-cell_tile_origin = 0
-cell_y_sort = false
-cell_clip_uv = false
-collision_use_kinematic = false
-collision_friction = 1.0
-collision_bounce = 0.0
-collision_layer = 1
-collision_mask = 1
-occluder_light_mask = 1
 format = 1
 tile_data = PoolIntArray( 65536, 0, 0, 65537, 0, 0, 65538, 0, 0, 65539, 0, 0 )
-_sections_unfolded = [ "Cell" ]
 
-[node name="TileMap2" type="TileMap" parent="." index="1"]
-
+[node name="TileMap2" type="TileMap" parent="."]
 visible = false
-mode = 0
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 16 )
-cell_quadrant_size = 16
-cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-cell_half_offset = 2
-cell_tile_origin = 0
-cell_y_sort = false
-cell_clip_uv = false
-collision_use_kinematic = false
-collision_friction = 1.0
-collision_bounce = 0.0
-collision_layer = 1
-collision_mask = 1
-occluder_light_mask = 1
 format = 1
 tile_data = PoolIntArray( 2, 0, 0, 65538, 0, 0, 131074, 0, 0, 196610, 0, 0 )
-_sections_unfolded = [ "Cell" ]
 
-[node name="TileMap3" type="TileMap" parent="." index="2"]
-
+[node name="TileMap3" type="TileMap" parent="."]
 visible = false
-mode = 0
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 16 )
-cell_quadrant_size = 16
-cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-cell_half_offset = 2
-cell_tile_origin = 0
-cell_y_sort = false
-cell_clip_uv = false
-collision_use_kinematic = false
-collision_friction = 1.0
-collision_bounce = 0.0
-collision_layer = 1
-collision_mask = 1
-occluder_light_mask = 1
 format = 1
 tile_data = PoolIntArray( 131072, 0, 0, 131073, 0, 0, 131074, 0, 0, 131075, 0, 0 )
-_sections_unfolded = [ "Cell" ]
 
-[node name="TileMap4" type="TileMap" parent="." index="3"]
-
+[node name="TileMap4" type="TileMap" parent="."]
 visible = false
-mode = 0
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 16 )
-cell_quadrant_size = 16
-cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-cell_half_offset = 2
-cell_tile_origin = 0
-cell_y_sort = false
-cell_clip_uv = false
-collision_use_kinematic = false
-collision_friction = 1.0
-collision_bounce = 0.0
-collision_layer = 1
-collision_mask = 1
-occluder_light_mask = 1
 format = 1
 tile_data = PoolIntArray( 1, 0, 0, 65537, 0, 0, 131073, 0, 0, 196609, 0, 0 )
-_sections_unfolded = [ "Cell" ]
-
-

@@ -59,10 +59,10 @@ var _block
 ########## Superpositon
 # is this block a superposition
 var is_sp
-# what are the blocks
-var sp_blocks
 # counter till next superposition
 var sp_counter
+# the block our superposition block will evaluate to
+var true_block
 
 ########## Variables for moving a block down a notch
 # Max time between plater block movements
@@ -227,9 +227,6 @@ func _on_TopGUI_speed_change():
 	speed_i = wrapi(speed_i+1, 1, speeds.size()+1)
 	_max_block_time = (START_BLOCK_TIME/ float(speed_i))
 	_max_move_time = (START_MOVE_TIME/float(speed_i))
-	print(String(speed_i))
-	print(String(_max_block_time))
-	print(String(_max_move_time))
 
 ########################### Manage Block Queue
 ##_spawn_inter
@@ -246,7 +243,10 @@ func _spawn_inter():
 	if (sp_counter == 0):
 		is_sp = true
 		sp_counter = superposition_counter()
-		set_superposition(_block_queue[0], _block_queue[1])
+		# YEETT  - change this to just give array to set superposition and get two blocks
+		var result = set_superposition(_block_types)
+		_block_queue.insert(2, result) 
+
 	else:
 		sp_counter -= 1
 	### Spawn handle next block 
@@ -257,9 +257,12 @@ func _spawn_inter():
 	
 
 func _spawn_block():
-
 	# get block from queue
-	_block = _block_queue.pop_front().instance()
+	var _poten_block = _block_queue.pop_front()
+	if _poten_block.get_class()=="PackedScene":
+		_block = _poten_block.instance()
+	else:
+		_block = _poten_block
 	add_child(_block)
 
 	var block_rect = _block.get_rect()
@@ -279,7 +282,6 @@ func _spawn_block():
 	if not _is_block_space_empty(block_pos, 0):
 		_set_game_over()
 		
-	#set superposition
 
 ## _generate_block_queue
 # Add a certain number of blocks of each type
@@ -361,6 +363,7 @@ func _is_block_space_empty(pos, rot):
 
 func _end_block():
 	var tiles = _block.get_tiles()
+	## HERE is where I covert it to block type
 	for t in tiles:
 		$board_tiles.set_cellv(t + _block.block_position,
 				_block.get_tile_type(t))
@@ -485,15 +488,91 @@ func end_game():
 # pass to server
 # receive inputs
 # pass 
-func set_superposition(block_i, block_j):
-	#var next_block_i = (randi() % (_block_types.size()-2)) + 2
-	#sp_blocks = Vector2(block_i, _block_queue)
+
+############ Main Quantum Functions
+func set_superposition(block_array):
+	# Generate two different indices
+	var i = (randi() % (block_array.size()))
+	var j = (randi() % (block_array.size()))
+	while j == i:
+		j = (randi() % (block_array.size()))
+	
+	# Get PackedScenes for blocks
+	var blockP_i = block_array[i]
+	var blockP_j = block_array[j]
+	
+	# Generate probabilities
 	var prob1 = randi() % 100 + 1
 	var prob2 = 100 - prob1
-	$SideGUI.set_superposition_data(prob1, block_i, prob2, block_j)
+	
+	# Update the UI
+	$SideGUI.set_superposition_data(prob1, blockP_i, prob2, blockP_j)
+	
+	# Get block nodes from PackedScenes
+	var block_i = blockP_i.instance()
+	var block_j = blockP_j.instance()
+	
+	# Get a total list of tiles
+	#Changed from get_real_tiles
+	var tiles_array = block_i.get_tiles() + block_j.get_tiles()
+	
+	var result = Node2D.new()
+	
+	var orientation1 = set_orientation(tiles_array, 0)
+	var orientation2 = set_orientation(tiles_array, 0)
+	var orientation3 = set_orientation(tiles_array, 0)
+	var orientation4 = set_orientation(tiles_array, 0)
+	
+	
+	result.add_child(orientation1)
+	result.add_child(orientation2)
+	result.add_child(orientation3)
+	result.add_child(orientation4)
+	
+	orientation1.owner = result
+	orientation2.owner = result
+	orientation3.owner = result
+	orientation4.owner = result
+	
+#	var tileset = (load("res://tilesets/tiles.tres"))
+#	orientation1.tile_set = tileset
+#	orientation1.cell_size = Vector2(16,16)
+#	orientation1.name = "orientation1"
+	#### FOR TESTING
+#	for tile in tiles_array:
+#		orientation1.set_cellv(tile, 9)
+	
+	
+	
+	result.set_script(load("res://blocks/block.gd"))
+	
+	#get true_block
+	
+	return result
 
 func superposition_counter():
 	return((randi() % 7) + 3)
 
 func reset_superposition():
 	$SideGUI.empty_superposition()
+	
+############ Helper Functions
+	
+func switch_blocks(blocki, blockj):
+	#save position and orientation of blocki and give it to blockj. Change block 
+	#to blockj.
+	pass
+
+
+func set_orientation(tiles_array, rotation):
+	## Set map parameters
+	var map = TileMap.new()
+	map.tile_set = load("res://tilesets/tiles.tres")
+	map.cell_size = Vector2(16,16)
+	map.name = "orientation" + String(rotation)
+	for tile in tiles_array:
+		map.set_cellv(tile, 9)
+	return map
+
+	
+	

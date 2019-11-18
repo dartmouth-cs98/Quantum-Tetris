@@ -26,12 +26,6 @@ func _ready():
 	super_prob1 = get_node("SideMargin/Superposition/PieceAndProb/Piece1/Prob1")
 	super_prob2 = get_node("SideMargin/Superposition/PieceAndProb/Piece2/Prob2")
 	
-	next_tiles.add_child(next_tile1)
-	next_tiles.add_child(next_tile2)
-	
-	super1_map.add_child(super_piece1)
-	super2_map.add_child(super_piece2)
-	
 func change_next(tileP1, tileP2):
 	next_tile1 = _replace_child_to_map(true, true, next_tiles, next_tile1, tileP1, Vector2(2,2))
 	next_tile2 = _replace_child_to_map(true, true, next_tiles, next_tile2, tileP2, Vector2(2,6))
@@ -50,17 +44,20 @@ func empty_superposition():
 	## Set text for labels
 	super_prob1.text = ""
 	super_prob2.text = ""
-	super_piece1 = _replace_child_to_map(true, false, super1_map, super_piece1, null, null)
-	super_piece2 = _replace_child_to_map(true, false, super2_map, super_piece2, null, null)
-	
+	super_piece1 = _replace_child_to_map(true, false, super1_map, super_piece1, Node, null)
+	super_piece2 = _replace_child_to_map(true, false, super2_map, super_piece2, Node, null)
+#### FOR TESTING	
 func _replace_child_to_map(replace, add, node, child, childP, position):
-	if replace:
-		node.remove_child(child)
-		if child != null:
-			child.queue_free()
-	if add:
-		child = childP.instance()
-		node.add_child(child)
-		child._set_block_position(position)
+	if childP.get_class()=="PackedScene":
+		if replace:
+			node.remove_child(child)
+			if child != null:
+				child.queue_free()
+		if add:	
+			child = childP.instance()
+			node.add_child(child)
+			child._set_block_position(position)
+	else: 
+		pass
 	
 	return child
