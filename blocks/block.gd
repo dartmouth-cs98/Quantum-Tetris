@@ -81,11 +81,6 @@ func get_tiles(pos = Vector2(0, 0), rot = block_rotation):
 		result[i] += pos
 	return result
 
-func get_real_tiles(pos = Vector2(0, 0), rot = block_rotation):
-	var real_rotation = wrapi(rot, 0, get_child_count())
-	var result = get_child(real_rotation).get_used_cells()
-	return result
-
 
 func get_tile_type(tile):
 	return _current_orientation.get_cellv(tile)

@@ -512,16 +512,23 @@ func set_superposition(block_array):
 	var block_i = blockP_i.instance()
 	var block_j = blockP_j.instance()
 	
-	# Get a total list of tiles
-	#Changed from get_real_tiles
-	var tiles_array = block_i.get_tiles() + block_j.get_tiles()
+	var tiles_array_0 = block_i.get_tiles() + block_j.get_tiles()
+	block_i._set_block_rotation(1)
+	block_j._set_block_rotation(1)
+	var tiles_array_1 = block_i.get_tiles() + block_j.get_tiles()
+	block_i._set_block_rotation(2)
+	block_j._set_block_rotation(2)
+	var tiles_array_2 = block_i.get_tiles() + block_j.get_tiles()
+	block_i._set_block_rotation(3)
+	block_j._set_block_rotation(3)
+	var tiles_array_3 = block_i.get_tiles() + block_j.get_tiles()
 	
 	var result = Node2D.new()
 	
-	var orientation1 = set_orientation(tiles_array, 0)
-	var orientation2 = set_orientation(tiles_array, 0)
-	var orientation3 = set_orientation(tiles_array, 0)
-	var orientation4 = set_orientation(tiles_array, 0)
+	var orientation1 = set_orientation(tiles_array_0)
+	var orientation2 = set_orientation(tiles_array_1)
+	var orientation3 = set_orientation(tiles_array_2)
+	var orientation4 = set_orientation(tiles_array_3)
 	
 	
 	result.add_child(orientation1)
@@ -533,16 +540,6 @@ func set_superposition(block_array):
 	orientation2.owner = result
 	orientation3.owner = result
 	orientation4.owner = result
-	
-#	var tileset = (load("res://tilesets/tiles.tres"))
-#	orientation1.tile_set = tileset
-#	orientation1.cell_size = Vector2(16,16)
-#	orientation1.name = "orientation1"
-	#### FOR TESTING
-#	for tile in tiles_array:
-#		orientation1.set_cellv(tile, 9)
-	
-	
 	
 	result.set_script(load("res://blocks/block.gd"))
 	
@@ -564,7 +561,7 @@ func switch_blocks(blocki, blockj):
 	pass
 
 
-func set_orientation(tiles_array, rotation):
+func set_orientation(tiles_array):
 	## Set map parameters
 	var map = TileMap.new()
 	map.tile_set = load("res://tilesets/tiles.tres")
@@ -572,6 +569,7 @@ func set_orientation(tiles_array, rotation):
 	map.name = "orientation" + String(rotation)
 	for tile in tiles_array:
 		map.set_cellv(tile, 9)
+	
 	return map
 
 	
