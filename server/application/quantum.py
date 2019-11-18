@@ -14,7 +14,7 @@ class Quantum():
 		pass
 
 
-	# Code adapted from https://blog.red-badger.com/2018/9/24/generate-true-random-numbers-with-a-quantum-computer
+	# Code adapted for random number from https://blog.red-badger.com/2018/9/24/generate-true-random-numbers-with-a-quantum-computer
 	def generateRandomNumber(self, maxInt):
 
 		result = self.getRandNum(maxInt)
@@ -44,6 +44,45 @@ class Quantum():
 			)
 
 		return abort(make_response(jsonify(error), 400))
+
+	def flipGrid(self, grid):
+
+		self.flipEntangledGrid(grid)
+
+		error = None
+		if grid is None:
+			error = "Error in flipping grid"
+
+		if error is None:
+			return jsonify(
+				result=grid,
+			)
+
+		return abort(make_response(jsonify(error), 400))
+	
+	def flipEntangledGrid(self, grid):
+		for k in grid.keys():
+			q = QuantumRegister(2)
+			c = ClassicalRegister(1)
+			qc = QuantumCircuit(q, c)
+
+			if grid[k]['value'] == 1:
+				qc.x(1)
+			qc.x(0)
+			qc.cx(0,1)
+			qc.measure(0, 0)
+			qc.measure(1, 0)
+
+			simulator = Aer.get_backend(self.machineName)
+			job_sim = execute(qc, backend = simulator, shots=1)
+			sim_result = job_sim.result()
+
+			try:
+				if sim_result.get_counts(qc)['0'] == 1:
+					grid[k]['value'] = 0
+			except KeyError:
+				grid[k]['value'] = 1
+
 
 	def findSuperposition(self, prob):
 		probability = prob / float(100)
