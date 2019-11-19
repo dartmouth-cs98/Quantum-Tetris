@@ -1,1 +1,1 @@
-web: python -m application.manage db runserver
+web: python -m application.manage runserver
