@@ -4,18 +4,20 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from application import models
-
+print(2)
 # create and configure the application and database
 app = Flask(__name__, instance_relative_config=True)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+print(3)
 db = SQLAlchemy(app)
 db.init_app(app)
 
 from . import quantum as q
 from . import player as p
 
+print(4)
 #************** PLAYER ENDPOINTS *****************
 player=p.Player()
 # Purpose: Creates a player in database with given highscore

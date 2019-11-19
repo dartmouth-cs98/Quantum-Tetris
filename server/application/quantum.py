@@ -1,7 +1,7 @@
 from werkzeug.exceptions import abort
 
 from flask import make_response, jsonify
-from qiskit import *
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, BasicAer, execute
 import math
 import numpy
 
