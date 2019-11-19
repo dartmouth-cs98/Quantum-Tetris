@@ -60,7 +60,7 @@ export APP_SETTINGS="config.DevelopmentConfig"
 python -m application.manage db init
 python -m application.manage db migrate
 python -m application.manage db update
-python -m application.manage db runserver
+python -m application.manage runserver
 ```
 
 ## Deployment

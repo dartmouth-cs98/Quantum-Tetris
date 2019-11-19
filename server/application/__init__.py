@@ -102,7 +102,7 @@ def updateHiscore():
 #   "id": 4,
 #   "username": "player"
 # }
-@app.route('/api/deletePlayer/', methods=['DELETE'])
+@app.route('/api/deletePlayer', methods=['DELETE'])
 def delete():
     if request.method == 'DELETE':
         username = request.args.get('username', default= None, type= str)
