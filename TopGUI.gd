@@ -24,6 +24,14 @@ func _ready():
 	speed_button = get_node("Box/HBoxContainer/Speed")
 	
 	speed_button.text = speeds[speed_i]
+	
+	$HTTPRequest.request("endpoint_url", PoolStringArray(), false, HTTPClient.METHOD_GET, JSON.print({"username": "rafa", "hiscore": "10"}))
+	
+func _on_HTTPRequest_request_completed( result, response_code, headers, body ):
+	var response = JSON.parse(body.get_string_from_utf8())
+	sc = response.result.score
+	hsc = response.result.hiscore
+	
 
 func _update_score(add):
 	score += add

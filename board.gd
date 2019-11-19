@@ -65,6 +65,8 @@ var _sp_counter
 var _true_block
 # when will the superposition block be loaded
 var _sp_hit_counter
+# if entanglement is activated
+var entanglement
 
 
 ########## Variables for moving a block down a notch
@@ -489,7 +491,7 @@ func end_game():
 	_game_state = GameState.STOPPED
 	emit_signal("game_over")
 
-########################### Quantum Functions
+########################### SuperPosition Functions
 # set which blocks it will be
 # fix timing
 # fix display
@@ -589,5 +591,13 @@ func set_orientation(tiles_array):
 	
 	return map
 
+########################### Entanglement Functions
+#var entanglement - goes in set_superposition and end_block
+# function calls go in end_block
+
+func get_rows_blocks(blocki):
+	var block_tiles = blocki.get_tiles()
+	pass
 	
-	
+func switch_rows_tiles():
+	pass
