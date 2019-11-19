@@ -1,7 +1,6 @@
 venv
 *.pyc
 *.db
-*/migrations/
 .vscode/*
 **/.idea/workspace.xml 
 **/.idea/tasks.xml

@@ -1,46 +1,22 @@
-# Quantum-Tetris
+##  Quantum Tetris
 
-Quantum Tetris is your traditional tetris game game with several twists based on quantum mechanics and using a REAL quantum computer. Link to mockups https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1
+Quantum Tetris is your traditional tetris game game who has several twists based on the concepts of quantum computing. Additionally, to implement this quantum functionality it uses IBM's qiskit library found [here](https://qiskit.org) which runs in the cloud on IBM's quantum computers.
+
+To play our game you can go here: http://quantumtetris.surge.sh/
+
+Backend can accessed via https://q-tetris-backend.herokuapp.com/
+
+Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1).
 ## Architecture
 
-So far the architecture of our project consists of a backend flask server and frontend react webpage. More to come with the exact architecture.
+The architecture of our project consists of a backend flask server that uses a PostgreSQL database to hold our player info. Our frontend is a simple html webpage that uses various graphics libraries to implement changes. We use GoDot to run our game in browser.
 
 ## Setup
-
-### How to Set Up Front End
-* Navigate to the webapp directory
-* Run the following commands
-```
-yarn
-yarn start
-```
-* NOTE: This is a remnant of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the front end
-
-### How to Set Up Backend
-* Navigate to the server directory
-* Make sure you have python3 installed if not install it here https://www.python.org/downloads/
-* Run this command to install flask 
-```
-pip install flask
-```
-* Lastly the following commands you will be presented with a hello worldish screen when you follow the link in the terminal
-```
-export FLASK_APP=app
-export FLASK_ENV=development
-export APP_SETTINGS="config.DevelopmentConfig"
-export DATABASE_URL="postgresql://localhost/quantum_tetris"
-pip install flask-cors
-pip install sqlalchemy
-python -m application.manage db init
-python -m application.manage db migrate
-python -m application.manage db update
-python -m application.manage runserver
-```
-* NOTE: This is a remanent of the flask tutorial that I completed from CS52. I could have stripped it of all of its inner workings so that it would be truly a "Hello World" type set up. However, I think the already set up server will help us when it comes time to flesh out the backend
 ### Dev Environmental Setup Notes
-
 #### Conda
-* Within your conda environment run the following commands
+* The easiest way to manage all of our packages that we will need is with a Conda environment.
+* If you don't have one yet, you can set one up [here](https://anaconda.org/)
+* Once you set up your conda environment run the following commands.
 ```
 conda update --name base conda
 conda install python==3.7
@@ -59,15 +35,42 @@ If you get an error trying to run the server in Pycharm like "ModuleNotFoundErro
 * Within PyCharm go to `Pycharm -> Preferences -> Project:[ProjectName] -> Project Interpreter`
 * Then click on the `gear icon` on the top right and click `Add Local`. Navigate to the file `/anaconda3/envs/[ProjectName]/bin/python3.7`
 * Click on this file and click add
+* Additionally to set the environmental variable that you will need. go to `Pycharm -> Click on file name next to the green run button -> Edit configurations -> Click the ... to the left of the environmental variables dropdown -> add the following 2 environemntal variables DATABASE_URL=postgresql://localhost/quantum_tetris and APP_SETTINGS= config.DevelopmentConfig `
+
+### How to Set Up Front End
+* Navigate to the webapp directory
+* Run the following commands
+```
+yarn
+yarn start
+```
+
+### How to Set Up Backend
+* Navigate to the server directory
+* Make sure you have python3 installed if not install it [here]( https://www.python.org/downloads/)
+* Also for local devving you will need to run a postgresql database in the background. The easiest way to set this up would be to follow the instructions found [here](https://postgresapp.com/)
+* Run the following commands
+```
+pip install flask
+pip install flask-cors
+pip install sqlalchemy
+export FLASK_APP=application
+export FLASK_ENV=development
+export DATABASE_URL="postgresql://localhost/quantum_tetris"
+export PORT=5000
+export APP_SETTINGS="config.DevelopmentConfig"
+python -m application.manage db init
+python -m application.manage db migrate
+python -m application.manage db update
+python -m application.manage runserver
+```
 
 ## Deployment
 
-### Running The Files
-#### Tetris
-* You should now be able to run the sample code for tetris using pygame. Once run using the green arrow, you should be able to click on the pop up'ed windown and play the tetris
-#### Qiskit
-* You should be able to run the basic qiskit code using the green arrow. The output should display the some vectors of the circuit.
-
+#### Front end
+* To deploy any local changes to surge, you can type `yarn deploy` while in the `webapp` directory
+#### Back end
+* To deploy any local changes to heroku, you can type `yarn heroku` while in the project's root directory.
 ## Authors
 
 Trevor Glasgow, Oliver Levy, Henry Hilton and Rafael Brantley

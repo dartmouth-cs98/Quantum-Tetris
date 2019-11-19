@@ -2,7 +2,6 @@ from application.__init__ import db
 import datetime
 
 # Base models found from https://blog.theodo.com/2017/03/developping-a-flask-web-app-with-a-postresql-database-making-all-the-possible-errors/
-
 class BaseModel(db.Model):
     """Base data model for all objects"""
     __abstract__ = True
