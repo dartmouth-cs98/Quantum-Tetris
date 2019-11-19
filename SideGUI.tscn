@@ -16,7 +16,7 @@ script = ExtResource( 2 )
 
 [node name="SideMargin" type="VBoxContainer" parent="."]
 margin_right = 117.0
-margin_bottom = 196.0
+margin_bottom = 315.0
 
 [node name="NextPieces" type="VBoxContainer" parent="SideMargin"]
 margin_right = 117.0
@@ -29,6 +29,7 @@ margin_right = 117.0
 margin_bottom = 19.0
 custom_fonts/font = SubResource( 1 )
 text = "Next Pieces"
+align = 1
 
 [node name="NextTiles" type="TileMap" parent="SideMargin/NextPieces"]
 tile_set = ExtResource( 4 )
@@ -38,34 +39,47 @@ format = 1
 [node name="Superposition" type="VBoxContainer" parent="SideMargin"]
 margin_top = 154.0
 margin_right = 117.0
-margin_bottom = 196.0
+margin_bottom = 315.0
 
 [node name="SuperLabel" type="Label" parent="SideMargin/Superposition"]
 margin_right = 117.0
 margin_bottom = 19.0
 text = "Superposition"
+align = 1
 
-[node name="PieceAndProb" type="HBoxContainer" parent="SideMargin/Superposition"]
+[node name="PieceAndProb" type="VBoxContainer" parent="SideMargin/Superposition"]
 margin_top = 23.0
 margin_right = 117.0
-margin_bottom = 42.0
+margin_bottom = 161.0
 
 [node name="Piece1" type="VBoxContainer" parent="SideMargin/Superposition/PieceAndProb"]
-margin_bottom = 19.0
+margin_right = 117.0
+margin_bottom = 115.0
+size_flags_horizontal = 3
 
 [node name="Prob1" type="Label" parent="SideMargin/Superposition/PieceAndProb/Piece1"]
-margin_bottom = 19.0
+margin_right = 117.0
+margin_bottom = 115.0
+rect_min_size = Vector2( 0, 115 )
+align = 1
 
 [node name="Sprite1" type="TileMap" parent="SideMargin/Superposition/PieceAndProb/Piece1"]
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 16, 16 )
 format = 1
 
 [node name="Piece2" type="VBoxContainer" parent="SideMargin/Superposition/PieceAndProb"]
-margin_left = 4.0
-margin_right = 4.0
-margin_bottom = 19.0
+margin_top = 119.0
+margin_right = 117.0
+margin_bottom = 138.0
+size_flags_horizontal = 3
 
 [node name="Prob2" type="Label" parent="SideMargin/Superposition/PieceAndProb/Piece2"]
+margin_right = 117.0
 margin_bottom = 19.0
+align = 1
 
 [node name="Sprite2" type="TileMap" parent="SideMargin/Superposition/PieceAndProb/Piece2"]
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 16, 16 )
 format = 1

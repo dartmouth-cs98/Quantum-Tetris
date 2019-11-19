@@ -390,15 +390,8 @@ func _end_block():
 	if(_is_sp):
 		if(_sp_hit_counter<1):
 			switch_blocks(_true_block)
-			########### FOR TESTING
-			_make_entanglement_request()
-			########### FOR TESTING
 			if temp_server == temp_prob:
-				pass
-				########### FOR TESTING
-				#_make_entanglement_request()
-
-			
+				_make_entanglement_request()
 			temp_block_i = null
 			temp_block_j = null
 			
