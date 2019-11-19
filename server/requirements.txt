@@ -156,7 +156,7 @@ PyWavelets==1.0.3
 PyYAML==5.1.2
 pyzmq==18.1.0
 qiskit==0.13.0
-qiskit-aer=0.3.2
+qiskit-aer==0.3.2
 qiskit-aqua==0.6.1
 qiskit-ibmq-provider==0.3.3
 qiskit-ignis==0.2.0
