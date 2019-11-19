@@ -43,7 +43,7 @@ func _on_instructions_pressed():
 	$instructions_popup/instructions_panel/Label.text = INSTRUCTIONS % keys
 	$instructions_popup.popup()
 
-# ????
+## _get_input_keys
 func _get_input_keys():
 	var result = []
 

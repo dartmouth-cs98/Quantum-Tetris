@@ -24,7 +24,6 @@ editor/display_folded = false
 position = Vector2( 0, 0 )
 
 [node name="RotationMask" parent="." index="4"]
-editor/display_folded = true
 position = Vector2( -8, 8 )
 
 [node name="CollisionShape2D" parent="RotationMask" index="0"]

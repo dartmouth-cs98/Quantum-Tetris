@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://board.gd" type="Script" id=1]
 [ext_resource path="res://tilesets/tiles.tres" type="TileSet" id=2]
 [ext_resource path="res://TopGUI.tscn" type="PackedScene" id=3]
+[ext_resource path="res://SideGUI.tscn" type="PackedScene" id=4]
 
 [sub_resource type="Animation" id=1]
 resource_name = "completed"
@@ -47,7 +48,19 @@ anims/completed = SubResource( 1 )
 anchor_left = 0.0
 anchor_right = 0.0
 margin_left = 4.0
-margin_top = -79.0
+margin_top = -85.0
 margin_right = 478.0
-margin_bottom = -3.0
+margin_bottom = -2.0
+
+[node name="SideGUI" parent="." instance=ExtResource( 4 )]
+anchor_right = 1.0
+margin_left = 354.0
+margin_right = 471.0
+margin_bottom = 196.0
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+[connection signal="game_over" from="." to="TopGUI" method="_on_board_game_over"]
+[connection signal="game_over" from="." to="SideGUI" method="_on_board_game_over"]
 [connection signal="animation_finished" from="completed_animation" to="." method="_on_completed_animation_animation_finished"]
+[connection signal="speed_change" from="TopGUI" to="." method="_on_TopGUI_speed_change"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
