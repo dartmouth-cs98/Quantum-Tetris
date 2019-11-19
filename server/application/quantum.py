@@ -2,7 +2,7 @@ from werkzeug.exceptions import abort
 
 from flask import make_response, jsonify
 print(1)
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, Aer, execute
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, BasicAer, execute
 print(2)
 import math
 print(3)
@@ -77,7 +77,7 @@ class Quantum():
 			qc.measure(0, 0)
 			qc.measure(1, 0)
 
-			simulator = Aer.get_backend(self.machineName)
+			simulator = BasicAer.get_backend(self.machineName)
 			job_sim = execute(qc, backend = simulator, shots=1)
 			sim_result = job_sim.result()
 
@@ -101,7 +101,7 @@ class Quantum():
 		qc.rx(angle, 0)
 		qc.measure(0, 0)
 
-		simulator = Aer.get_backend(self.machineName)
+		simulator = BasicAer.get_backend(self.machineName)
 		job_sim = execute(qc, backend = simulator, shots=1)
 		sim_result = job_sim.result()
 		try:
@@ -129,7 +129,7 @@ class Quantum():
 			qc.h(q)
 			qc.measure(q, c)
 
-			simulator = Aer.get_backend(self.machineName)
+			simulator = BasicAer.get_backend(self.machineName)
 			job_sim = execute(qc, backend = simulator, shots=1)
 			sim_result = job_sim.result()
 			counts = sim_result.get_counts(qc)
