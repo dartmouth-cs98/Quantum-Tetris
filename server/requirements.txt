@@ -74,12 +74,6 @@ Jinja2==2.10.3
 joblib==0.14.0
 json5==0.8.5
 jsonschema==3.0.2
-jupyter==1.0.0
-jupyter-client==5.3.4
-jupyter-console==6.0.0
-jupyter-core==4.6.1
-jupyterlab==1.1.4
-jupyterlab-server==1.0.6
 keyring==18.0.0
 kiwisolver==1.1.0
 lazy-object-proxy==1.4.2
