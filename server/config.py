@@ -1,6 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+# good secret key bro
 class Config(object):
     DEBUG = False
     TESTING = False

@@ -1,0 +1,4 @@
+web: python -m application.manage runserver --host 0.0.0.0 --port $PORT
+init: python -m application.manage db init
+migrate: python -m application.manage db migrate
+upgrade: python -m application.manage db upgrade

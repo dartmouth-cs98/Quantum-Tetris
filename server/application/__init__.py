@@ -1,16 +1,15 @@
 import os
-
 from flask import Flask, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from application import models
-
-# create and configure the application
+# create and configure the application and database
 app = Flask(__name__, instance_relative_config=True)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 db.init_app(app)
 
@@ -20,6 +19,23 @@ from . import player as p
 #************** PLAYER ENDPOINTS *****************
 player=p.Player()
 
+# Purpose: Creates a player in database with given highscore
+# Data contract
+# username: str
+# hiscore: int
+# Sample JSON Body
+# {
+# 	"username": "player",
+# 	"hiscore": 90
+# }
+#
+#
+# Sample response
+# {
+#   "hiscore": 90,
+#   "id": 4,
+#   "username": "player"
+# }
 @app.route('/api/createPlayer', methods=['POST'])
 def createPlayer():
     if request.method == 'POST':
@@ -27,19 +43,43 @@ def createPlayer():
         newPlayer = models.PlayerModel(params['username'], params['hiscore'])
         response = player.createPlayer(newPlayer)
         return response
-    print("CreatePlayer")
     return None
-
-
-@app.route('/api/fetchPlayer/', methods=['GET'])
+# Purpose: Fetches a player in database with given username
+# Data contract
+# username: str
+# Sample request
+# [SERVER_NAME]/api/fetchPlayer?username=player
+#
+# Sample response
+# {
+#   "hiscore": 90,
+#   "id": 4,
+#   "username": "player"
+# }
+@app.route('/api/fetchPlayer', methods=['GET'])
 def fetchPlayer():
     if request.method == 'GET':
         username = request.args.get('username', default= None, type= str)
         response = player.fetchPlayer(username)
         return response
-    print("FetchPlayer")
     return None
 
+# Purpose: Updates a player's hiscore in database from given username and hiscore
+# Data contract
+# username: str
+# hiscore: int
+#
+# Sample JSON body
+# {
+# 	"username": "player",
+# 	"hiscore": 15
+# }
+# Sample response
+# {
+#   "hiscore": 15,
+#   "id": 4,
+#   "username": "player"
+# }
 @app.route('/api/updateHiscore', methods=['PUT'])
 def updateHiscore():
     if request.method == 'PUT':
@@ -47,35 +87,110 @@ def updateHiscore():
         updatePlayer = models.PlayerModel(params['username'], params['hiscore'])
         response = player.updateHiscore(updatePlayer)
         return response
-    print("CreatePlayer")
     return None
 
-@app.route('/api/deletePlayer/', methods=['DELETE'])
+# Purpose: Deletes a player in database with given username
+# Data contract
+# username: str
+# Sample request
+# [SERVER_NAME]/api/deletePlayer?username=player
+#
+#
+# Sample response
+# {
+#   "hiscore": 15,
+#   "id": 4,
+#   "username": "player"
+# }
+@app.route('/api/deletePlayer', methods=['DELETE'])
 def delete():
     if request.method == 'DELETE':
         username = request.args.get('username', default= None, type= str)
         response = player.delete(username)
         return response
-    print("DeletePlayer")
     return None
 
 #************** QUANTUM ENDPOINTS *****************
 quantum=q.Quantum()
 
-@app.route('/api/generateRandomNumber/', methods=['GET'])
+# Purpose: Generates random integer between 0 and provided max int
+# Data contract
+# max: int
+# Sample request
+# [SERVER_NAME]/api/generateRandomNumber?max=10
+#
+#
+# Sample response
+# {
+#   "randomInt": 2
+# }
+@app.route('/api/generateRandomNumber', methods=['GET'])
 def generateRandomNumber():
     if request.method == 'GET':
         maxNum = request.args.get('max', default= None, type= int)
         response = quantum.generateRandomNumber(maxNum)
         return response
-    print("GenerateRandomNumber")
     return None
 
-@app.route('/api/determineSuperposition/', methods=['GET'])
+# Purpose: Calculates a superposition result (0 or 1) based on given probability of 0
+# Data contract
+# prob: int (1-100)
+#
+# Sample Request
+# [SERVER_NAME]/api/determineSuperposition?prob=60
+#
+# Sample result
+# {
+#   "result": 0
+# }
+#
+@app.route('/api/determineSuperposition', methods=['GET'])
 def determineSuperposition():
     if request.method == 'GET':
         prob = request.args.get('prob', default= None, type= int)
         response = quantum.determineSuperposition(prob)
         return response
-    print("DetermineSuperposition")
+    return None
+
+# Purpose: Flips all the values in the provided grid using entanglement
+# Data contract
+# value: int
+# x: int
+# y: int
+# Sample JSON body
+# {
+# 	"grid" : {
+# 		"0": {
+# 			"value": 0,
+# 			"x": 0,
+# 			"y": 0
+# 		},
+# 		"1": {
+# 			"value": 1,
+# 			"x": 0,
+# 			"y": 1
+# 		}
+# 	}
+# }
+# Sample JSON response
+# {
+#   "result": {
+#     "0": {
+#       "value": 1,
+#       "x": 0,
+#       "y": 0
+#     },
+#     "1": {
+#       "value": 0,
+#       "x": 0,
+#       "y": 0
+#     }
+#   }
+# }
+@app.route('/api/flipGrid', methods=['POST'])
+def flipGrid():
+    if request.method == 'POST':
+        params=request.get_json()
+        response = quantum.flipGrid(params['grid'])
+        return response
     return None
