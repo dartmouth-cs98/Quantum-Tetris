@@ -58,11 +58,14 @@ var _block
 
 ########## Superpositon
 # is this block a superposition
-var is_sp
+var _is_sp
 # counter till next superposition
-var sp_counter
+var _sp_counter
 # the block our superposition block will evaluate to
-var true_block
+var _true_block
+# when will the superposition block be loaded
+var _sp_hit_counter
+
 
 ########## Variables for moving a block down a notch
 # Max time between plater block movements
@@ -145,8 +148,8 @@ func start_game():
 	_move_time = _max_move_time 
 	
 	# set superposition variables
-	sp_counter = superposition_counter()
-	is_sp = false
+	_sp_counter = superposition_counter()
+	_is_sp = false
 	
 	# set other variables
 	_grace = false
@@ -240,15 +243,15 @@ func _spawn_inter():
 	### Superposition 
 	
 	# determine superposition
-	if (sp_counter == 0):
-		is_sp = true
-		sp_counter = superposition_counter()
+	if (_sp_counter == 0):
+		_is_sp = true
+		_sp_counter = superposition_counter()
 		# YEETT  - change this to just give array to set superposition and get two blocks
 		var result = set_superposition(_block_types)
 		_block_queue.insert(2, result) 
 
 	else:
-		sp_counter -= 1
+		_sp_counter -= 1
 	### Spawn handle next block 
 	_spawn_block()
 	
@@ -364,6 +367,16 @@ func _is_block_space_empty(pos, rot):
 func _end_block():
 	var tiles = _block.get_tiles()
 	## HERE is where I covert it to block type
+	if(_is_sp):
+		if(_sp_hit_counter<1):
+			print("switched blocks")
+			switch_blocks(_true_block)
+			_is_sp = !_is_sp
+			reset_superposition()
+		else:
+			_sp_hit_counter -= 1	
+		
+	
 	for t in tiles:
 		$board_tiles.set_cellv(t + _block.block_position,
 				_block.get_tile_type(t))
@@ -371,9 +384,8 @@ func _end_block():
 	_block.queue_free()
 	_block = null
 	# if last piece was in superposition, reset it.
-	if(is_sp):
-		is_sp = !is_sp
-		reset_superposition()
+	
+	
 
 	if _game_state == GameState.RUNNING:
 		_check_for_completed_lines()
@@ -479,15 +491,10 @@ func end_game():
 
 ########################### Quantum Functions
 # set which blocks it will be
-# array holds block types right now, sp_blocks hold ints for that array
-# can make sp_blocks hold the actual blocks. 
-# will set next value for number of blocks with superposition
-# how to get blocks and manage queue (make sure enough blocks are there)
-# What to pass back or add superposition block with properties to thing
-# send info to side gui
-# pass to server
-# receive inputs
-# pass 
+# fix timing
+# fix display
+# change block
+# connect to server
 
 ############ Main Quantum Functions
 func set_superposition(block_array):
@@ -543,7 +550,10 @@ func set_superposition(block_array):
 	
 	result.set_script(load("res://blocks/block.gd"))
 	
-	#get true_block
+	#CONNECT TO SERVER
+	_true_block = block_i
+	
+	_sp_hit_counter = 2
 	
 	return result
 
@@ -555,18 +565,25 @@ func reset_superposition():
 	
 ############ Helper Functions
 	
-func switch_blocks(blocki, blockj):
+func switch_blocks(blocki):
 	#save position and orientation of blocki and give it to blockj. Change block 
 	#to blockj.
+	var position = _block._get_block_position()
+	var orientation = int(_block.block_rotation)
+	_block.queue_free()
+	_block = null
+	_block = _true_block
+	_block._set_block_position(position)
+	_block._set_block_rotation(orientation)
+	_true_block = null
 	pass
-
 
 func set_orientation(tiles_array):
 	## Set map parameters
 	var map = TileMap.new()
 	map.tile_set = load("res://tilesets/tiles.tres")
 	map.cell_size = Vector2(16,16)
-	map.name = "orientation" + String(rotation)
+	#map.name = "orientation" + String(rotation)
 	for tile in tiles_array:
 		map.set_cellv(tile, 9)
 	

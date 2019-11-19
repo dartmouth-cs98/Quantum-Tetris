@@ -15,6 +15,7 @@ var next_tile2
 var super_piece1
 var super_piece2
 
+var weird_switch
 
 ##############################   Functions   ###############################
 
@@ -40,6 +41,8 @@ func set_superposition_data(probability1, tileP1, probability2, tileP2):
 	super_piece1 = _replace_child_to_map(false, true, super1_map, super_piece1, tileP1, Vector2(2,2))
 	super_piece2 = _replace_child_to_map(false, true, super2_map, super_piece2, tileP2, Vector2(2,6))
 	
+	weird_switch = true
+	
 func empty_superposition():
 	## Set text for labels
 	super_prob1.text = ""
@@ -58,6 +61,17 @@ func _replace_child_to_map(replace, add, node, child, childP, position):
 			node.add_child(child)
 			child._set_block_position(position)
 	else: 
-		pass
-	
+		if replace:
+			node.remove_child(child)
+			if weird_switch:
+				print("weird switch")
+				child.queue_free()
+				child = null
+				weird_switch = false
+		if add:
+			child = childP.duplicate()
+			print(String(child.get_tiles()))
+			node.add_child(child)
+			child._set_block_position(position)
+			
 	return child

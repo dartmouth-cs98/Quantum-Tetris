@@ -20,7 +20,7 @@ func _ready():
 ## _set_block_rotation
 # Make the correct child visible
 func _set_block_rotation(value):
-	block_rotation = value
+	block_rotation = int(value)
 	if get_child_count() > 0:
 		var real_rotation = wrapi(block_rotation, 0, get_child_count())
 
