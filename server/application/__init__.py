@@ -56,7 +56,7 @@ def createPlayer():
 #   "id": 4,
 #   "username": "player"
 # }
-@app.route('/api/fetchPlayer/', methods=['GET'])
+@app.route('/api/fetchPlayer', methods=['GET'])
 def fetchPlayer():
     if request.method == 'GET':
         username = request.args.get('username', default= None, type= str)
@@ -93,7 +93,7 @@ def updateHiscore():
 # Data contract
 # username: str
 # Sample request
-# [SERVER_NAME]/api/deletePlayer/?username=player
+# [SERVER_NAME]/api/deletePlayer?username=player
 #
 #
 # Sample response
@@ -117,14 +117,14 @@ quantum=q.Quantum()
 # Data contract
 # max: int
 # Sample request
-# [SERVER_NAME]/api/generateRandomNumber/?max=10
+# [SERVER_NAME]/api/generateRandomNumber?max=10
 #
 #
 # Sample response
 # {
 #   "randomInt": 2
 # }
-@app.route('/api/generateRandomNumber/', methods=['GET'])
+@app.route('/api/generateRandomNumber', methods=['GET'])
 def generateRandomNumber():
     if request.method == 'GET':
         maxNum = request.args.get('max', default= None, type= int)
@@ -137,14 +137,14 @@ def generateRandomNumber():
 # prob: int (1-100)
 #
 # Sample Request
-# [SERVER_NAME]/api/determineSuperposition/?prob=60
+# [SERVER_NAME]/api/determineSuperposition?prob=60
 #
 # Sample result
 # {
 #   "result": 0
 # }
 #
-@app.route('/api/determineSuperposition/', methods=['GET'])
+@app.route('/api/determineSuperposition', methods=['GET'])
 def determineSuperposition():
     if request.method == 'GET':
         prob = request.args.get('prob', default= None, type= int)
