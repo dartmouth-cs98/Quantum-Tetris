@@ -64,14 +64,15 @@ func _replace_child_to_map(replace, add, node, child, childP, position):
 		if replace:
 			node.remove_child(child)
 			if weird_switch:
-				print("weird switch")
+				#print("weird switch")
 				child.queue_free()
 				child = null
 				weird_switch = false
 		if add:
 			child = childP.duplicate()
-			print(String(child.get_tiles()))
+			#print(String(child.get_tiles()))
 			node.add_child(child)
 			child._set_block_position(position)
 			
 	return child
+

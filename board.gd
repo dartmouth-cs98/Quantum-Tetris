@@ -66,7 +66,16 @@ var _true_block
 # when will the superposition block be loaded
 var _sp_hit_counter
 # if entanglement is activated
-var entanglement
+var entanglement = {}
+
+var response
+
+var temp_block_i
+var temp_block_j
+
+var temp_prob
+var temp_server
+
 
 
 ########## Variables for moving a block down a notch
@@ -216,12 +225,21 @@ func _process(delta):
 
 				_control_block(move_left, move_right, move_down, false, false)
 
+				
 				if can_move:
 					_move_time += _max_move_time
 			# By putting this here, the program gets a new block as soon as the old one hits
 			# the problem with reading if it hit or not has to do with time values
 			else:
 				_spawn_inter()
+			# because drawing entanglement in spawn is slow (this is slow too)
+			if entanglement.size()>0:
+				for key in entanglement.keys():
+					var new_tile_int = -1
+					if(entanglement[key] == 1):
+						new_tile_int = randi() % _block_types.size()
+					$board_tiles.set_cellv(key, new_tile_int)
+				entanglement.clear()
 		## If the falling block animation is over, end the game.
 		elif _game_state == GameState.OVER:
 			# If all falling tiles are off screen
@@ -371,10 +389,22 @@ func _end_block():
 	## HERE is where I covert it to block type
 	if(_is_sp):
 		if(_sp_hit_counter<1):
-			print("switched blocks")
 			switch_blocks(_true_block)
+			########### FOR TESTING
+			_make_entanglement_request()
+			########### FOR TESTING
+			if temp_server == temp_prob:
+				pass
+				########### FOR TESTING
+				#_make_entanglement_request()
+
+			
+			temp_block_i = null
+			temp_block_j = null
+			
 			_is_sp = !_is_sp
 			reset_superposition()
+			
 		else:
 			_sp_hit_counter -= 1	
 		
@@ -492,13 +522,8 @@ func end_game():
 	emit_signal("game_over")
 
 ########################### SuperPosition Functions
-# set which blocks it will be
-# fix timing
-# fix display
-# change block
-# connect to server
 
-############ Main Quantum Functions
+############ Main Functions
 func set_superposition(block_array):
 	# Generate two different indices
 	var i = (randi() % (block_array.size()))
@@ -514,9 +539,10 @@ func set_superposition(block_array):
 	var prob1 = randi() % 100 + 1
 	var prob2 = 100 - prob1
 	
-	# Update the UI
-	$SideGUI.set_superposition_data(prob1, blockP_i, prob2, blockP_j)
-	
+	if prob1>50:
+		temp_prob = 1
+	else:
+		temp_prob = 0
 	# Get block nodes from PackedScenes
 	var block_i = blockP_i.instance()
 	var block_j = blockP_j.instance()
@@ -553,7 +579,14 @@ func set_superposition(block_array):
 	result.set_script(load("res://blocks/block.gd"))
 	
 	#CONNECT TO SERVER
+	_make_superposition_request(prob1)
+	
 	_true_block = block_i
+	
+	temp_block_i = block_i
+	temp_block_j = block_j
+	# Update the UI	
+	$SideGUI.set_superposition_data(prob1, blockP_i, prob2, blockP_j)
 	
 	_sp_hit_counter = 2
 	
@@ -591,13 +624,59 @@ func set_orientation(tiles_array):
 	
 	return map
 
-########################### Entanglement Functions
-#var entanglement - goes in set_superposition and end_block
-# function calls go in end_block
 
-func get_rows_blocks(blocki):
-	var block_tiles = blocki.get_tiles()
-	pass
+########################## Http Request Fuctions
+
+func _make_superposition_request(prob):
+	var headers = ["Content-Type: application/json"]
+	# Add 'Content-Type' header:
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + String(prob),  headers, false, HTTPClient.METHOD_GET)
 	
-func switch_rows_tiles():
-	pass
+func _make_entanglement_request():
+	var data_to_send = {}
+	var inner_data = {}
+	var true_tiles = _block.get_tiles(_block.block_position)
+	var rows = []
+	for tile in true_tiles:
+		if(rows.find(tile[1]) == -1):
+			rows.append(tile[1])
+	var index = 0 
+	for y in rows:
+		for x in range(1, board_size.x+1):
+			if(true_tiles.find(Vector2(x,y)) == -1):	
+				var value
+				if($board_tiles.get_cell(x,y) > -1):
+					value =1
+				else: 
+					value = 0
+				
+				var position_value = {"value": value, "x":x,"y":y }
+				inner_data[String(index)] = position_value
+				index += 1
+	
+	data_to_send["grid"] = inner_data
+	
+	var query = JSON.print(data_to_send)
+	#Add 'Content-Type' header:
+	var headers = ["Content-Type: application/json"]
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/flipGrid", headers, false, HTTPClient.METHOD_POST, query)
+
+func _on_HTTPRequest_request_completed(result, response_code, headers, body):
+	response = JSON.parse(body.get_string_from_utf8())
+
+	if typeof(response.result.result) == TYPE_REAL:
+		var server = response.result.result
+		temp_server = server
+		if int(server) == 0:
+			_true_block = temp_block_i
+		else:
+			_true_block = temp_block_j
+			
+	else:
+		var server = response.result.result
+		for server_val in server.values():
+			var pos = Vector2(int(server_val["x"]), int(server_val["y"]))
+			var value = server_val["value"]
+			entanglement[pos] = value
+	
+
