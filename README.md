@@ -1,4 +1,4 @@
-# Quantum Tetris
+##  Quantum Tetris
 
 Quantum Tetris is your traditional tetris game game who has several twists based on the concepts of quantum computing. Additionally, to implement this quantum functionality it uses IBM's qiskit library found [here](https://qiskit.org) which runs in the cloud on IBM's quantum computers.
 
