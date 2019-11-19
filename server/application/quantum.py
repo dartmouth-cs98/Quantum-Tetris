@@ -1,9 +1,13 @@
 from werkzeug.exceptions import abort
 
 from flask import make_response, jsonify
+print(1)
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, BasicAer, execute
+print(2)
 import math
+print(3)
 import numpy
+print(4)
 
 class Quantum():
 

@@ -1,7 +1,11 @@
 from werkzeug.exceptions import abort
+print(5)
 from application import models
+print(6)
 from flask import make_response, jsonify
+print(7)
 from application.__init__ import db
+print(8)
 
 class Player():
     def __init__(self):
