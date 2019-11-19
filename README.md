@@ -52,14 +52,15 @@ yarn start
 pip install flask
 pip install flask-cors
 pip install sqlalchemy
-export FLASK_APP=app
+export FLASK_APP=application
 export FLASK_ENV=development
 export DATABASE_URL="postgresql://localhost/quantum_tetris"
+export PORT=5000
 export APP_SETTINGS= "config.DevelopmentConfig"
 python -m application.manage db init
 python -m application.manage db migrate
 python -m application.manage db update
-python -m application.manage runserver
+flask run $PORT
 ```
 
 ## Deployment

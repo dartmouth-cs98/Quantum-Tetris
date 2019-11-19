@@ -1,1 +1,1 @@
-web: python -m application.manage runserver
+web: flask run $PORT
