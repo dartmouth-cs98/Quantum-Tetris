@@ -60,7 +60,7 @@ export APP_SETTINGS="config.DevelopmentConfig"
 python -m application.manage db init
 python -m application.manage db migrate
 python -m application.manage db update
-flask run $PORT
+python -m application.manage db runserver
 ```
 
 ## Deployment
