@@ -4,6 +4,8 @@ Quantum Tetris is your traditional tetris game game who has several twists based
 
 To play our game you can go here: http://quantumtetris.surge.sh/
 
+Backend can accessed via https://q-tetris-backend.herokuapp.com/
+
 Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1).
 ## Architecture
 
