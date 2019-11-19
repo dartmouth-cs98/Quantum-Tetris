@@ -17,9 +17,8 @@ from . import quantum as q
 from . import player as p
 
 #************** PLAYER ENDPOINTS *****************
-print(1)
 player=p.Player()
-print(2)
+
 # Purpose: Creates a player in database with given highscore
 # Data contract
 # username: str
@@ -112,9 +111,8 @@ def delete():
     return None
 
 #************** QUANTUM ENDPOINTS *****************
-print(3)
 quantum=q.Quantum()
-print(4)
+
 # Purpose: Generates random integer between 0 and provided max int
 # Data contract
 # max: int
