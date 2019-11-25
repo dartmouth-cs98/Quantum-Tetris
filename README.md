@@ -41,6 +41,7 @@ brew install openssl
 If you get an error trying to run the server in Pycharm like "ModuleNotFoundError: No module named 'app'" ensure than the folder "server" is marked as a source root
 
 #### PyCharm
+* If you wish to dev this project in PyCharm, follow the following instructions if not ignore.
 * Within PyCharm go to `Pycharm -> Preferences -> Project:[ProjectName] -> Project Interpreter`
 * Then click on the `gear icon` on the top right and click `Add Local`. Navigate to the file `/anaconda3/envs/[ProjectName]/bin/python3.7`
 * Click on this file and click add
