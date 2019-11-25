@@ -87,7 +87,7 @@ python -m application.manage runserver
 * To deploy any local changes to surge, you can type `yarn deploy` while in the `webapp` directory
 #### Back end
 * To deploy any local changes to heroku, you can type `yarn heroku` while in the project's root directory.
-* *Note Since the heroku URL is used in the GoDot game export, it is impossible to have full integration locally. Test all changes to the backend via Postman and use the above command to deploy to heroku*
+* *Since the heroku URL is used in the GoDot game export, it is impossible to have full integration locally. Test all changes to the backend via Postman and use the above command to deploy to heroku*
 ## Authors
 Trevor Glasgow, Oliver Levy, Henry Hilton and Rafael Brantley
 
