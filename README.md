@@ -18,6 +18,8 @@ The architecture of our project consists of a backend flask server that uses a P
 * If you don't have one yet, you can set one up [here](https://anaconda.org/)
 * Once you set up your conda environment run the following commands.
 ```
+conda create -n %NAMEOFENV% python=3
+conda activate %NAMEOFENV%
 conda update --name base conda
 conda install python==3.7
 python3 -m pip install --user qiskit
