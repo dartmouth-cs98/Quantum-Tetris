@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://midi/MidiPlayer.gd" type="Script" id=1]
+
+[node name="MidiPlayer" type="Node" index="0"]
+
+script = ExtResource( 1 )
+max_polyphony = 64
+file = ""
+playing = false
+channel_mute = [ false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false ]
+play_speed = 1.0
+volume_db = -30
+key_shift = 0
+loop = false
+loop_start = 0
+soundfont = ""
+mix_target = 0
+bus = "Master"
+
+[node name="Default" type="AudioStreamPlayer" parent="." index="0"]
+
+stream = null
+volume_db = 0.0
+pitch_scale = 1.0
+autoplay = false
+mix_target = 0
+bus = "Master"
+
+
