@@ -1,0 +1,118 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://themes/theme.tres" type="Theme" id=1]
+[ext_resource path="res://title.gd" type="Script" id=2]
+[ext_resource path="res://graphics/Backgrounds/QPixel.jpg" type="Texture" id=3]
+[ext_resource path="res://fonts/font_large.fnt" type="BitmapFont" id=4]
+[ext_resource path="res://themes/panel_stylebox.tres" type="StyleBox" id=5]
+[ext_resource path="res://fonts/font_small.fnt" type="BitmapFont" id=6]
+
+[node name="title" type="CenterContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -240.0
+margin_top = -320.0
+margin_right = 240.0
+margin_bottom = 320.0
+mouse_filter = 1
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Background" type="Sprite" parent="."]
+scale = Vector2( 0.11517, 0.153577 )
+texture = ExtResource( 3 )
+centered = false
+offset = Vector2( -3.47162, 3.90765 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 172.0
+margin_top = 45.0
+margin_right = 307.0
+margin_bottom = 594.0
+custom_constants/separation = 332
+
+[node name="title" type="Label" parent="VBoxContainer"]
+margin_right = 135.0
+margin_bottom = 59.0
+custom_fonts/font = ExtResource( 4 )
+custom_colors/font_color = Color( 0, 1, 0.0901961, 1 )
+custom_colors/font_color_shadow = Color( 0, 0.658824, 0, 1 )
+text = "Quantum
+Tetris"
+align = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 391.0
+margin_right = 135.0
+margin_bottom = 549.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer"]
+margin_right = 135.0
+margin_bottom = 158.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer/HBoxContainer"]
+margin_right = 135.0
+margin_bottom = 158.0
+
+[node name="Single" type="Button" parent="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer"]
+margin_right = 135.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 50, 50 )
+theme = ExtResource( 1 )
+text = "Single Player"
+
+[node name="instructions" type="Button" parent="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer"]
+margin_top = 54.0
+margin_right = 135.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 50, 50 )
+theme = ExtResource( 1 )
+text = "Instructions"
+
+[node name="quit" type="Button" parent="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer"]
+margin_top = 108.0
+margin_right = 135.0
+margin_bottom = 158.0
+rect_min_size = Vector2( 50, 50 )
+theme = ExtResource( 1 )
+text = "Quit"
+
+[node name="instructions_popup" type="Popup" parent="."]
+editor/display_folded = true
+margin_left = 240.0
+margin_top = 320.0
+margin_right = 240.0
+margin_bottom = 320.0
+
+[node name="instructions_panel" type="PanelContainer" parent="instructions_popup"]
+margin_left = -66.0
+margin_top = -113.0
+margin_right = 66.0
+margin_bottom = 112.0
+custom_styles/panel = ExtResource( 5 )
+
+[node name="Label" type="Label" parent="instructions_popup/instructions_panel"]
+margin_left = 3.0
+margin_top = 15.0
+margin_right = 129.0
+margin_bottom = 210.0
+custom_fonts/font = ExtResource( 6 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_shadow = Color( 0.670588, 0.670588, 0.670588, 1 )
+text = "Left: %s
+Right: %s
+Down: %s
+Drop: %s
+Rotate Counter
+Clockwise: %s
+Rotate
+Clockwise: %s
+Pause: %s"
+[connection signal="pressed" from="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer/Single" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer/instructions" to="." method="_on_instructions_pressed"]
+[connection signal="pressed" from="VBoxContainer/CenterContainer/HBoxContainer/VBoxContainer/quit" to="." method="_on_quit_pressed"]

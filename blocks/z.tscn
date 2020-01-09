@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://blocks/block.gd" type="Script" id=1]
+[ext_resource path="res://tilesets/tiles.tres" type="TileSet" id=2]
+
+[node name="z" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+format = 1
+tile_data = PoolIntArray( 0, 4, 0, 1, 4, 0, 65537, 4, 0, 65538, 4, 0 )
+
+[node name="TileMap2" type="TileMap" parent="."]
+visible = false
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+format = 1
+tile_data = PoolIntArray( 2, 4, 0, 65537, 4, 0, 65538, 4, 0, 131073, 4, 0 )
+
+[node name="TileMap3" type="TileMap" parent="."]
+visible = false
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+format = 1
+tile_data = PoolIntArray( 65536, 4, 0, 65537, 4, 0, 131073, 4, 0, 131074, 4, 0 )
+
+[node name="TileMap4" type="TileMap" parent="."]
+visible = false
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+format = 1
+tile_data = PoolIntArray( 1, 4, 0, 65536, 4, 0, 65537, 4, 0, 131072, 4, 0 )

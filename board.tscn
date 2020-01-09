@@ -1,0 +1,66 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://board.gd" type="Script" id=1]
+[ext_resource path="res://tilesets/tiles.tres" type="TileSet" id=2]
+[ext_resource path="res://TopGUI.tscn" type="PackedScene" id=3]
+[ext_resource path="res://SideGUI.tscn" type="PackedScene" id=4]
+
+[sub_resource type="Animation" id=1]
+resource_name = "completed"
+length = 0.5
+step = 0.01
+tracks/0/type = "value"
+tracks/0/path = NodePath("MarginContainer/completed_lines:modulate")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.12, 0.25, 0.38, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[node name="board" type="Node2D"]
+position = Vector2( 1, 0 )
+script = ExtResource( 1 )
+board_size = Vector2( 20, 32 )
+
+[node name="board_tiles" type="TileMap" parent="."]
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+format = 1
+tile_data = PoolIntArray( 0, 7, 0, 1, 7, 0, 2, 7, 0, 3, 7, 0, 4, 7, 0, 5, 7, 0, 6, 7, 0, 7, 7, 0, 8, 7, 0, 9, 7, 0, 10, 7, 0, 11, 7, 0, 12, 7, 0, 13, 7, 0, 14, 7, 0, 15, 7, 0, 16, 7, 0, 17, 7, 0, 18, 7, 0, 19, 7, 0, 20, 7, 0, 21, 7, 0, 65536, 7, 0, 65557, 7, 0, 131072, 7, 0, 131093, 7, 0, 196608, 7, 0, 196629, 7, 0, 262144, 7, 0, 262165, 7, 0, 327680, 7, 0, 327701, 7, 0, 393216, 7, 0, 393237, 7, 0, 458752, 7, 0, 458773, 7, 0, 524288, 7, 0, 524309, 7, 0, 589824, 7, 0, 589845, 7, 0, 655360, 7, 0, 655381, 7, 0, 720896, 7, 0, 720917, 7, 0, 786432, 7, 0, 786453, 7, 0, 851968, 7, 0, 851989, 7, 0, 917504, 7, 0, 917525, 7, 0, 983040, 7, 0, 983061, 7, 0, 1048576, 7, 0, 1048597, 7, 0, 1114112, 7, 0, 1114133, 7, 0, 1179648, 7, 0, 1179669, 7, 0, 1245184, 7, 0, 1245205, 7, 0, 1310720, 7, 0, 1310741, 7, 0, 1376256, 7, 0, 1376277, 7, 0, 1441792, 7, 0, 1441813, 7, 0, 1507328, 7, 0, 1507349, 7, 0, 1572864, 7, 0, 1572885, 7, 0, 1638400, 7, 0, 1638421, 7, 0, 1703936, 7, 0, 1703957, 7, 0, 1769472, 7, 0, 1769493, 7, 0, 1835008, 7, 0, 1835029, 7, 0, 1900544, 7, 0, 1900565, 7, 0, 1966080, 7, 0, 1966101, 7, 0, 2031616, 7, 0, 2031637, 7, 0, 2097152, 7, 0, 2097173, 7, 0, 2162688, 7, 0, 2162689, 7, 0, 2162690, 7, 0, 2162691, 7, 0, 2162692, 7, 0, 2162693, 7, 0, 2162694, 7, 0, 2162695, 7, 0, 2162696, 7, 0, 2162697, 7, 0, 2162698, 7, 0, 2162699, 7, 0, 2162700, 7, 0, 2162701, 7, 0, 2162702, 7, 0, 2162703, 7, 0, 2162704, 7, 0, 2162705, 7, 0, 2162706, 7, 0, 2162707, 7, 0, 2162708, 7, 0, 2162709, 7, 0 )
+
+[node name="completed_lines" type="TileMap" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+format = 1
+
+[node name="completed_animation" type="AnimationPlayer" parent="."]
+anims/completed = SubResource( 1 )
+
+[node name="falling_tiles" type="Node2D" parent="."]
+
+[node name="TopGUI" parent="." instance=ExtResource( 3 )]
+anchor_left = 0.0
+anchor_right = 0.0
+margin_left = 4.0
+margin_top = -85.0
+margin_right = 478.0
+margin_bottom = -2.0
+
+[node name="SideGUI" parent="." instance=ExtResource( 4 )]
+anchor_right = 1.0
+margin_left = 354.0
+margin_right = 471.0
+margin_bottom = 196.0
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+[connection signal="game_over" from="." to="TopGUI" method="_on_board_game_over"]
+[connection signal="game_over" from="." to="SideGUI" method="_on_board_game_over"]
+[connection signal="animation_finished" from="completed_animation" to="." method="_on_completed_animation_animation_finished"]
+[connection signal="speed_change" from="TopGUI" to="." method="_on_TopGUI_speed_change"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
