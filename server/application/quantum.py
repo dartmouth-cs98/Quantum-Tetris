@@ -1,5 +1,5 @@
 from werkzeug.exceptions import abort
-
+import os
 from flask import make_response, jsonify
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, BasicAer, execute
 import math
@@ -7,12 +7,11 @@ import numpy
 
 class Quantum():
 
-	MAX_QUBITS = 5
-	machineName = 'qasm_simulator'
+	MAX_QUBITS = os.environ['MAX_QUBITS']
+	machineName = os.environ['MACHINE_NAME']
 
 	def __init__(self):
 		pass
-
 
 	# Code adapted for random number from https://blog.red-badger.com/2018/9/24/generate-true-random-numbers-with-a-quantum-computer
 	def generateRandomNumber(self, maxInt):

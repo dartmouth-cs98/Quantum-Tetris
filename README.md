@@ -71,6 +71,8 @@ pip install flask_migrate
 pip install psycopg2
 export FLASK_APP=application
 export FLASK_ENV=development
+export MAX_QUBITS=5
+export MACHINE_NAME=qasm_simulator
 export DATABASE_URL="postgresql://localhost/quantum_tetris"
 export PORT=5000
 export APP_SETTINGS="config.DevelopmentConfig"

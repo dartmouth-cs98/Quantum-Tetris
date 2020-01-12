@@ -25,7 +25,6 @@ class BaseModel(db.Model):
             for column, value in self._to_dict().items()
         }
 
-
 class PlayerModel(db.Model):
     __tablename__ = 'players'
     __table_args__ = {'extend_existing': True}
