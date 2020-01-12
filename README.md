@@ -60,27 +60,9 @@ yarn start
 * Make sure you have python3 installed if not install it [here]( https://www.python.org/downloads/)
 * Also for local devving you will need to run a postgresql database in the background. The easiest way to set this up would be to follow the instructions found [here](https://postgresapp.com/)
 * For the Postgress the server make sure the server is running on port 5432 (the default) and is named `quantum_tetris`
-* Run the following commands
+* Run the following command in the `server` directory
 ```
-pip install flask
-pip install flask-cors
-pip install sqlalchemy
-pip install flask_sqlalchemy
-pip install flask_script
-pip install flask_migrate
-pip install psycopg2
-export FLASK_APP=application
-export FLASK_ENV=development
-export MAX_QUBITS=5
-export MACHINE_NAME=qasm_simulator
-export DATABASE_URL="postgresql://localhost/quantum_tetris"
-export PORT=5000
-export APP_SETTINGS="config.DevelopmentConfig"
-rm -rf migrations (Needed to be committed for Heroku)
-python -m application.manage db init
-python -m application.manage db migrate
-python -m application.manage db upgrade
-python -m application.manage runserver
+./setup.sh
 ```
 
 ## Deployment
