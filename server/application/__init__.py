@@ -21,11 +21,11 @@ player=p.Player()
 
 # Purpose: Creates a player in database with given highscore
 # Data contract
-# username: str
+# userId: str
 # hiscore: int
 # Sample JSON Body
 # {
-# 	"username": "player",
+# 	"userId": "player",
 # 	"hiscore": 90
 # }
 #
@@ -34,79 +34,79 @@ player=p.Player()
 # {
 #   "hiscore": 90,
 #   "id": 4,
-#   "username": "player"
+#   "userId": "player"
 # }
 @app.route('/api/createPlayer', methods=['POST'])
 def createPlayer():
     if request.method == 'POST':
         params=request.get_json()
-        newPlayer = models.PlayerModel(params['username'], params['hiscore'])
+        newPlayer = models.PlayerModel(params['userId'], params['hiscore'])
         response = player.createPlayer(newPlayer)
         return response
     return None
-# Purpose: Fetches a player in database with given username
+# Purpose: Fetches a player in database with given userId
 # Data contract
-# username: str
+# userId: str
 # Sample request
-# [SERVER_NAME]/api/fetchPlayer?username=player
+# [SERVER_NAME]/api/fetchPlayer?userId=player
 #
 # Sample response
 # {
 #   "hiscore": 90,
 #   "id": 4,
-#   "username": "player"
+#   "userId": "player"
 # }
 @app.route('/api/fetchPlayer', methods=['GET'])
 def fetchPlayer():
     if request.method == 'GET':
-        username = request.args.get('username', default= None, type= str)
-        response = player.fetchPlayer(username)
+        userId = request.args.get('userId', default= None, type= str)
+        response = player.fetchPlayer(userId)
         return response
     return None
 
-# Purpose: Updates a player's hiscore in database from given username and hiscore
+# Purpose: Updates a player's hiscore in database from given userId and hiscore
 # Data contract
-# username: str
+# userId: str
 # hiscore: int
 #
 # Sample JSON body
 # {
-# 	"username": "player",
+# 	"userId": "player",
 # 	"hiscore": 15
 # }
 # Sample response
 # {
 #   "hiscore": 15,
 #   "id": 4,
-#   "username": "player"
+#   "userId": "player"
 # }
 @app.route('/api/updateHiscore', methods=['PUT'])
 def updateHiscore():
     if request.method == 'PUT':
         params=request.get_json()
-        updatePlayer = models.PlayerModel(params['username'], params['hiscore'])
+        updatePlayer = models.PlayerModel(params['userId'], params['hiscore'])
         response = player.updateHiscore(updatePlayer)
         return response
     return None
 
-# Purpose: Deletes a player in database with given username
+# Purpose: Deletes a player in database with given userId
 # Data contract
-# username: str
+# userId: str
 # Sample request
-# [SERVER_NAME]/api/deletePlayer?username=player
+# [SERVER_NAME]/api/deletePlayer?userId=player
 #
 #
 # Sample response
 # {
 #   "hiscore": 15,
 #   "id": 4,
-#   "username": "player"
+#   "userId": "player"
 # }
 @app.route('/api/deletePlayer', methods=['DELETE'])
 def delete():
     if request.method == 'DELETE':
-        username = request.args.get('username', default= None, type= str)
-        response = player.delete(username)
+        userId = request.args.get('userId', default= None, type= str)
+        response = player.delete(userId)
         return response
     return None
 
