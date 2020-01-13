@@ -2,5 +2,5 @@
 
 [Downloads](https://github.com/adrienmalin/TETRIS3000/releases)
 
-[Play in browser (experimental)](https://adrienmalin.github.io/TETRIS3000/web/TETRIS3000.html)
+[Play in browser](https://adrienmalin.github.io/TETRIS3000/web/TETRIS3000.html) (Firefox recommanded)
 

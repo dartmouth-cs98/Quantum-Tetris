@@ -11,6 +11,4 @@ func print(text):
 
 func _on_AnimationPlayer_animation_finished(anim_name):
 	texts.resize(0)
-
-func _on_Stats_flash_text(text):
-	self.print(text)
+	

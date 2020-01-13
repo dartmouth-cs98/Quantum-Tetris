@@ -1,8 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Tetrominos/TetroS.gd" type="Script" id=1]
+[ext_resource path="res://Tetrominos/Tetromino.gd" type="Script" id=1]
 [ext_resource path="res://Tetrominos/Mino/Mino.tscn" type="PackedScene" id=2]
-
 
 [node name="TetroS" type="Spatial" index="0"]
 

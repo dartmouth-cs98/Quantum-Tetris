@@ -10,3 +10,6 @@ export_presets.cfg
 midi/FluidR3 GM.sf2
 release/
 *.import
+*.tmp
+
+desktop.ini

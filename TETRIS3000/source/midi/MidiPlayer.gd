@@ -19,7 +19,7 @@ export var play_speed = 1.0
 export var volume_db = -30
 export var key_shift = 0
 export var loop = false
-export var loop_start = 1.81
+export var loop_start = 0
 export var soundfont = ""
 export var mix_target = AudioStreamPlayer.MIX_TARGET_STEREO
 export var bus = "Master"
@@ -197,7 +197,7 @@ func seek( to_position ):
 	var length = len(self.track_status.events)
 	while pointer < length:
 		var event_chunk = self.track_status.events[pointer]
-		if self.position < event_chunk.time:
+		if self.position <= event_chunk.time:
 			break
 		pointer += 1
 	self.track_status.event_pointer = pointer

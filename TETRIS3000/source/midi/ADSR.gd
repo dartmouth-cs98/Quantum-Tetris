@@ -36,13 +36,13 @@ func set_instrument( instrument ):
 	self.ads_state = instrument.ads_state
 	self.release_state = instrument.release_state
 
-func play( ):
+func play( from_position=0.0 ):
 	self.releasing = false
 	self.timer = 0.0
 	self.using_timer = 0.0
 	self.current_volume = self.ads_state[0].volume
 	self.stream.mix_rate = round( self.mix_rate * ( 1.0 + self.pitch_bend * 0.5 ) )
-	.play( 0.0 )
+	.play( from_position )
 	self._update_volume( )
 
 func start_release( ):

@@ -1,17 +1,5 @@
 extends Control
 
-# Note for the reader:
-#
-# This demo conveniently uses the same names for actions and for the container nodes
-# that hold each remapping button. This allow to get back to the button based simply
-# on the name of the corresponding action, but it might not be so simple in your project.
-#
-# A better approach for large-scale input remapping might be to do the connections between
-# buttons and wait_for_input through the code, passing as arguments both the name of the
-# action and the node, e.g.:
-# button.connect("pressed", self, "wait_for_input", [ button, action ])
-
-# Constants
 const INPUT_ACTIONS = [
 	"move_left",
 	"move_right",
@@ -24,11 +12,8 @@ const INPUT_ACTIONS = [
 ]
 const CONFIG_FILE = "user://input.cfg"
 
-# Member variables
 var action # To register the action the UI is currently handling
 var button # Button node corresponding to the above action
-var enable_resume = true
-
 
 # Load/save input mapping to a config file
 # Changes done while testing the demo will be persistent, saved to CONFIG_FILE
@@ -74,8 +59,7 @@ func wait_for_input(action_bind):
 	action = action_bind
 	# See note at the beginning of the script
 	button = get_node("bindings").get_node(action).get_node("Button")
-	#get_node("contextual_help").text = "Press a key to assign to the '" + action + "' action."
-	enable_resume = false
+	button.text = "Press key"
 	set_process_input(true)
 
 
@@ -85,9 +69,7 @@ func _input(event):
 		# Register the event as handled and stop polling
 		get_tree().set_input_as_handled()
 		set_process_input(false)
-		# Reinitialise the contextual help label
-		#get_node("contextual_help").text = "Click a key binding to reassign it, or press the Cancel action."
-
+		
 		# Display the string corresponding to the pressed key
 		var scancode = OS.get_scancode_string(event.scancode)
 		button.text = scancode
@@ -97,9 +79,8 @@ func _input(event):
 		# Add the new key binding
 		InputMap.action_add_event(action, event)
 		save_to_config("input", action, scancode)
-		enable_resume = true
-
-
+		hint_text()
+	
 func _ready():
 	# Load config if existing, if not it will be generated with default values
 	load_config()
@@ -111,6 +92,13 @@ func _ready():
 		var button = get_node("bindings").get_node(action).get_node("Button")
 		button.text = OS.get_scancode_string(input_event.scancode)
 		button.connect("pressed", self, "wait_for_input", [action])
+		
+	hint_text()
+
+func hint_text():
+	var input_event = InputMap.get_action_list("pause")[0]
+	var scancode = OS.get_scancode_string(input_event.scancode)
+	$hint.text = "Press ["+ scancode + "] to resume\nor click on a button to change key assignment"
 	
 	# Do not start processing input until a button is pressed
 	set_process_input(false)

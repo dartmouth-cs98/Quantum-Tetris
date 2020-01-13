@@ -1,34 +1,26 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://controls.gd" type="Script" id=1]
 [ext_resource path="res://fonts/TitleFont.tres" type="DynamicFont" id=2]
-[ext_resource path="res://fonts/Gamer.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://fonts/ButtonFont.tres" type="DynamicFont" id=4]
-
-[sub_resource type="DynamicFont" id=2]
-
-size = 20
-use_mipmaps = true
-use_filter = false
-extra_spacing_top = -4
-extra_spacing_bottom = -4
-font_data = ExtResource( 3 )
-_sections_unfolded = [ "Extra Spacing", "Font", "Settings" ]
+[ext_resource path="res://fonts/ButtonFont.tres" type="DynamicFont" id=3]
+[ext_resource path="res://icons/arrowLeft.png" type="Texture" id=4]
+[ext_resource path="res://icons/arrowRight.png" type="Texture" id=5]
+[ext_resource path="res://icons/clockwise.png" type="Texture" id=6]
+[ext_resource path="res://icons/counterclockwise.png" type="Texture" id=7]
+[ext_resource path="res://icons/arrowDown.png" type="Texture" id=8]
+[ext_resource path="res://icons/harddrop.png" type="Texture" id=9]
+[ext_resource path="res://icons/hold.png" type="Texture" id=10]
+[ext_resource path="res://icons/pause.png" type="Texture" id=11]
 
 [node name="controls_ui" type="Control"]
-
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -30.0
-margin_top = 10.0
+margin_top = 20.0
 margin_right = 10.0
-margin_bottom = 50.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
+margin_bottom = 60.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 script = ExtResource( 1 )
@@ -36,575 +28,215 @@ __meta__ = {
 "__editor_plugin_screen__": "2D"
 }
 
-[node name="pause" type="Label" parent="." index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = -40.0
-margin_top = -150.0
-margin_right = 110.0
-margin_bottom = -111.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
+[node name="pause" type="Label" parent="."]
+margin_left = -220.0
+margin_top = -190.0
+margin_right = 280.0
+margin_bottom = -151.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 2 )
 custom_colors/font_color = Color( 0.443137, 0.709804, 0.819608, 0.533333 )
 custom_colors/font_color_shadow = Color( 1, 1, 1, 0.0968627 )
 text = "PAUSE"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "custom_colors", "custom_fonts" ]
+align = 1
+valign = 1
 
-[node name="bindings" type="Control" parent="." index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="bindings" type="Control" parent="."]
 margin_left = -190.0
 margin_top = -130.0
 margin_right = -150.0
 margin_bottom = -90.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 
-[node name="move_left" type="Control" parent="bindings" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 50.0
-margin_top = 50.0
-margin_right = 90.0
-margin_bottom = 90.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
+[node name="move_left" type="Control" parent="bindings"]
+margin_left = 20.0
+margin_top = 65.0
+margin_right = 60.0
+margin_bottom = 105.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 
-[node name="Label" type="Label" parent="bindings/move_left" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 69.0
-margin_bottom = 29.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "move
-left"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect", "custom_fonts" ]
-
-[node name="Button" type="Button" parent="bindings/move_left" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Button" type="Button" parent="bindings/move_left"]
 margin_left = 80.0
-margin_right = 155.0
+margin_right = 174.0
 margin_bottom = 37.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
 size_flags_horizontal = 2
 size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
 
-[node name="move_right" type="Control" parent="bindings" index="1"]
+[node name="arrowLeft" type="Sprite" parent="bindings/move_left"]
+position = Vector2( 30, 20 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 4 )
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 226.0
-margin_top = 51.0
-margin_right = 266.0
-margin_bottom = 91.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
+[node name="move_right" type="Control" parent="bindings"]
+margin_left = 220.0
+margin_top = 65.0
+margin_right = 260.0
+margin_bottom = 105.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 
-[node name="Label" type="Label" parent="bindings/move_right" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 5.0
-margin_top = -1.0
-margin_right = 80.0
-margin_bottom = 31.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "move
-right"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Button" type="Button" parent="bindings/move_right" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Button" type="Button" parent="bindings/move_right"]
 margin_left = 84.0
 margin_top = -1.0
-margin_right = 159.0
+margin_right = 178.0
 margin_bottom = 36.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
 size_flags_horizontal = 2
 size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
 
-[node name="rotate_clockwise" type="Control" parent="bindings" index="2"]
+[node name="arrowRight" type="Sprite" parent="bindings/move_right"]
+position = Vector2( 34, 19 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 5 )
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 50.0
-margin_top = 100.0
-margin_right = 90.0
-margin_bottom = 140.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
+[node name="rotate_clockwise" type="Control" parent="bindings"]
+margin_left = 224.0
+margin_top = 114.0
+margin_right = 264.0
+margin_bottom = 154.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 
-[node name="Label" type="Label" parent="bindings/rotate_clockwise" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 118.0
-margin_bottom = 32.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "rotate
-clockwise"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Button" type="Button" parent="bindings/rotate_clockwise" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Button" type="Button" parent="bindings/rotate_clockwise"]
 margin_left = 80.0
-margin_right = 155.0
+margin_right = 174.0
 margin_bottom = 37.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
 size_flags_horizontal = 2
 size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
-_sections_unfolded = [ "custom_fonts" ]
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
 
-[node name="rotate_counterclockwise" type="Control" parent="bindings" index="3"]
+[node name="clockwise" type="Sprite" parent="bindings/rotate_clockwise"]
+position = Vector2( 30, 15 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 6 )
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 226.0
-margin_top = 101.0
-margin_right = 266.0
-margin_bottom = 141.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-
-[node name="Label" type="Label" parent="bindings/rotate_counterclockwise" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 5.0
-margin_top = -2.0
-margin_right = 177.0
-margin_bottom = 37.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "rotate
-counter
-clockwise"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Button" type="Button" parent="bindings/rotate_counterclockwise" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 84.0
-margin_top = -1.0
-margin_right = 159.0
-margin_bottom = 36.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
-_sections_unfolded = [ "Rect" ]
-
-[node name="soft_drop" type="Control" parent="bindings" index="4"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 50.0
-margin_top = 150.0
-margin_right = 90.0
-margin_bottom = 190.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-
-[node name="Label" type="Label" parent="bindings/soft_drop" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 66.0
-margin_bottom = 32.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "soft
-drop"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Button" type="Button" parent="bindings/soft_drop" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 80.0
-margin_right = 155.0
-margin_bottom = 37.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
-
-[node name="hard_drop" type="Control" parent="bindings" index="5"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 226.0
-margin_top = 151.0
-margin_right = 266.0
-margin_bottom = 191.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-
-[node name="Label" type="Label" parent="bindings/hard_drop" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 5.0
-margin_top = -1.0
-margin_right = 75.0
-margin_bottom = 31.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "hard
-drop"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Button" type="Button" parent="bindings/hard_drop" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 84.0
-margin_top = -1.0
-margin_right = 159.0
-margin_bottom = 36.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
-
-[node name="hold" type="Control" parent="bindings" index="6"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 50.0
-margin_top = 200.0
-margin_right = 90.0
-margin_bottom = 240.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-
-[node name="Label" type="Label" parent="bindings/hold" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="rotate_counterclockwise" type="Control" parent="bindings"]
+margin_left = 15.0
+margin_top = 115.0
 margin_right = 55.0
-margin_bottom = 40.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "hold"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Button" type="Button" parent="bindings/hold" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 80.0
-margin_right = 155.0
-margin_bottom = 37.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
-align = 1
-
-[node name="pause" type="Control" parent="bindings" index="7"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 226.0
-margin_top = 201.0
-margin_right = 266.0
-margin_bottom = 241.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
+margin_bottom = 155.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 
-[node name="Label" type="Label" parent="bindings/pause" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 5.0
-margin_top = 3.0
-margin_right = 106.0
-margin_bottom = 35.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.752941, 0.921569, 0.988235, 1 )
-text = "pause
-resume"
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "custom_fonts" ]
-
-[node name="Button" type="Button" parent="bindings/pause" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="Button" type="Button" parent="bindings/rotate_counterclockwise"]
 margin_left = 84.0
 margin_top = -1.0
-margin_right = 159.0
+margin_right = 178.0
 margin_bottom = 36.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
 size_flags_horizontal = 2
 size_flags_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-group = null
-flat = false
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
+
+[node name="counterclockwise" type="Sprite" parent="bindings/rotate_counterclockwise"]
+position = Vector2( 35, 15 )
+scale = Vector2( 0.82, 0.82 )
+texture = ExtResource( 7 )
+
+[node name="soft_drop" type="Control" parent="bindings"]
+margin_left = 20.0
+margin_top = 165.0
+margin_right = 60.0
+margin_bottom = 205.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="Button" type="Button" parent="bindings/soft_drop"]
+margin_left = 80.0
+margin_right = 174.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
+
+[node name="arrowDown" type="Sprite" parent="bindings/soft_drop"]
+position = Vector2( 30, 20 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 8 )
+
+[node name="hard_drop" type="Control" parent="bindings"]
+margin_left = 220.0
+margin_top = 165.0
+margin_right = 260.0
+margin_bottom = 205.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="Button" type="Button" parent="bindings/hard_drop"]
+margin_left = 84.0
+margin_top = -1.0
+margin_right = 178.0
+margin_bottom = 36.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
+
+[node name="harddrop" type="Sprite" parent="bindings/hard_drop"]
+position = Vector2( 34, 19 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 9 )
+
+[node name="hold" type="Control" parent="bindings"]
+margin_left = 20.0
+margin_top = 215.0
+margin_right = 60.0
+margin_bottom = 255.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="Button" type="Button" parent="bindings/hold"]
+margin_left = 80.0
+margin_right = 174.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
+
+[node name="hold" type="Sprite" parent="bindings/hold"]
+position = Vector2( 30, 20 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 10 )
+
+[node name="pause" type="Control" parent="bindings"]
+margin_left = 220.0
+margin_top = 215.0
+margin_right = 260.0
+margin_bottom = 255.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="Button" type="Button" parent="bindings/pause"]
+margin_left = 84.0
+margin_top = -1.0
+margin_right = 178.0
+margin_bottom = 36.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
+
+[node name="pause" type="Sprite" parent="bindings/pause"]
+position = Vector2( 34, 19 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 11 )
+
+[node name="hint" type="Label" parent="."]
+margin_left = -220.0
+margin_top = -135.0
+margin_right = 280.0
+margin_bottom = -84.0
+custom_fonts/font = ExtResource( 3 )
+text = "Press [pause key] to resume
+or click on a button to change key assignment"
 align = 1
-
-
+valign = 1

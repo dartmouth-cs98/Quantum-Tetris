@@ -3,10 +3,9 @@ extends Spatial
 const NB_MINOES = 4
 const CLOCKWISE = -1
 const COUNTERCLOCKWISE = 1
-const NO_T_SPIN = 0
-const T_SPIN = 1
-const MINI_T_SPIN = 2
-const SUPER_ROTATION_SYSTEM = [
+const DROP_MOVEMENT = Vector3(0, -1, 0)
+
+var super_rotation_system = [
     {
         COUNTERCLOCKWISE: [
 			Vector3(0, 0, 0),
@@ -73,59 +72,80 @@ const SUPER_ROTATION_SYSTEM = [
     }
 ]
 
-var minoes
-var grid_map
+var minoes = []
 var orientation = 0
-var t_spin = NO_T_SPIN
+var rotation_point_5_used = false
+var rotated_last = false
+var grid_map
+var lock_delay
+var ghost
 
 func _ready():
-	randomize()
-	minoes = [$Mino0, $Mino1, $Mino2, $Mino3]
-	grid_map = get_parent().get_node("GridMap")
-	
-func positions():
-	var p = []
-	for mino in minoes:
-		p.append(to_global(mino.translation))
-	return p
-	
-func rotated_positions(direction):
-	var translations = [to_global(minoes[0].translation) ]
-	for i in range(1, 4):
-		var v = to_global(minoes[i].translation) 
-		v -= to_global(minoes[0].translation)
-		v = Vector3(-1*direction*v.y, direction*v.x, 0)
-		v += to_global(minoes[0].translation)
-		translations.append(v)
-	return translations
-	
-func apply_positions(positions):
 	for i in range(NB_MINOES):
-		minoes[i].translation = to_local(positions[i])
+		minoes.append(get_node("Mino"+str(i)))
+	grid_map = get_node("../Matrix/GridMap")
+	lock_delay = get_node("../LockDelay")
+	ghost = get_node("../Ghost")
+	
+func set_translations(translations):
+	for i in range(NB_MINOES):
+		minoes[i].translation = to_local(translations[i])
+	
+func get_translations():
+	var translations = []
+	for mino in minoes:
+		translations.append(to_global(mino.translation))
+	return translations
 
 func move(movement):
-	if grid_map.possible_positions(positions(), movement):
+	if grid_map.possible_positions(get_translations(), movement):
 		translate(movement)
+		unlocking()
+		rotated_last = false
+		move_ghost()
 		return true
 	else:
+		if movement == DROP_MOVEMENT:
+			locking()
 		return false
 	
-func rotate(direction):
-	var rotated_positions = rotated_positions(direction)
-	var movements = SUPER_ROTATION_SYSTEM[orientation][direction]
+func turn(direction):
+	var translations = get_translations()
+	var rotated_translations = [translations[0]]
+	var center = translations[0]
+	for i in range(1, NB_MINOES):
+		var rt = translations[i] - center
+		rt = Vector3(-1*direction*rt.y, direction*rt.x, 0)
+		rt += center
+		rotated_translations.append(rt)
+	var movements = super_rotation_system[orientation][direction]
 	for i in range(movements.size()):
-		if grid_map.possible_positions(rotated_positions, movements[i]):
-			orientation -= direction
-			orientation %= NB_MINOES
-			apply_positions(rotated_positions)
+		if grid_map.possible_positions(rotated_translations, movements[i]):
+			orientation = (orientation - direction) % 4
+			set_translations(rotated_translations)
 			translate(movements[i])
-			return i+1
-	return 0
+			unlocking()
+			rotated_last = true
+			if i == 4:
+				rotation_point_5_used = true
+			move_ghost()
+			return true
+	return false
 	
-func emit_trail(visible):
-	var trail
+func move_ghost():
+	ghost.set_translations(get_translations())
+	while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
+		ghost.translate(DROP_MOVEMENT)
+	
+func t_spin():
+	return ""
+	
+func locking():
+	if lock_delay.is_stopped():
+		lock_delay.start()
 	for mino in minoes:
-		trail = mino.get_node("Trail")
-		trail.emitting = visible
-		trail.visible = visible
-		mino.get_node("SpotLight").visible = visible
+		mino.get_node("LockingMesh").visible = true
+
+func unlocking():
+	if not lock_delay.is_stopped():
+		lock_delay.start()
