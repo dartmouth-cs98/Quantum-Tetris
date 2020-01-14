@@ -133,6 +133,8 @@ func turn(direction):
 	return false
 	
 func move_ghost():
+	# ghost is the "Ghost" scene
+	# See res://Tetrominos/Ghost.tscn
 	ghost.set_translations(get_translations())
 	while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
 		ghost.translate(DROP_MOVEMENT)

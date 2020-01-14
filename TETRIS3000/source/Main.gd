@@ -23,9 +23,16 @@ const movements = {
 
 var random_bag = []
 
+# The next piece queued in the upper right
 var next_piece
+
+# The piece currently falling
 var current_piece
+
+# The "held" piece in the upper left
 var held_piece
+
+# Boolean
 var current_piece_held
 var autoshift_action
 
@@ -53,11 +60,19 @@ func new_game(level):
 	resume()
 	
 func new_piece():
+	# current_piece, next_piece, etc. are all Tetromino objects
+	# See res://Tetrominos/Tetromino.gd
 	current_piece = next_piece
 	current_piece.translation = $Matrix/Position3D.translation
+	
+	# Initializes the ghost-piece at the bottom
 	current_piece.move_ghost()
+	
+	# Generates the next piece
 	next_piece = random_piece()
 	next_piece.translation = $Next/Position3D.translation
+	
+	# THERE is a 0-magnitude 3D-vector
 	if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE):
 		$DropTimer.start()
 		current_piece_held = false
@@ -66,8 +81,10 @@ func new_piece():
 
 ## random_piece: Generate a random piece
 func random_piece():
-	# if
+	
 	if not random_bag:
+		# Creates an array of each different piece
+		# Each piece is a SCENE
 		random_bag = [
 			TetroI, TetroJ, TetroL, TetroO,
 			TetroS, TetroT, TetroZ
@@ -78,14 +95,20 @@ func random_piece():
 	if create_super_piece:
 		pass #var second_piece = 
 	add_child(piece)
+	
+	# Returns the piece randomly selected from random_bag
 	return piece
 
+# Increments the difficulty upon reaching a new level
 func new_level(level):
 	if level <= 15:
 		$DropTimer.wait_time = pow(0.8 - ((level-1)*0.007), level-1)
 	else:
 		$LockDelay.wait_time = 0.5 * pow(0.9, level-15)
 
+
+# Handles all of the keyboard-inputs
+# Mapping happens in res://controls.gd
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
 		if playing:
@@ -95,6 +118,8 @@ func _unhandled_input(event):
 	if event.is_action_pressed("toggle_fullscreen"):
 		OS.window_fullscreen = not OS.window_fullscreen
 	if playing:
+		
+		# When the key of the current autoshift_action is released,
 		if autoshift_action and event.is_action_released(autoshift_action):
 			$AutoShiftDelay.stop()
 			$AutoShiftTimer.stop()
@@ -112,28 +137,62 @@ func _unhandled_input(event):
 			hold()
 			
 func process_new_action(event):
+	
+	# movements are the 3 possible ways to move a piece
+	# represented each as a single 3D-vector
+	# (left, right, and soft-drop)
 	for action in movements:
+		
+		# When the user starts holding down a new key,
+		# For that key,
 		if action != autoshift_action and event.is_action_pressed(action):
+			
+			# Stop autoshifting!
 			$AutoShiftTimer.stop()
+			
+			# Switch to the new key the user is holding down
 			autoshift_action = action
+			
+			# Shift
+			# This is NOT actually an autoshift!
+			# This is the user moving the piece a single time
 			process_autoshift()
+			
+			# Give the user .2 seconds to release the key before autoshifting starts
 			$AutoShiftDelay.start()
 			break
 
+# Called every .2 seconds while AutoShiftDelay is running
 func _on_AutoShiftDelay_timeout():
 	if autoshift_action:
+		
+		# Autoshift once and then start rapidly autoshifting
 		process_autoshift()
 		$AutoShiftTimer.start()
 
+
+# Called every .03 seconds while AutoShiftTimer is running
+# Rapidly autoshifts after the user has held the key down for .2 seconds
 func _on_AutoShiftTimer_timeout():
 	if autoshift_action:
 		process_autoshift()
 
+
+# Confusingly named!
+# Called to move a piece, 
+# NOT just for autoshifting!
 func process_autoshift():
+	
+	# Move the the piece with the movement autoshift_action is currently assigned to.
 	var moved = current_piece.move(movements[autoshift_action])
+	
+	# If the piece actually moved,
+	# And 
 	if moved and (autoshift_action == "soft_drop"):
 		$Stats.piece_dropped(1)
 
+
+# Called to instantly drop the piece to the bottom
 func hard_drop():
 	var score = 0
 	while current_piece.move(movements["soft_drop"]):
@@ -202,6 +261,7 @@ func resume():
 		held_piece.visible = true
 	next_piece.visible = true
 
+# Run when game gets paused
 func pause(gui=null):
 	playing = false
 	$MidiPlayer.stop()

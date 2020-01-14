@@ -34,6 +34,8 @@ func is_free_cell(cell):
 func possible_positions(initial_translations, movement):
 	var position
 	var test_translations = []
+	
+	# For each possible orientation,
 	for i in range(4):
 		position = initial_translations[i] + movement
 		if is_free_cell(position):
