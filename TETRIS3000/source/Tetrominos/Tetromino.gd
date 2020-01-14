@@ -139,6 +139,9 @@ func move_ghost():
 	while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
 		ghost.translate(DROP_MOVEMENT)
 	
+# Returns an empty string.
+# Used effectively as a boolean
+# Evaluates to true!
 func t_spin():
 	return ""
 	

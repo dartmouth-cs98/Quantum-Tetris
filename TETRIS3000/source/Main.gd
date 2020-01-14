@@ -206,16 +206,26 @@ func hard_drop():
 	$LockDelay.stop()
 	lock()
 
+
+# I can't find this timer.
+# Maybe it was removed?
 func _on_DropTrailDelay_timeout():
 	$Matrix/DropTrail.visible = false
 
+
+# Moves the piece down every certain amount of time.
+# Based on level!
 func _on_DropTimer_timeout():
 	current_piece.move(movements["soft_drop"])
 	
+
+# Probably the amount of time the piece can sit on the ground before being locked.
 func _on_LockDelay_timeout():
 	if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"]):
 		lock()
 
+
+# Appears to transform the piece from a falling object to a group of blocks resting on the floor
 func lock():
 	if $Matrix/GridMap.lock(current_piece):
 		var t_spin = current_piece.t_spin()
@@ -243,6 +253,8 @@ func hold():
 		else:
 			new_piece()
 		
+
+# Called when game is resumed after being paused
 func resume():
 	playing = true
 	$DropTimer.start()
