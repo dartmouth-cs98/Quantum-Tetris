@@ -32,10 +32,14 @@ var current_piece
 # The "held" piece in the upper left
 var held_piece
 
-# Boolean
+# Boolean - used to prevent code from breaking if user holds down the hold-piece-command
 var current_piece_held
+
+# Stores a movement when the player holds down a key
 var autoshift_action
 
+# Boolean - false while game is paused,
+# and set to true when player starts playing
 var playing = false
 
 ################ Superposition Variables
@@ -225,7 +229,7 @@ func _on_LockDelay_timeout():
 		lock()
 
 
-# Appears to transform the piece from a falling object to a group of blocks resting on the floor
+# Transforms the piece from a falling object to a group of blocks resting on the floor
 func lock():
 	if $Matrix/GridMap.lock(current_piece):
 		var t_spin = current_piece.t_spin()
@@ -234,22 +238,43 @@ func lock():
 		if lines_cleared or t_spin:
 			$MidiPlayer.piece_locked(lines_cleared)
 		remove_child(current_piece)
+		
+		# Spawns the next piece after this one is locked to the ground.
 		new_piece()
+		
+	# If the piece doesn't successfully lock into the grid, game over!
 	else:
 		game_over()
-
+		
+		
+# Implements holding a piece in the upper left
 func hold():
+	
+	# If the current piece is NOT falling
+	# i.e. the current piece and the held piece are not already currently being swapped
 	if not current_piece_held:
+		
+		# Prevents the user from using the hold command again while swapping is happening
 		current_piece_held = true
+		
+		# Swap the falling piece and the held piece
 		var swap = current_piece
 		current_piece = held_piece
 		held_piece = swap
+		
+		# Transform held_piece into falling object
 		for mino in held_piece.minoes:
 			mino.get_node("LockingMesh").visible = false
 		held_piece.translation = $Hold/Position3D.translation
+		
+		# If we were holding a piece in the upperleft already,
+		# Initialize the piece that just got swapped in
 		if current_piece:
 			current_piece.translation = $Matrix/Position3D.translation
 			current_piece.move_ghost()
+			
+		# If we weren't holding a piece in the upperleft,
+		# Generate a new piece!
 		else:
 			new_piece()
 		
@@ -296,11 +321,14 @@ func pause(gui=null):
 			held_piece.visible = false
 		next_piece.visible = false
 
+# Called when the player loses
 func game_over():
 	pause()
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
 
+
+# Called when the replay-button is pressed
 func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
 	remove_child(next_piece)
@@ -311,6 +339,9 @@ func _on_ReplayButton_pressed():
 	$Matrix/GridMap.clear()
 	pause($Start)
 	
+	
+# Implemented in every Godot object
+# See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
 func _notification(what):
 	match what:
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
