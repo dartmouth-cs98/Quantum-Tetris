@@ -200,7 +200,6 @@ one_shot = true
 wait_time = 0.03
 
 [node name="MidiPlayer" parent="." instance=ExtResource( 7 )]
-editor/display_folded = true
 script = ExtResource( 8 )
 file = "res://midi/music-a-dance-remix-.mid"
 volume_db = -24

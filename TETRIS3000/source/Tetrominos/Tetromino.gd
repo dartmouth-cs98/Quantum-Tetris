@@ -168,11 +168,16 @@ func turn(direction):
 
 ### move_ghost
 func move_ghost():
+	# ghost is the "Ghost" scene
+	# See res://Tetrominos/Ghost.tscn
 	ghost.set_translations(get_translations())
 	# While possible, keep dropping piece. 
 	while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
 		ghost.translate(DROP_MOVEMENT)
 	
+# Returns an empty string.
+# Used effectively as a boolean
+# Evaluates to true!
 func t_spin():
 	return ""
 	

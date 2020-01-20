@@ -43,7 +43,8 @@ func is_free_cell(cell): #3D Vector
 func possible_positions(initial_translations, movement): # Set of vectors with cur position (global) and movement vector 
 	var position
 	var test_translations = []
-	#preform action
+	
+	# For each possible orientation,
 	for i in range(4):
 		position = initial_translations[i] + movement
 		if is_free_cell(position):
