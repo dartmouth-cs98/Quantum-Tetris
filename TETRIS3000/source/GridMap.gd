@@ -1,4 +1,7 @@
 extends GridMap
+#################################  Notes  #################################
+
+
 
 const Tetromino = preload("res://Tetrominos/Tetromino.gd")
 const ExplodingMino = preload("res://Tetrominos/Mino/ExplodingMino.tscn")
@@ -24,27 +27,37 @@ func clear():
 	for used_cell in get_used_cells():
 		set_cell_item(used_cell.x, used_cell.y, used_cell.z, EMPTY_CELL)
 
-func is_free_cell(cell):
+### is_free_cell
+## Input: A Vector 
+func is_free_cell(cell): #3D Vector
 	return (
+		# Within grid columns (not at side edge)
 		0 <= cell.x and cell.x < nb_collumns
+		# Above the bottom
 		and cell.y >= 0
+		# The cell is empty - built in GridMesh Function
 		and get_cell_item(cell.x, cell.y, cell.z) == INVALID_CELL_ITEM
 	)
-	
-func possible_positions(initial_translations, movement):
+### possible_positions
+## Function: Check if position is available. 
+func possible_positions(initial_translations, movement): # Set of vectors with cur position (global) and movement vector 
 	var position
 	var test_translations = []
+	#preform action
 	for i in range(4):
 		position = initial_translations[i] + movement
 		if is_free_cell(position):
 			test_translations.append(position)
+		# one of the cells is full
 		else:
 			break
+	# if test_translations has the same size, then no break so all cells are empty.
 	if test_translations.size() == Tetromino.NB_MINOES:
 		return test_translations
 	else:
 		return []
-		
+
+### lock
 func lock(piece):
 	var minoes_over_grid = 0
 	for position in piece.get_translations():
@@ -53,6 +66,8 @@ func lock(piece):
 		set_cell_item(position.x, position.y, 0, MINO)
 	return minoes_over_grid < Tetromino.NB_MINOES
 
+
+### clear_lines
 func clear_lines():
 	var lines_cleared = 0
 	for y in range(nb_lines-1, -1, -1):
