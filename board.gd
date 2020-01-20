@@ -266,7 +266,7 @@ func _spawn_inter():
 	if (_sp_counter == 0):
 		_is_sp = true
 		_sp_counter = superposition_counter()
-		# YEETT  - change this to just give array to set superposition and get two blocks
+		# change this to just give array to set superposition and get two blocks
 		var result = set_superposition(_block_types)
 		_block_queue.insert(2, result) 
 
@@ -361,8 +361,7 @@ func _drop_block_fast():
 		_drop_block()
 
 func _check_stop():
-	if not _is_block_space_empty(_block.block_position + Vector2(0, 1),
-			_block.block_rotation):
+	if not _is_block_space_empty(_block.block_position + Vector2(0, 1), _block.block_rotation):
 		if _grace:
 			_end_block()
 			_grace = false
