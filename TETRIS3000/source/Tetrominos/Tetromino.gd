@@ -95,7 +95,7 @@ var ghost
 
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
-var is_fake
+var is_fake = false
 
 
 #########################  Functions  ######################### 
@@ -143,6 +143,7 @@ func move(movement):
 		## i.e. if the move is not possible AND that movement is downwards
 		if movement == DROP_MOVEMENT:
 			
+			# If this piece is real
 			if !is_fake:
 				# Begin locking the piece!
 				locking()
