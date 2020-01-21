@@ -106,7 +106,6 @@ light_energy = 3.0
 [node name="Matrix" type="MeshInstance" parent="."]
 transform = Transform( 10, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
 mesh = SubResource( 2 )
-skeleton = NodePath("")
 material/0 = null
 
 [node name="GridMap" type="GridMap" parent="Matrix"]
