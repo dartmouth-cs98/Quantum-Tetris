@@ -64,6 +64,8 @@ func new_game(level):
 	new_piece()
 	resume()
 	
+
+# The new piece gets generated
 func new_piece():
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
@@ -86,6 +88,7 @@ func new_piece():
 			current_piece_held = false
 		else:
 			game_over()
+		
 
 ## random_piece: Generate a random piece
 ##DONE

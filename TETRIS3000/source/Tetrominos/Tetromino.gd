@@ -93,6 +93,11 @@ var lock_delay
 # ghost piece
 var ghost
 
+# Boolean
+# True -> between the 2 superimposed pieces, this is the fake one.
+var is_fake = false
+
+
 #########################  Functions  ######################### 
 
 ### _ready - assign all nodes to associated variables
@@ -134,8 +139,19 @@ func move(movement):
 		return true
 	# the move is not possible
 	else:
+		
+		## i.e. if the move is not possible AND that movement is downwards
 		if movement == DROP_MOVEMENT:
-			locking()
+			
+			# If this piece is real
+			if !is_fake:
+				# Begin locking the piece!
+				locking()
+				
+			else:
+				get_parent().remove_child(self)
+			
+			
 		return false
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
@@ -166,6 +182,7 @@ func turn(direction):
 			return true
 	return false
 
+
 ### move_ghost
 func move_ghost():
 	# ghost is the "Ghost" scene
@@ -181,12 +198,23 @@ func move_ghost():
 func t_spin():
 	return ""
 	
+	
+# Starts locking timer
 func locking():
+	
 	if lock_delay.is_stopped():
 		lock_delay.start()
+		
+	
 	for mino in minoes:
 		mino.get_node("LockingMesh").visible = true
 
 func unlocking():
 	if not lock_delay.is_stopped():
 		lock_delay.start()
+		
+		
+
+func set_fake():
+	
+	is_fake = true
