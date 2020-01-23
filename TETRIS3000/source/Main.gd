@@ -115,6 +115,7 @@ func random_piece():
 		var second_choice = randi() % random_bag.size()
 		var second_piece = random_bag[second_choice].instance()
 		random_bag.remove(second_choice)
+		add_child(second_piece)
 
 		pieces.append(second_piece)
 		
