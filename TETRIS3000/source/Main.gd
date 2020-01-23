@@ -91,7 +91,7 @@ func new_piece():
 		
 
 ## random_piece: Generate a random piece
-##DONE
+## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
 func random_piece():
 	
 	if random_bag.size()<2:
@@ -117,6 +117,10 @@ func random_piece():
 		random_bag.remove(second_choice)
 
 		pieces.append(second_piece)
+		
+		############## FOR TESTING ############## 
+		second_piece.set_fake()
+		############## TESTING DONE ############## 
 		# evaluate which piece is the superposition piece
 		# call setter function to set those values
 	

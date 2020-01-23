@@ -1,8 +1,6 @@
 extends GridMap
 #################################  Notes  #################################
 
-
-
 const Tetromino = preload("res://Tetrominos/Tetromino.gd")
 const ExplodingMino = preload("res://Tetrominos/Mino/ExplodingMino.tscn")
 

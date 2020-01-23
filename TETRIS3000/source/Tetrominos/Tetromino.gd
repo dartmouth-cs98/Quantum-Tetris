@@ -5,7 +5,7 @@ extends Spatial
 ##### subsequent functions act on the list of Minos. 
 ### The ghost piece is just one piece that is translated to be under the current piece when it is put on the board.
 ### Mino 0 is always at the center of the piece (at origin). This is important for turning. 
-#########################  Constants and Variables  ######################### 
+###############################  Constants and Variables  ############################### 
 const NB_MINOES = 4
 const CLOCKWISE = -1
 const COUNTERCLOCKWISE = 1
@@ -90,16 +90,18 @@ var minoes = []
 var grid_map
 var lock_delay
 
-# ghost piece
+# ghost pieces
 var ghost
+var ghost_fake
 
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
 var is_fake = false
 
 
-#########################  Functions  ######################### 
+#####################################  Functions  ##################################### 
 
+####################### Start Game or Level
 ### _ready - assign all nodes to associated variables
 func _ready():
 	for i in range(NB_MINOES):
@@ -107,7 +109,10 @@ func _ready():
 	grid_map = get_node("../Matrix/GridMap")
 	lock_delay = get_node("../LockDelay")
 	ghost = get_node("../Ghost")
+	ghost_fake = get_node("../FakeGhost")
 	
+
+####################### Controlling Piece
 ### set_translations
 ## Input: A set of vector3's in global space (the scene space)
 ## Function: Turns global locations into local space locations using to_local. Then 
@@ -181,31 +186,36 @@ func turn(direction):
 			move_ghost()
 			return true
 	return false
-
-
+	
+####################### Ghost
 ### move_ghost
 func move_ghost():
-	# ghost is the "Ghost" scene
-	# See res://Tetrominos/Ghost.tscn
-	ghost.set_translations(get_translations())
-	# While possible, keep dropping piece. 
-	while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
-		ghost.translate(DROP_MOVEMENT)
+	if is_fake:
+		ghost_fake.set_translations(get_translations())
+		while grid_map.possible_positions(ghost_fake.get_translations(), DROP_MOVEMENT):
+			ghost_fake.translate(DROP_MOVEMENT)
+	else:
+		# ghost is the "Ghost" scene
+		# See res://Tetrominos/Ghost.tscn
+		ghost.set_translations(get_translations())
+		# While possible, keep dropping piece. 
+		while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
+			ghost.translate(DROP_MOVEMENT)
 	
+####################### Scoring
 # Returns an empty string.
 # Used effectively as a boolean
 # Evaluates to true!
 func t_spin():
 	return ""
-	
+
+####################### Locking 
 	
 # Starts locking timer
 func locking():
 	
 	if lock_delay.is_stopped():
 		lock_delay.start()
-		
-	
 	for mino in minoes:
 		mino.get_node("LockingMesh").visible = true
 
@@ -214,7 +224,10 @@ func unlocking():
 		lock_delay.start()
 		
 		
-
+####################### Superposition Functions
 func set_fake():
-	
 	is_fake = true
+	
+func get_is_fake():
+	return is_fake
+	
