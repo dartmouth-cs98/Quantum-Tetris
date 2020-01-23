@@ -106,7 +106,6 @@ light_energy = 3.0
 [node name="Matrix" type="MeshInstance" parent="."]
 transform = Transform( 10, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
 mesh = SubResource( 2 )
-skeleton = NodePath("")
 material/0 = null
 
 [node name="GridMap" type="GridMap" parent="Matrix"]
@@ -120,21 +119,6 @@ data = {
 "cells": PoolIntArray(  )
 }
 script = ExtResource( 5 )
-__meta__ = {
-"_editor_clip_": 1,
-"_editor_floor_": Vector3( 0, -2, 0 )
-}
-
-[node name="SuperMap" type="GridMap" parent="Matrix"]
-transform = Transform( 0.1, 0, 0, 0, 0.05, 0, 0, 0, 1, -0.45, -0.475, 0 )
-mesh_library = ExtResource( 4 )
-cell_size = Vector3( 1, 1, 1 )
-cell_center_x = false
-cell_center_y = false
-cell_center_z = false
-data = {
-"cells": PoolIntArray(  )
-}
 __meta__ = {
 "_editor_clip_": 1,
 "_editor_floor_": Vector3( 0, -2, 0 )
@@ -279,9 +263,6 @@ custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "play again"
 
 [node name="Ghost" parent="." instance=ExtResource( 15 )]
-visible = false
-
-[node name="FakeGhost" parent="." instance=ExtResource( 15 )]
 visible = false
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
