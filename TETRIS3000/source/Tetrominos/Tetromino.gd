@@ -154,6 +154,13 @@ func move(movement):
 				locking()
 				
 			else:
+				
+				# Removes itself from the array of current pieces
+				var piece_array = get_parent().get_current_pieces()
+				piece_array.pop_back();
+				get_parent().set_current_pieces(piece_array)
+				
+				# ... and removes itself from the scene-tree!
 				get_parent().remove_child(self)
 			
 			

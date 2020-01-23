@@ -78,6 +78,7 @@ func new_piece():
 	
 	# Generates the next piece
 	next_pieces = random_piece()
+	
 	for next_piece in next_pieces:
 		next_piece.translation = $Next/Position3D.translation
 	
@@ -93,6 +94,7 @@ func new_piece():
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
 func random_piece():
+	
 	
 	if random_bag.size()<2:
 		# Creates an array of each different piece
@@ -115,8 +117,10 @@ func random_piece():
 		var second_choice = randi() % random_bag.size()
 		var second_piece = random_bag[second_choice].instance()
 		random_bag.remove(second_choice)
+		
 
 		pieces.append(second_piece)
+		
 		
 		############## FOR TESTING ############## 
 		second_piece.set_fake()
@@ -409,3 +413,12 @@ func _notification(what):
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
 			if playing:
 				pause($controls_ui)
+
+
+func set_current_pieces(pieces):
+	
+	current_pieces = pieces
+
+func get_current_pieces():
+	
+	return current_pieces
