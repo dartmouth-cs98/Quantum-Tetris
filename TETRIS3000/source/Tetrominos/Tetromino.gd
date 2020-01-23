@@ -82,7 +82,7 @@ var super_rotation_system = [
 # Tracks orientation - set by indices of the above list 
 var orientation = 0
 var rotation_point_5_used = false
-# tracks whether the last movement was a rotation or tranlsation.
+# tracks whether the last movement was a rotation - tracks T spin.
 var rotated_last = false
 
 ###### Variables to Control Scene Nodes 

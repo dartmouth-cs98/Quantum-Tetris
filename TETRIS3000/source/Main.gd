@@ -24,13 +24,13 @@ const movements = {
 var random_bag = []
 
 # The next piece queued in the upper right
-var next_piece
+var next_pieces = []
 
-# The piece currently falling
-var current_piece
+# The pieces currently falling
+var current_pieces = []
 
 # The "held" piece in the upper left
-var held_piece
+var held_pieces = []
 
 # Boolean - used to prevent code from breaking if user holds down the hold-piece-command
 var current_piece_held
@@ -43,7 +43,7 @@ var autoshift_action
 var playing = false
 
 ################ Superposition Variables
-var create_super_piece = false
+var create_super_piece = true
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -51,11 +51,12 @@ func _ready():
 	randomize()
 
 ## new_game: Start a new game
+## DONE
 func new_game(level):
 	# hide the title screen
 	$Start.visible = false
 	# generate the next piece
-	next_piece = random_piece()
+	next_pieces = random_piece()
 	autoshift_action = ""
 	$LockDelay.wait_time = 0.5
 	$MidiPlayer.position = 0
@@ -66,27 +67,31 @@ func new_game(level):
 func new_piece():
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
-	current_piece = next_piece
-	current_piece.translation = $Matrix/Position3D.translation
+	current_pieces = next_pieces
+	for current_piece in current_pieces:
+		current_piece.translation = $Matrix/Position3D.translation
 	
-	# Initializes the ghost-piece at the bottom
-	current_piece.move_ghost()
+		# Initializes the ghost-piece at the bottom
+		current_piece.move_ghost()
 	
 	# Generates the next piece
-	next_piece = random_piece()
-	next_piece.translation = $Next/Position3D.translation
+	next_pieces = random_piece()
+	for next_piece in next_pieces:
+		next_piece.translation = $Next/Position3D.translation
 	
 	# THERE is a 0-magnitude 3D-vector
-	if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE):
-		$DropTimer.start()
-		current_piece_held = false
-	else:
-		game_over()
+	for current_piece in current_pieces:
+		if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE):
+			$DropTimer.start()
+			current_piece_held = false
+		else:
+			game_over()
 
 ## random_piece: Generate a random piece
+##DONE
 func random_piece():
 	
-	if not random_bag:
+	if random_bag.size()<2:
 		# Creates an array of each different piece
 		# Each piece is a SCENE
 		random_bag = [
@@ -96,14 +101,29 @@ func random_piece():
 	var choice = randi() % random_bag.size()
 	var piece = random_bag[choice].instance()
 	random_bag.remove(choice)
-	if create_super_piece:
-		pass #var second_piece = 
+	
+	# Add first piece
+	var pieces = []
+	pieces.append(piece)
 	add_child(piece)
 	
+	# create a superposition piece
+	if create_super_piece:
+		var second_choice = randi() % random_bag.size()
+		var second_piece = random_bag[second_choice].instance()
+		random_bag.remove(second_choice)
+
+		pieces.append(second_piece)
+		# evaluate which piece is the superposition piece
+		# call setter function to set those values
+	
+	
+	
 	# Returns the piece randomly selected from random_bag
-	return piece
+	return pieces
 
 # Increments the difficulty upon reaching a new level
+##DONE
 func new_level(level):
 	if level <= 15:
 		$DropTimer.wait_time = pow(0.8 - ((level-1)*0.007), level-1)
@@ -113,6 +133,7 @@ func new_level(level):
 
 # Handles all of the keyboard-inputs
 # Mapping happens in res://controls.gd
+##DONE
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
 		if playing:
@@ -134,12 +155,15 @@ func _unhandled_input(event):
 		if event.is_action_pressed("hard_drop"):
 			hard_drop()
 		if event.is_action_pressed("rotate_clockwise"):
-			current_piece.turn(Tetromino.CLOCKWISE)
+			for current_piece in current_pieces:
+				current_piece.turn(Tetromino.CLOCKWISE)
 		if event.is_action_pressed("rotate_counterclockwise"):
-			current_piece.turn(Tetromino.COUNTERCLOCKWISE)
+			for current_piece in current_pieces:
+				current_piece.turn(Tetromino.COUNTERCLOCKWISE)
 		if event.is_action_pressed("hold"):
 			hold()
 			
+##DONE
 func process_new_action(event):
 	
 	# movements are the 3 possible ways to move a piece
@@ -167,6 +191,7 @@ func process_new_action(event):
 			break
 
 # Called every .2 seconds while AutoShiftDelay is running
+##DONE
 func _on_AutoShiftDelay_timeout():
 	if autoshift_action:
 		
@@ -177,6 +202,7 @@ func _on_AutoShiftDelay_timeout():
 
 # Called every .03 seconds while AutoShiftTimer is running
 # Rapidly autoshifts after the user has held the key down for .2 seconds
+##DONE
 func _on_AutoShiftTimer_timeout():
 	if autoshift_action:
 		process_autoshift()
@@ -185,69 +211,82 @@ func _on_AutoShiftTimer_timeout():
 # Confusingly named!
 # Called to move a piece, 
 # NOT just for autoshifting!
+##DONE
 func process_autoshift():
-	
-	# Move the the piece with the movement autoshift_action is currently assigned to.
-	var moved = current_piece.move(movements[autoshift_action])
-	
-	# If the piece actually moved,
-	# And 
-	if moved and (autoshift_action == "soft_drop"):
-		$Stats.piece_dropped(1)
+	for current_piece in current_pieces:
+		# Move the the piece with the movement autoshift_action is currently assigned to.
+		var moved = current_piece.move(movements[autoshift_action])
+		
+		# If the piece actually moved,
+		# And 
+		if moved and (autoshift_action == "soft_drop"):
+			$Stats.piece_dropped(1)
 
 
 # Called to instantly drop the piece to the bottom
+##DONE
 func hard_drop():
-	var score = 0
-	while current_piece.move(movements["soft_drop"]):
-		score += 2
-	$Stats.piece_dropped(score)
-	var translations = current_piece.get_translations()
-	for i in range(Tetromino.NB_MINOES):
-		get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
-	$Matrix/DropTrail.visible = true
-	$Matrix/DropTrail/Delay.start()
-	$LockDelay.stop()
-	lock()
+	for current_piece in current_pieces:
+		var score = 0
+		while current_piece.move(movements["soft_drop"]):
+			score += 2
+		$Stats.piece_dropped(score)
+		var translations = current_piece.get_translations()
+		for i in range(Tetromino.NB_MINOES):
+			get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
+		$Matrix/DropTrail.visible = true
+		$Matrix/DropTrail/Delay.start()
+		$LockDelay.stop()
+		lock()
 
 
 # I can't find this timer.
 # Maybe it was removed?
+##DONE
 func _on_DropTrailDelay_timeout():
 	$Matrix/DropTrail.visible = false
 
 
 # Moves the piece down every certain amount of time.
 # Based on level!
+##DONE
 func _on_DropTimer_timeout():
-	current_piece.move(movements["soft_drop"])
+	for current_piece in current_pieces:	
+		current_piece.move(movements["soft_drop"])
 	
 
-# Probably the amount of time the piece can sit on the ground before being locked.
+# After the amount of time the piece can sit on the ground before being locked, check that the piece is 
+#still ready to be locked.
+
+## LOOP FUNCTION, NOT DONE
 func _on_LockDelay_timeout():
-	if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"]):
-		lock()
+	for current_piece in current_pieces:
+		if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"]):
+			lock()
 
 
 # Transforms the piece from a falling object to a group of blocks resting on the floor
+##NOT DONE
 func lock():
-	if $Matrix/GridMap.lock(current_piece):
-		var t_spin = current_piece.t_spin()
-		var lines_cleared = $Matrix/GridMap.clear_lines()
-		$Stats.piece_locked(lines_cleared, t_spin)
-		if lines_cleared or t_spin:
-			$MidiPlayer.piece_locked(lines_cleared)
-		remove_child(current_piece)
-		
-		# Spawns the next piece after this one is locked to the ground.
-		new_piece()
-		
-	# If the piece doesn't successfully lock into the grid, game over!
-	else:
-		game_over()
+	for current_piece in current_pieces:
+		if $Matrix/GridMap.lock(current_piece):
+			var t_spin = current_piece.t_spin()
+			var lines_cleared = $Matrix/GridMap.clear_lines()
+			$Stats.piece_locked(lines_cleared, t_spin)
+			if lines_cleared or t_spin:
+				$MidiPlayer.piece_locked(lines_cleared)
+			remove_child(current_piece)
+			
+			# Spawns the next piece after this one is locked to the ground.
+			new_piece()
+			
+		# If the piece doesn't successfully lock into the grid, game over!
+		else:
+			game_over()
 		
 		
 # Implements holding a piece in the upper left
+##DONE - but logic is tricky
 func hold():
 	
 	# If the current piece is NOT falling
@@ -258,28 +297,31 @@ func hold():
 		current_piece_held = true
 		
 		# Swap the falling piece and the held piece
-		var swap = current_piece
-		current_piece = held_piece
-		held_piece = swap
+		var swap = current_pieces
+		current_pieces = held_pieces
+		held_pieces = swap
 		
 		# Transform held_piece into falling object
-		for mino in held_piece.minoes:
-			mino.get_node("LockingMesh").visible = false
-		held_piece.translation = $Hold/Position3D.translation
+		for held_piece in held_pieces:
+			for mino in held_piece.minoes:
+				mino.get_node("LockingMesh").visible = false
+			held_piece.translation = $Hold/Position3D.translation
 		
 		# If we were holding a piece in the upperleft already,
 		# Initialize the piece that just got swapped in
-		if current_piece:
-			current_piece.translation = $Matrix/Position3D.translation
-			current_piece.move_ghost()
+		for current_piece in current_pieces:
+			if current_piece:
+				current_piece.translation = $Matrix/Position3D.translation
+				current_piece.move_ghost()
 			
-		# If we weren't holding a piece in the upperleft,
-		# Generate a new piece!
-		else:
-			new_piece()
+			# If we weren't holding a piece in the upperleft,
+			# Generate a new piece!
+			else:
+				new_piece()
 		
 
 # Called when game is resumed after being paused
+##DONE
 func resume():
 	playing = true
 	$DropTimer.start()
@@ -292,13 +334,17 @@ func resume():
 	$Matrix/GridMap.visible = true
 	$Hold.visible = true
 	$Next.visible = true
-	current_piece.visible = true
+	for current_piece in current_pieces:
+		current_piece.visible = true
 	$Ghost.visible = true
-	if held_piece:
-		held_piece.visible = true
-	next_piece.visible = true
+	if held_pieces.size()>0:
+		for held_piece in held_pieces:
+			held_piece.visible = true
+	for next_piece in next_pieces:
+		next_piece.visible = true
 
 # Run when game gets paused
+##DONE 
 func pause(gui=null):
 	playing = false
 	$MidiPlayer.stop()
@@ -315,13 +361,17 @@ func pause(gui=null):
 		$Matrix/GridMap.visible = false
 		$Hold.visible = false
 		$Next.visible = false
-		current_piece.visible = false
+		for current_piece in current_pieces:
+			current_piece.visible = false
 		$Ghost.visible = false
-		if held_piece:
-			held_piece.visible = false
-		next_piece.visible = false
+		if held_pieces.size()>0:
+			for held_piece in held_pieces:
+				held_piece.visible = false
+		for next_piece in next_pieces:
+			next_piece.visible = false
 
 # Called when the player loses
+##DONE
 func game_over():
 	pause()
 	$FlashText.print("GAME\nOVER")
@@ -329,19 +379,24 @@ func game_over():
 
 
 # Called when the replay-button is pressed
+##DONE
 func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
-	remove_child(next_piece)
-	remove_child(current_piece)
-	if held_piece:
-		remove_child(held_piece)
-		held_piece = null
+	for next_piece in next_pieces:
+		remove_child(next_piece)
+	for current_piece in current_pieces:
+		remove_child(current_piece)
+	if held_pieces.size()>0:
+		for held_piece in held_pieces:
+			remove_child(held_piece)
+			held_piece = null
 	$Matrix/GridMap.clear()
 	pause($Start)
 	
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
+##DONE
 func _notification(what):
 	match what:
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
