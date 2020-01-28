@@ -43,7 +43,7 @@ var autoshift_action
 var playing = false
 
 ################ Superposition Variables
-var create_super_piece = false
+var create_super_piece = true
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -90,6 +90,10 @@ func new_piece():
 		else:
 			game_over()
 		
+	if (current_pieces.size() > 1):
+		$FakeGhost.visible = true
+	else:
+		$FakeGhost.visible = false
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
@@ -361,7 +365,7 @@ func resume():
 	$Ghost.visible = true
 	
 	# Only make the fake ghost visible if there is a second piece
-	if( current_pieces.size() == 2 ): 
+	if( current_pieces.size() > 1 ): 
 		$FakeGhost.visible = true
 		
 	if held_pieces.size()>0:
