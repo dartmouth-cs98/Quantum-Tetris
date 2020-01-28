@@ -43,7 +43,7 @@ var autoshift_action
 var playing = false
 
 ################ Superposition Variables
-var create_super_piece = true
+var create_super_piece = false
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -320,7 +320,7 @@ func hold():
 		
 		# If we were holding a piece in the upperleft already,
 		# Initialize the piece that just got swapped in
-		if current_pieces.size()<1:
+		if current_pieces.size()>0:
 			for current_piece in current_pieces:
 				current_piece.translation = $Matrix/Position3D.translation
 				current_piece.move_ghost()
@@ -348,6 +348,7 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
+	$FakeGhost.visible = true
 	if held_pieces.size()>0:
 		for held_piece in held_pieces:
 			held_piece.visible = true
@@ -375,6 +376,7 @@ func pause(gui=null):
 		for current_piece in current_pieces:
 			current_piece.visible = false
 		$Ghost.visible = false
+		$FakeGhost.visible = false
 		if held_pieces.size()>0:
 			for held_piece in held_pieces:
 				held_piece.visible = false
