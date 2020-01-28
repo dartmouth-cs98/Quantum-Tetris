@@ -117,9 +117,9 @@ func random_piece():
 		var second_choice = randi() % random_bag.size()
 		var second_piece = random_bag[second_choice].instance()
 		random_bag.remove(second_choice)
-		add_child(second_piece)
 		
 		pieces.append(second_piece)
+		add_child(second_piece)
 		
 		
 		############## FOR TESTING ############## 
@@ -237,18 +237,29 @@ func process_autoshift():
 # Called to instantly drop the piece to the bottom
 ##DONE
 func hard_drop():
+	
+	
+	
 	for current_piece in current_pieces:
 		var score = 0
+		
+		# Stats
+		# (Also drops the piece until it can be dropped no more
 		while current_piece.move(movements["soft_drop"]):
 			score += 2
 		$Stats.piece_dropped(score)
+		
+		
 		var translations = current_piece.get_translations()
 		for i in range(Tetromino.NB_MINOES):
 			get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
-		$Matrix/DropTrail.visible = true
-		$Matrix/DropTrail/Delay.start()
-		$LockDelay.stop()
-		lock()
+			
+		
+	# This code should be executed only once
+	$Matrix/DropTrail.visible = true
+	$Matrix/DropTrail/Delay.start()
+	$LockDelay.stop()
+	lock()
 
 
 # I can't find this timer.
