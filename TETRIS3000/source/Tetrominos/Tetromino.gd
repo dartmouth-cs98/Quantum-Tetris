@@ -161,6 +161,7 @@ func move(movement):
 				get_parent().set_current_pieces(piece_array)
 				
 				# ... and removes itself from the scene-tree!
+				ghost_fake.visible = false
 				get_parent().remove_child(self)
 			
 			
