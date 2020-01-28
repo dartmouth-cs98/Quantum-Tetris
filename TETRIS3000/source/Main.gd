@@ -320,15 +320,15 @@ func hold():
 		
 		# If we were holding a piece in the upperleft already,
 		# Initialize the piece that just got swapped in
-		for current_piece in current_pieces:
-			if current_piece:
+		if current_pieces.size()<1:
+			for current_piece in current_pieces:
 				current_piece.translation = $Matrix/Position3D.translation
 				current_piece.move_ghost()
 			
 			# If we weren't holding a piece in the upperleft,
 			# Generate a new piece!
-			else:
-				new_piece()
+		else:
+			new_piece()
 		
 
 # Called when game is resumed after being paused
