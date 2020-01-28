@@ -43,7 +43,7 @@ var autoshift_action
 var playing = false
 
 ################ Superposition Variables
-var create_super_piece = false
+var create_super_piece = true
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -89,6 +89,12 @@ func new_piece():
 			current_piece_held = false
 		else:
 			game_over()
+			
+	if current_pieces.size()<2:
+		$FakeGhost.visible = false
+	else:
+		$FakeGhost.visible = true	
+	
 		
 
 ## random_piece: Generate a random piece
@@ -359,7 +365,10 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
-	$FakeGhost.visible = true
+	if current_pieces.size()>1:
+		$FakeGhost.visible = true
+	else: 
+		pass
 	if held_pieces.size()>0:
 		for held_piece in held_pieces:
 			held_piece.visible = true

@@ -104,9 +104,9 @@ transform = Transform( 0.332668, 0.771982, -0.541642, 0.579657, 0.285656, 0.7631
 light_energy = 3.0
 
 [node name="Matrix" type="MeshInstance" parent="."]
-editor/display_folded = true
 transform = Transform( 10, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
 mesh = SubResource( 2 )
+skeleton = NodePath("")
 material/0 = null
 
 [node name="GridMap" type="GridMap" parent="Matrix"]
@@ -120,6 +120,21 @@ data = {
 "cells": PoolIntArray(  )
 }
 script = ExtResource( 5 )
+__meta__ = {
+"_editor_clip_": 1,
+"_editor_floor_": Vector3( 0, -2, 0 )
+}
+
+[node name="SuperMap" type="GridMap" parent="Matrix"]
+transform = Transform( 0.1, 0, 0, 0, 0.05, 0, 0, 0, 1, -0.45, -0.475, 0 )
+mesh_library = ExtResource( 4 )
+cell_size = Vector3( 1, 1, 1 )
+cell_center_x = false
+cell_center_y = false
+cell_center_z = false
+data = {
+"cells": PoolIntArray(  )
+}
 __meta__ = {
 "_editor_clip_": 1,
 "_editor_floor_": Vector3( 0, -2, 0 )
@@ -169,7 +184,6 @@ wait_time = 0.06
 one_shot = true
 
 [node name="Hold" type="MeshInstance" parent="."]
-editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, -5, 16, 0 )
 visible = false
 mesh = SubResource( 3 )
@@ -179,7 +193,6 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 16, 0 )
 
 [node name="Next" type="MeshInstance" parent="."]
-editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 14, 16, 0 )
 visible = false
 mesh = SubResource( 3 )
@@ -202,7 +215,6 @@ one_shot = true
 wait_time = 0.03
 
 [node name="MidiPlayer" parent="." instance=ExtResource( 7 )]
-editor/display_folded = true
 script = ExtResource( 8 )
 file = "res://midi/music-a-dance-remix-.mid"
 volume_db = -24
@@ -214,7 +226,6 @@ wait_time = 1.41
 one_shot = true
 
 [node name="FlashText" type="Control" parent="."]
-editor/display_folded = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -271,6 +282,7 @@ text = "play again"
 visible = false
 
 [node name="FakeGhost" parent="." instance=ExtResource( 15 )]
+visible = false
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]
