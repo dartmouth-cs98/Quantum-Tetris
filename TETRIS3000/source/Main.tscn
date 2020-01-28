@@ -271,6 +271,7 @@ text = "play again"
 visible = false
 
 [node name="FakeGhost" parent="." instance=ExtResource( 15 )]
+visible = false
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]

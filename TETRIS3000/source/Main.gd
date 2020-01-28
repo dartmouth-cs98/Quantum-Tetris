@@ -359,7 +359,11 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
-	$FakeGhost.visible = true
+	
+	# Only make the fake ghost visible if there is a second piece
+	if( current_pieces.size() == 2 ): 
+		$FakeGhost.visible = true
+		
 	if held_pieces.size()>0:
 		for held_piece in held_pieces:
 			held_piece.visible = true

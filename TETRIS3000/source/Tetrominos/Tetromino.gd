@@ -161,6 +161,7 @@ func move(movement):
 				get_parent().set_current_pieces(piece_array)
 				
 				# ... and removes itself from the scene-tree!
+				
 				get_parent().remove_child(self)
 			
 			
