@@ -125,6 +125,8 @@ func random_piece():
 		pieces.append(second_piece)
 		add_child(second_piece)
 		
+		$FlashText.print("SUPERPOSITION")
+		
 		
 		############## FOR TESTING ############## 
 		second_piece.set_fake()
@@ -254,12 +256,13 @@ func hard_drop():
 		$Stats.piece_dropped(score)
 		
 		
+	# This code and below should be executed only once
 	var translations = current_pieces[0].get_translations()
 	for i in range(Tetromino.NB_MINOES):
 		get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
-			
 		
-	# This code should be executed only once
+		
+
 	$Matrix/DropTrail.visible = true
 	$Matrix/DropTrail/Delay.start()
 	$LockDelay.stop()
@@ -298,7 +301,12 @@ func lock():
 		if $Matrix/GridMap.lock(current_piece):
 			var t_spin = current_piece.t_spin()
 			var lines_cleared = $Matrix/GridMap.clear_lines()
-			$Stats.piece_locked(lines_cleared, t_spin)
+			
+			var super = ""
+			if(create_super_piece): super = "SUPER"
+			
+			$Stats.piece_locked(lines_cleared, t_spin, super)
+			
 			if lines_cleared or t_spin:
 				$MidiPlayer.piece_locked(lines_cleared)
 			remove_child(current_piece)
