@@ -132,6 +132,33 @@ def generateRandomNumber():
         return response
     return None
 
+# Purpose: Create a superposition of two piece with random types and probabilities
+# Data contract
+# NO DATA NEEDED
+#
+# Sample Request
+# [SERVER_NAME]/api/createSuperposition
+#
+# {
+#   "result": {
+#     "piece1": {
+#       "prob": 0.25,
+#       "type": 0
+#     },
+#     "piece2": {
+#       "prob": 0.75,
+#       "type": 4
+#     }
+#   }
+# }
+#
+@app.route('/api/createSuperposition', methods=['GET'])
+def createSuperposition():
+    if request.method == 'GET':
+        response = quantum.createSuperposition()
+        return response
+    return None
+
 # Purpose: Calculates a superposition result (0 or 1) based on given probability of 0
 # Data contract
 # prob: int (1-100)
