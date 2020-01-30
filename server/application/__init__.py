@@ -161,7 +161,7 @@ def createSuperposition():
 
 # Purpose: Calculates a superposition result (0 or 1) based on given probability of 0
 # Data contract
-# prob: int (1-100)
+# prob: float (0-1)
 #
 # Sample Request
 # [SERVER_NAME]/api/determineSuperposition?prob=60
@@ -174,7 +174,7 @@ def createSuperposition():
 @app.route('/api/determineSuperposition', methods=['GET'])
 def determineSuperposition():
     if request.method == 'GET':
-        prob = request.args.get('prob', default= None, type= int)
+        prob = request.args.get('prob', default= None, type= float)
         response = quantum.determineSuperposition(prob)
         return response
     return None
