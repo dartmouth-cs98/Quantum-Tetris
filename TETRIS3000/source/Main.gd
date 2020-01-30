@@ -307,7 +307,7 @@ func lock():
 			new_piece()
 			
 		# If the piece doesn't successfully lock into the grid, game over!
-		else:
+		elif(playing == true):
 			game_over()
 		
 		

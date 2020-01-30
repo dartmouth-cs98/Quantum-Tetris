@@ -184,7 +184,7 @@ wait_time = 0.06
 one_shot = true
 
 [node name="Hold" type="MeshInstance" parent="."]
-transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, -5, 16, 0 )
+transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 14, 3.5, 0 )
 visible = false
 mesh = SubResource( 3 )
 material/0 = null
@@ -193,7 +193,7 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 16, 0 )
 
 [node name="Next" type="MeshInstance" parent="."]
-transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 14, 16, 0 )
+transform = Transform( 7, 0, 0, 0, 12, 0, 0, 0, 1, 14.006, 13.5, 0 )
 visible = false
 mesh = SubResource( 3 )
 material/0 = null
