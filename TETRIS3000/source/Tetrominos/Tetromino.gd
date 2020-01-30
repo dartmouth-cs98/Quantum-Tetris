@@ -11,7 +11,12 @@ const CLOCKWISE = -1
 const COUNTERCLOCKWISE = 1
 const DROP_MOVEMENT = Vector3(0, -1, 0)
 
-#Encodes rotation vectors for each piece. Overloaded by each pieces indiviual variables.
+
+# "Orientation" indexes into one of the 4 possible orientations,
+# and then "direction" indexes into either CLOCKWISE or COUNTERCLOCKWISE.
+# Finally, each vector represents a DIFFERENT WAY to rotate the piece
+# When the player tries to turn the piece, each vector is used sequentially to attempt to turn the piece
+# The fifth way to rotate is only triggered through T-SPIN
 var super_rotation_system = [
     {
         COUNTERCLOCKWISE: [
@@ -184,9 +189,13 @@ func turn(direction):
 	var movements = super_rotation_system[orientation][direction]
 	for i in range(movements.size()):
 		if grid_map.possible_positions(rotated_translations, movements[i]):
+			
 			#Set new orientation
+			# Rotate the piece's position by either +1 or -1
 			orientation = (orientation - direction) % 4
 			set_translations(rotated_translations)
+			
+			
 			translate(movements[i])
 			unlocking()
 			rotated_last = true

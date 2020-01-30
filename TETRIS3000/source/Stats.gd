@@ -84,15 +84,15 @@ func piece_dropped(ds):
 
 # Triggered whenever the player drops a piece to the bottom,
 # but only does anything if the piece fills any lines.
-func piece_locked(lines, t_spin):
+func piece_locked(lines, t_spin, super):
 	var ds
 	if lines or t_spin:
 		if lines and t_spin:
-			emit_signal("flash_text", t_spin + " " + LINES_CLEARED_NAMES[lines])
+			emit_signal("flash_text", super + "\n" + t_spin + " " + LINES_CLEARED_NAMES[lines])
 		elif lines:
-			emit_signal("flash_text", LINES_CLEARED_NAMES[lines])
+			emit_signal("flash_text", super + "\n" + LINES_CLEARED_NAMES[lines])
 		elif t_spin:
-			emit_signal("flash_text", t_spin)
+			emit_signal("flash_text", super + "\n" + t_spin)
 		goal -= SCORES[lines][""]
 		$VBC/Goal.text = str(goal)
 		ds = 100 * level * SCORES[lines][t_spin]
