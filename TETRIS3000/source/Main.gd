@@ -254,9 +254,9 @@ func hard_drop():
 		$Stats.piece_dropped(score)
 		
 		
-		var translations = current_piece.get_translations()
-		for i in range(Tetromino.NB_MINOES):
-			get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
+	var translations = current_pieces[0].get_translations()
+	for i in range(Tetromino.NB_MINOES):
+		get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
 			
 		
 	# This code should be executed only once
