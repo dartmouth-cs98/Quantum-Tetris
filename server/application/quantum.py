@@ -130,11 +130,7 @@ class Quantum():
 
 	def findSuperposition(self, piece1_prob):
 
-		angle = numpy.arccos(math.sqrt(piece1_prob)) * 2
-
-		q = QuantumRegister(1)
-		c = ClassicalRegister(1)
-		qc = QuantumCircuit(q, c)
+		qc, angle = self.setUpSingleCiruitFromProbs(piece1_prob)
 
 		qc.rx(angle, 0)
 		qc.measure(0, 0)
@@ -151,12 +147,7 @@ class Quantum():
 
 	def determineHProb(self, superposition):
 
-		# Determines angle to adjust spin based wanted probability
-		angle = numpy.arccos(math.sqrt(superposition['piece1']["prob"])) * 2
-
-		q = QuantumRegister(1)
-		c = ClassicalRegister(1)
-		qc = QuantumCircuit(q, c)
+		qc, angle = self.setUpSingleCiruitFromProbs(superposition['piece1']["prob"])
 
 		qc.rx(angle, 0)
 		qc.rz(angle, 0)
@@ -164,59 +155,41 @@ class Quantum():
 
 		simulator = BasicAer.get_backend("statevector_simulator")
 		job_sim = execute(qc, backend = simulator, shots=1)
-		result = job_sim.result().results[0].data.statevector[0]
-		conjugate = numpy.conjugate(result)
-		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
-		piece1ProbRounded = float(round(piece1Prob, 2))
-		piece2Prob = Decimal(1 - piece1ProbRounded)
-		piece2ProbRounded = float(round(piece2Prob, 2))
+		piece1Prob, piece2Prob  = self.getProbsFromAlpha(job_sim.result().results[0].data.statevector[0])
 
 
 		return {
 			"piece1": {
 				"type": superposition['piece1']["type"],
-				"prob": piece1ProbRounded
+				"prob": piece1Prob
 			},
 			"piece2": {
 				"type": superposition['piece2']["type"],
-				"prob": piece2ProbRounded
+				"prob": piece2Prob
 			}
 		}
 
 	def determineXProb(self, superposition):
 
-		# Determines angle to adjust spin based wanted probability
-		angle = numpy.arccos(math.sqrt(superposition['piece1']["prob"])) * 2
-
-		q = QuantumRegister(1)
-		c = ClassicalRegister(1)
-		qc = QuantumCircuit(q, c)
+		qc, angle = self.setUpSingleCiruitFromProbs(superposition['piece1']["prob"])
 
 		qc.rx(angle, 0)
 		qc.x(0)
 
 		simulator = BasicAer.get_backend("statevector_simulator")
 		job_sim = execute(qc, backend = simulator, shots=1)
-		result = job_sim.result().results[0].data.statevector[0]
-		conjugate = numpy.conjugate(result)
-		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
-		piece1ProbRounded = float(round(piece1Prob, 2))
-		piece2Prob = Decimal(1 - piece1ProbRounded)
-		piece2ProbRounded = float(round(piece2Prob, 2))
-
+		piece1Prob, piece2Prob  = self.getProbsFromAlpha(job_sim.result().results[0].data.statevector[0])
 
 		return {
 			"piece1": {
 				"type": superposition['piece1']["type"],
-				"prob": piece1ProbRounded
+				"prob": piece1Prob
 			},
 			"piece2": {
 				"type": superposition['piece2']["type"],
-				"prob": piece2ProbRounded
+				"prob": piece2Prob
 			}
 		}
-
-
 
 	def createPieces(self):
 
@@ -245,6 +218,24 @@ class Quantum():
 		while result > maxInt:
 			result = self.random_int(self.nextPowerOf2(maxInt))
 		return result
+
+	def getProbsFromAlpha(self, result):
+		conjugate = numpy.conjugate(result)
+		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
+		piece1ProbRounded = float(round(piece1Prob, 2))
+		piece2Prob = Decimal(1 - piece1ProbRounded)
+		piece2ProbRounded = float(round(piece2Prob, 2))
+		return piece1ProbRounded, piece2ProbRounded
+
+	def setUpSingleCiruitFromProbs(self, prob):
+		# Determines angle to adjust spin based wanted probability
+		angle = numpy.arccos(math.sqrt(prob)) * 2
+
+		q = QuantumRegister(1)
+		c = ClassicalRegister(1)
+		return QuantumCircuit(q, c), angle
+
+
 
 	def random_int(self, maxInt):
 		bits = ''
