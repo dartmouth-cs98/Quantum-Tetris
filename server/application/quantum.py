@@ -3,6 +3,7 @@ import os
 from flask import make_response, jsonify
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, BasicAer, execute
 import math
+from decimal import Decimal
 import numpy
 
 class Quantum():
@@ -59,6 +60,21 @@ class Quantum():
 
 		return abort(make_response(jsonify(error), 400))
 
+	def applyHGate(self, superposition):
+		result = self.determineHProb(superposition)
+
+		error = None
+		if result is None:
+			error = "Error in determining superposition"
+
+		if error is None:
+			return jsonify(
+				result=result,
+			)
+
+		return abort(make_response(jsonify(error), 400))
+
+
 	def flipGrid(self, grid):
 		self.flipEntangledGrid(grid)
 
@@ -100,9 +116,7 @@ class Quantum():
 
 	def findSuperposition(self, piece1_prob):
 
-		# Determines angle to adjust spin based wanted probability
-		probability = piece1_prob
-		angle = numpy.arccos(math.sqrt(probability)) * 2
+		angle = numpy.arccos(math.sqrt(piece1_prob)) * 2
 
 		q = QuantumRegister(1)
 		c = ClassicalRegister(1)
@@ -120,6 +134,42 @@ class Quantum():
 			return 0
 		except KeyError:
 			return 1
+
+	def determineHProb(self, superposition):
+
+		# Determines angle to adjust spin based wanted probability
+		angle = numpy.arccos(math.sqrt(superposition['piece1']["prob"])) * 2
+
+		q = QuantumRegister(1)
+		c = ClassicalRegister(1)
+		qc = QuantumCircuit(q, c)
+
+		qc.rx(angle, 0)
+		qc.rz(angle, 0)
+		qc.h(0)
+
+		simulator = BasicAer.get_backend("statevector_simulator")
+		job_sim = execute(qc, backend = simulator, shots=1)
+		result = job_sim.result().results[0].data.statevector[1]
+		conjugate = numpy.conjugate(result)
+		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
+		piece1ProbRounded = float(round(piece1Prob, 2))
+		piece2Prob = Decimal(1 - piece1ProbRounded)
+		piece2ProbRounded = float(round(piece2Prob, 2))
+
+
+		return {
+			"piece1": {
+				"type": superposition['piece1']["type"],
+				"prob": piece1ProbRounded
+			},
+			"piece2": {
+				"type": superposition['piece2']["type"],
+				"prob": piece2ProbRounded
+			}
+		}
+
+
 
 	def createPieces(self):
 
