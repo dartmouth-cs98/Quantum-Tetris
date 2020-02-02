@@ -65,7 +65,21 @@ class Quantum():
 
 		error = None
 		if result is None:
-			error = "Error in determining superposition"
+			error = "Error in applying H gate"
+
+		if error is None:
+			return jsonify(
+				result=result,
+			)
+
+		return abort(make_response(jsonify(error), 400))
+
+	def applyXGate(self, superposition):
+		result = self.determineXProb(superposition)
+
+		error = None
+		if result is None:
+			error = "Error in applying X gate"
 
 		if error is None:
 			return jsonify(
@@ -150,7 +164,40 @@ class Quantum():
 
 		simulator = BasicAer.get_backend("statevector_simulator")
 		job_sim = execute(qc, backend = simulator, shots=1)
-		result = job_sim.result().results[0].data.statevector[1]
+		result = job_sim.result().results[0].data.statevector[0]
+		conjugate = numpy.conjugate(result)
+		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
+		piece1ProbRounded = float(round(piece1Prob, 2))
+		piece2Prob = Decimal(1 - piece1ProbRounded)
+		piece2ProbRounded = float(round(piece2Prob, 2))
+
+
+		return {
+			"piece1": {
+				"type": superposition['piece1']["type"],
+				"prob": piece1ProbRounded
+			},
+			"piece2": {
+				"type": superposition['piece2']["type"],
+				"prob": piece2ProbRounded
+			}
+		}
+
+	def determineXProb(self, superposition):
+
+		# Determines angle to adjust spin based wanted probability
+		angle = numpy.arccos(math.sqrt(superposition['piece1']["prob"])) * 2
+
+		q = QuantumRegister(1)
+		c = ClassicalRegister(1)
+		qc = QuantumCircuit(q, c)
+
+		qc.rx(angle, 0)
+		qc.x(0)
+
+		simulator = BasicAer.get_backend("statevector_simulator")
+		job_sim = execute(qc, backend = simulator, shots=1)
+		result = job_sim.result().results[0].data.statevector[0]
 		conjugate = numpy.conjugate(result)
 		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
 		piece1ProbRounded = float(round(piece1Prob, 2))
