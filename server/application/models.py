@@ -30,11 +30,11 @@ class PlayerModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String())
+    userId = db.Column(db.String())
     hiscore = db.Column(db.Integer)
 
-    def __init__(self, username, hiscore):
-        self.username = username
+    def __init__(self, userId, hiscore):
+        self.userId = userId
         self.hiscore = hiscore
 
     def __repr__(self):
