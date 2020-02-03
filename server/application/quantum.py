@@ -3,6 +3,7 @@ import os
 from flask import make_response, jsonify
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, BasicAer, execute
 import math
+from decimal import Decimal
 import numpy
 
 class Quantum():
@@ -59,6 +60,35 @@ class Quantum():
 
 		return abort(make_response(jsonify(error), 400))
 
+	def applyHGate(self, superposition):
+		result = self.determineHProb(superposition)
+
+		error = None
+		if result is None:
+			error = "Error in applying H gate"
+
+		if error is None:
+			return jsonify(
+				result=result,
+			)
+
+		return abort(make_response(jsonify(error), 400))
+
+	def applyXGate(self, superposition):
+		result = self.determineXProb(superposition)
+
+		error = None
+		if result is None:
+			error = "Error in applying X gate"
+
+		if error is None:
+			return jsonify(
+				result=result,
+			)
+
+		return abort(make_response(jsonify(error), 400))
+
+
 	def flipGrid(self, grid):
 		self.flipEntangledGrid(grid)
 
@@ -100,13 +130,7 @@ class Quantum():
 
 	def findSuperposition(self, piece1_prob):
 
-		# Determines angle to adjust spin based wanted probability
-		probability = piece1_prob
-		angle = numpy.arccos(math.sqrt(probability)) * 2
-
-		q = QuantumRegister(1)
-		c = ClassicalRegister(1)
-		qc = QuantumCircuit(q, c)
+		qc, angle = self.setUpSingleCiruitFromProbs(piece1_prob)
 
 		qc.rx(angle, 0)
 		qc.measure(0, 0)
@@ -120,6 +144,52 @@ class Quantum():
 			return 0
 		except KeyError:
 			return 1
+
+	def determineHProb(self, superposition):
+
+		qc, angle = self.setUpSingleCiruitFromProbs(superposition['piece1']["prob"])
+
+		qc.rx(angle, 0)
+		qc.rz(angle, 0)
+		qc.h(0)
+
+		simulator = BasicAer.get_backend("statevector_simulator")
+		job_sim = execute(qc, backend = simulator, shots=1)
+		piece1Prob, piece2Prob  = self.getProbsFromAlpha(job_sim.result().results[0].data.statevector[0])
+
+
+		return {
+			"piece1": {
+				"type": superposition['piece1']["type"],
+				"prob": piece1Prob
+			},
+			"piece2": {
+				"type": superposition['piece2']["type"],
+				"prob": piece2Prob
+			}
+		}
+
+	def determineXProb(self, superposition):
+
+		qc, angle = self.setUpSingleCiruitFromProbs(superposition['piece1']["prob"])
+
+		qc.rx(angle, 0)
+		qc.x(0)
+
+		simulator = BasicAer.get_backend("statevector_simulator")
+		job_sim = execute(qc, backend = simulator, shots=1)
+		piece1Prob, piece2Prob  = self.getProbsFromAlpha(job_sim.result().results[0].data.statevector[0])
+
+		return {
+			"piece1": {
+				"type": superposition['piece1']["type"],
+				"prob": piece1Prob
+			},
+			"piece2": {
+				"type": superposition['piece2']["type"],
+				"prob": piece2Prob
+			}
+		}
 
 	def createPieces(self):
 
@@ -148,6 +218,24 @@ class Quantum():
 		while result > maxInt:
 			result = self.random_int(self.nextPowerOf2(maxInt))
 		return result
+
+	def getProbsFromAlpha(self, result):
+		conjugate = numpy.conjugate(result)
+		piece1Prob = Decimal(float(numpy.multiply(result,conjugate)))
+		piece1ProbRounded = float(round(piece1Prob, 2))
+		piece2Prob = Decimal(1 - piece1ProbRounded)
+		piece2ProbRounded = float(round(piece2Prob, 2))
+		return piece1ProbRounded, piece2ProbRounded
+
+	def setUpSingleCiruitFromProbs(self, prob):
+		# Determines angle to adjust spin based wanted probability
+		angle = numpy.arccos(math.sqrt(prob)) * 2
+
+		q = QuantumRegister(1)
+		c = ClassicalRegister(1)
+		return QuantumCircuit(q, c), angle
+
+
 
 	def random_int(self, maxInt):
 		bits = ''

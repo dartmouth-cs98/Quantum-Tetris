@@ -179,6 +179,87 @@ def determineSuperposition():
         return response
     return None
 
+# Purpose: Applies an H gate to any given superposition piece and return a new probabilities
+# Data contract
+# prob: float (0-1)
+#
+# Sample Request
+# [SERVER_NAME]/api/applyHGate
+
+# Sample JSON Object
+# {
+#      "piece1": {
+#        "prob": 0.2,
+#        "type": 0
+#      },
+#      "piece2": {
+#        "prob": 0.8,
+#        "type": 4
+#      }
+# }
+#
+# Sample result
+# {
+#   "result": {
+#     "piece1": {
+#       "prob": 0.18,
+#       "type": 0
+#     },
+#     "piece2": {
+#       "prob": 0.82,
+#       "type": 4
+#     }
+#   }
+# }
+#
+@app.route('/api/applyHGate', methods=['POST'])
+def applyHGate():
+    if request.method == 'POST':
+        params = request.get_json()
+        response = quantum.applyHGate(params)
+        return response
+    return None
+
+# Purpose: Applies an X gate to any given superposition piece and return a new probabilities
+# Data contract
+# prob: float (0-1)
+#
+# Sample Request
+# [SERVER_NAME]/api/applyHGate
+
+# Sample JSON Object
+# {
+#      "piece1": {
+#        "prob": 0.2,
+#        "type": 0
+#      },
+#      "piece2": {
+#        "prob": 0.8,
+#        "type": 4
+#      }
+# }
+#
+# Sample result
+# {
+#   "result": {
+#     "piece1": {
+#       "prob": 0.8,
+#       "type": 0
+#     },
+#     "piece2": {
+#       "prob": 0.2,
+#       "type": 4
+#     }
+#   }
+# }
+#
+@app.route('/api/applyXGate', methods=['POST'])
+def applyXGate():
+    if request.method == 'POST':
+        params = request.get_json()
+        response = quantum.applyXGate(params)
+        return response
+    return None
 # Purpose: Flips all the values in the provided grid using entanglement
 # Data contract
 # value: int
