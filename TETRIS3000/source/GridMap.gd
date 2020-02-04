@@ -1,8 +1,6 @@
 extends GridMap
 #################################  Notes  #################################
 
-
-
 const Tetromino = preload("res://Tetrominos/Tetromino.gd")
 const ExplodingMino = preload("res://Tetrominos/Mino/ExplodingMino.tscn")
 
@@ -59,6 +57,7 @@ func possible_positions(initial_translations, movement): # Set of vectors with c
 		return []
 
 ### lock
+## Function: Transfer a pieces minos to the gridmap. 
 func lock(piece):
 	var minoes_over_grid = 0
 	for position in piece.get_translations():
@@ -72,17 +71,21 @@ func lock(piece):
 func clear_lines():
 	var lines_cleared = 0
 	for y in range(nb_lines-1, -1, -1):
+		# Assume the line is full.
 		var line_cleared = true
+		# If there is an empty space, move to the next line.
 		for x in range(nb_collumns):
 			if not get_cell_item(x, y, 0) == MINO:
 				line_cleared = false
 				break
+		# If the line is clear, move every block down one.
 		if line_cleared:
 			for y2 in range(y, nb_lines+2):
 				for x in range(nb_collumns):
 					var above_cell = get_cell_item(x, y2+1, 0)
 					set_cell_item(x, y2, 0, above_cell)
 			lines_cleared += 1
+			# Use hidden exploding minos for animation.
 			for x in range(nb_collumns):
 				exploding_minoes[y][x].emitting = true
 				exploding_minoes[y][x].restart()
