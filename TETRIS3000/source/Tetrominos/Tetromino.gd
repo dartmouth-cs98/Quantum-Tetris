@@ -212,7 +212,7 @@ func move_ghost():
 		ghost_fake.set_translations(get_translations())
 		while grid_map.possible_positions(ghost_fake.get_translations(), DROP_MOVEMENT):
 			ghost_fake.translate(DROP_MOVEMENT)
-		pass
+
 	else:
 		# ghost is the "Ghost" scene
 		# See res://Tetrominos/Ghost.tscn
@@ -220,7 +220,8 @@ func move_ghost():
 		# While possible, keep dropping piece. 
 		while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
 			ghost.translate(DROP_MOVEMENT)
-	
+		
+		
 ####################### Scoring
 # Returns an empty string.
 # Used effectively as a boolean

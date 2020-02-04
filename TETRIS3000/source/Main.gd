@@ -42,9 +42,9 @@ var autoshift_action
 # and set to true when player starts playing
 var playing = false
 
-################ Superposition Variables
+################ Superposition and Entanglement Variables
 var create_super_piece = true
-
+var create_entanglement = true
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
@@ -97,10 +97,10 @@ func new_piece():
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
+## AND ENTANGLEMENT
 func random_piece():
 	
-	
-	if random_bag.size()<2:
+	if random_bag.size()<5:
 		# Creates an array of each different piece
 		# Each piece is a SCENE
 		random_bag = [
@@ -115,29 +115,35 @@ func random_piece():
 	var pieces = []
 	pieces.append(piece)
 	add_child(piece)
-	
-	# create a superposition piece
+
 	if create_super_piece:
-		var second_choice = randi() % random_bag.size()
-		var second_piece = random_bag[second_choice].instance()
-		random_bag.remove(second_choice)
-		
-		pieces.append(second_piece)
-		add_child(second_piece)
-		
-		$FlashText.print("SUPERPOSITION")
-		
-		
-		############## FOR TESTING ############## 
-		second_piece.set_fake()
-		############## TESTING DONE ############## 
-		# evaluate which piece is the superposition piece
-		# call setter function to set those values
-	
-	
-	
+		pieces = create_superposition(pieces, true)
+		if create_entanglement: 
+			pieces = create_superposition(pieces, false)
+			pieces = create_superposition(pieces, true)
+			$FlashText.print("ENTANGLEMENT")
+		else: 
+			$FlashText.print("SUPERPOSITION")
 	# Returns the piece randomly selected from random_bag
 	return pieces
+	
+	
+func create_superposition(pieces, is_fake):  	# create a superposition piece
+	var second_choice = randi() % random_bag.size()
+	var second_piece = random_bag[second_choice].instance()
+	random_bag.remove(second_choice)
+		
+	pieces.append(second_piece)
+	add_child(second_piece)
+			
+	############## FOR TESTING ############## 
+	if is_fake:
+		second_piece.set_fake()
+	############## TESTING DONE ############## 
+	# evaluate which piece is the superposition piece
+	# turn off create_superposition
+	return pieces
+	
 
 # Increments the difficulty upon reaching a new level
 ##DONE
@@ -315,7 +321,7 @@ func lock():
 			new_piece()
 			
 		# If the piece doesn't successfully lock into the grid, game over!
-		else:
+		elif(playing == true):
 			game_over()
 		
 		
