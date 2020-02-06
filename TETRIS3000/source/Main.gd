@@ -43,7 +43,7 @@ var autoshift_action
 var playing = false
 
 ################ Superposition and Entanglement Variables
-var create_super_piece = true
+var create_super_piece = false
 var create_entanglement = true
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -67,12 +67,25 @@ func new_game(level):
 
 # The new piece gets generated
 func new_piece():
+	
+	
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
 	current_pieces = next_pieces
 	for current_piece in current_pieces:
-		current_piece.translation = $Matrix/Position3D.translation
-	
+		
+		if (!create_entanglement): 
+			# This is the line that places the piece in the middle of the center grid when it starts falling
+			current_piece.translation = $Matrix/Position3D.translation
+		
+		else:
+			if( current_piece.entanglement < 0 ):
+				current_piece.translation = $Matrix/PosEntA.translation
+			elif( current_piece.entanglement > 0 ):
+				current_piece.translation = $Matrix/PosEntB.translation
+			else:
+				print("entanglement error.")
+		
 		# Initializes the ghost-piece at the bottom
 		current_piece.move_ghost()
 	
@@ -80,13 +93,19 @@ func new_piece():
 	next_pieces = random_piece()
 	
 	for next_piece in next_pieces:
+		
+		# This places the next piece in the upper-right box
 		next_piece.translation = $Next/Position3D.translation
 	
 	# THERE is a 0-magnitude 3D-vector
 	for current_piece in current_pieces:
-		if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE):
+		
+		# Checks whether the piece has room to spawn
+		if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE, current_piece.entanglement):
 			$DropTimer.start()
 			current_piece_held = false
+			
+		# If the piece can't spawn, you lose!
 		else:
 			game_over()
 		
@@ -116,14 +135,29 @@ func random_piece():
 	pieces.append(piece)
 	add_child(piece)
 
-	if create_super_piece:
+	if create_entanglement && create_super_piece: 
 		pieces = create_superposition(pieces, true)
-		if create_entanglement: 
-			pieces = create_superposition(pieces, false)
-			pieces = create_superposition(pieces, true)
-			$FlashText.print("ENTANGLEMENT")
-		else: 
-			$FlashText.print("SUPERPOSITION")
+		pieces = create_superposition(pieces, false)
+		pieces = create_superposition(pieces, true)
+		$FlashText.print("ENTANGLEMENT")
+		
+	elif create_entanglement:
+		
+		pieces = create_superposition(pieces, false)
+		
+		# Entangles the two pieces
+		pieces[0].entangle(-1)
+		pieces[1].entangle(1)
+		
+		$FlashText.print("ENTANGLEMENT")
+		
+		
+	elif create_super_piece:
+		pieces = create_superposition(pieces, true)
+		$FlashText.print("SUPERPOSITION")
+	
+		
+			
 	# Returns the piece randomly selected from random_bag
 	return pieces
 	
@@ -236,13 +270,28 @@ func _on_AutoShiftTimer_timeout():
 # NOT just for autoshifting!
 ##DONE
 func process_autoshift():
+	
 	for current_piece in current_pieces:
+		
+		var moved
+		
 		# Move the the piece with the movement autoshift_action is currently assigned to.
-		var moved = current_piece.move(movements[autoshift_action])
+		# autoshift_action needs to be reversed if piece-entanglement is positive
+		if( current_piece.entanglement > 0 ):
+			
+			# If the piece is positively entangled,
+			# Reverse lateral movement
+			if( autoshift_action == "move_left" ): moved = current_piece.move(movements["move_right"])
+			elif( autoshift_action == "move_right" ): moved = current_piece.move(movements["move_left"])
+			
+		# If the piece is either negatively entangled or not entangled at all,
+		# behave normally
+		else:
+			moved = current_piece.move(movements[autoshift_action])
 		
 		# If the piece actually moved,
 		# And 
-		if moved and (autoshift_action == "soft_drop"):
+		if moved != null and (autoshift_action == "soft_drop"):
 			$Stats.piece_dropped(1)
 
 
@@ -286,7 +335,7 @@ func _on_DropTrailDelay_timeout():
 # Based on level!
 ##DONE
 func _on_DropTimer_timeout():
-	for current_piece in current_pieces:	
+	for current_piece in current_pieces:
 		current_piece.move(movements["soft_drop"])
 	
 
@@ -345,6 +394,8 @@ func hold():
 		for held_piece in held_pieces:
 			for mino in held_piece.minoes:
 				mino.get_node("LockingMesh").visible = false
+				
+			# Places the piece in the upper left box
 			held_piece.translation = $Hold/Position3D.translation
 		
 		# If we were holding a piece in the upperleft already,
