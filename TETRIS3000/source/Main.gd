@@ -283,6 +283,7 @@ func process_autoshift():
 			# Reverse lateral movement
 			if( autoshift_action == "move_left" ): moved = current_piece.move(movements["move_right"])
 			elif( autoshift_action == "move_right" ): moved = current_piece.move(movements["move_left"])
+			else: moved = current_piece.move(movements["soft_drop"])
 			
 		# If the piece is either negatively entangled or not entangled at all,
 		# behave normally
