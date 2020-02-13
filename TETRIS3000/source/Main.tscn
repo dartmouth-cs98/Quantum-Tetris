@@ -105,7 +105,6 @@ transform = Transform( 0.332668, 0.771982, -0.541642, 0.579657, 0.285656, 0.7631
 light_energy = 3.0
 
 [node name="Matrix" type="MeshInstance" parent="."]
-editor/display_folded = true
 transform = Transform( 10, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
 mesh = SubResource( 2 )
 material/0 = null
@@ -128,6 +127,12 @@ __meta__ = {
 
 [node name="Position3D" type="Position3D" parent="Matrix"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 20, 0 )
+
+[node name="PosEntA" type="Position3D" parent="Matrix"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 20, 0 )
+
+[node name="PosEntB" type="Position3D" parent="Matrix"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 20, 0 )
 
 [node name="DropTrail" type="Spatial" parent="Matrix"]
 editor/display_folded = true

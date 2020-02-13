@@ -27,10 +27,20 @@ func clear():
 
 ### is_free_cell
 ## Input: A Vector 
-func is_free_cell(cell): #3D Vector
+func is_free_cell(cell, entanglement): #3D Vector
+	
+	# The two boundaries restricting the piece's lateral movement
+	var left_bound = 0
+	var right_bound = nb_collumns
+	
+	if( entanglement < 0 ): right_bound = 5
+	elif( entanglement > 0 ): left_bound = 5
+	
 	return (
+	
+		# Right here is where you set the bounds for entanglement!!
 		# Within grid columns (not at side edge)
-		0 <= cell.x and cell.x < nb_collumns
+		left_bound <= cell.x and cell.x < right_bound
 		# Above the bottom
 		and cell.y >= 0
 		# The cell is empty - built in GridMesh Function
@@ -38,14 +48,16 @@ func is_free_cell(cell): #3D Vector
 	)
 ### possible_positions
 ## Function: Check if position is available. 
-func possible_positions(initial_translations, movement): # Set of vectors with cur position (global) and movement vector 
+func possible_positions(initial_translations, movement, entanglement): # Set of vectors with cur position (global) and movement vector 
 	var position
 	var test_translations = []
 	
 	# For each possible orientation,
 	for i in range(4):
 		position = initial_translations[i] + movement
-		if is_free_cell(position):
+		
+		# Checks here whether the move is possible
+		if is_free_cell(position, entanglement):
 			test_translations.append(position)
 		# one of the cells is full
 		else:

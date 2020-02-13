@@ -103,6 +103,13 @@ var ghost_fake
 # True -> between the 2 superimposed pieces, this is the fake one.
 var is_fake = false
 
+# int
+# 0 -> this piece is not entangled
+# negative -> this piece is entangled into the left side of the grid
+# positive -> right side of the grid
+var entanglement = 0
+
+
 
 #####################################  Functions  ##################################### 
 
@@ -140,13 +147,16 @@ func get_translations():
 ## Input: Vector, see movements in main.
 ## Function: Translate a piece. 
 func move(movement):
-	#possible 
-	if grid_map.possible_positions(get_translations(), movement):
+	
+	# If the move is possible, 
+	# This is where you have to stop entangled pieces from moving through the middle-axis!
+	if grid_map.possible_positions(get_translations(), movement, entanglement):
 		translate(movement)
 		unlocking()
 		rotated_last = false
 		move_ghost()
 		return true
+		
 	# the move is not possible
 	else:
 		
@@ -165,7 +175,7 @@ func move(movement):
 				piece_array.pop_back();
 				get_parent().set_current_pieces(piece_array)
 				
-				# ... and removes itself from the scene-tree!
+				# ...and removes itself from the scene-tree!
 				# (along with its ghost)
 				ghost_fake.visible = false
 				get_parent().remove_child(self)
@@ -210,17 +220,18 @@ func turn(direction):
 func move_ghost():
 	if is_fake:
 		ghost_fake.set_translations(get_translations())
-		while grid_map.possible_positions(ghost_fake.get_translations(), DROP_MOVEMENT):
+		while grid_map.possible_positions(ghost_fake.get_translations(), DROP_MOVEMENT, entanglement):
 			ghost_fake.translate(DROP_MOVEMENT)
-		pass
+
 	else:
 		# ghost is the "Ghost" scene
 		# See res://Tetrominos/Ghost.tscn
 		ghost.set_translations(get_translations())
 		# While possible, keep dropping piece. 
-		while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
+		while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT, entanglement):
 			ghost.translate(DROP_MOVEMENT)
-	
+		
+		
 ####################### Scoring
 # Returns an empty string.
 # Used effectively as a boolean
@@ -249,4 +260,17 @@ func set_fake():
 	
 func get_is_fake():
 	return is_fake
+	
+	
+####################### Entanglement functions
+
+func entangle(entangle_int): 
+	
+	entanglement = entangle_int
+	
+	
+	
+	
+	
+	
 	
