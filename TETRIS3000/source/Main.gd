@@ -372,9 +372,6 @@ func lock(current_piece):
 			$MidiPlayer.piece_locked(lines_cleared)
 		remove_child(current_piece)
 		
-		# You should now remove current_piece from the array current_pieces
-		# current_pieces.remove(current_pieces.find(current_piece))
-		
 		# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
