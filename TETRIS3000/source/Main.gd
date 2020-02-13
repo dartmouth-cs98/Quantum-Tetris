@@ -21,6 +21,17 @@ const movements = {
 	"soft_drop": Vector3(0, -1, 0)
 }
 
+const piece_names = {
+	"TetroI": 0, 
+	"TetroJ": 1, 
+	"TetroL": 2,
+	"TetroO": 3,
+	"TetroS": 4,
+	"TetroT": 5,
+	"TetroZ": 6
+	
+}
+
 var random_bag = []
 
 # The next piece queued in the upper right
@@ -43,8 +54,22 @@ var autoshift_action
 var playing = false
 
 ################ Superposition and Entanglement Variables
-var create_super_piece = false
-var create_entanglement = true
+## Creating Pieces
+var create_super_piece = true
+var create_entanglement = false
+
+## Probabilities
+var probabilities = [12,88,14,86]
+
+## For responce
+var super_response = false
+var gate_response = false
+var eval_response = false
+var entangled_pieces = false
+
+##Signals
+signal response_received
+
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
@@ -219,8 +244,11 @@ func _unhandled_input(event):
 				current_piece.turn(Tetromino.COUNTERCLOCKWISE)
 		if event.is_action_pressed("hold"):
 			hold()
+		if event.is_action_pressed("hgate") and current_pieces .size()>1:
+			evaluate_probabilities("hgate")
+		if event.is_action_pressed("xgate") and current_pieces.size()>1:
+			evaluate_probabilities("xgate")
 			
-##DONE
 func process_new_action(event):
 	
 	# movements are the 3 possible ways to move a piece
@@ -248,7 +276,6 @@ func process_new_action(event):
 			break
 
 # Called every .2 seconds while AutoShiftDelay is running
-##DONE
 func _on_AutoShiftDelay_timeout():
 	if autoshift_action:
 		
@@ -259,7 +286,6 @@ func _on_AutoShiftDelay_timeout():
 
 # Called every .03 seconds while AutoShiftTimer is running
 # Rapidly autoshifts after the user has held the key down for .2 seconds
-##DONE
 func _on_AutoShiftTimer_timeout():
 	if autoshift_action:
 		process_autoshift()
@@ -268,7 +294,6 @@ func _on_AutoShiftTimer_timeout():
 # Confusingly named!
 # Called to move a piece, 
 # NOT just for autoshifting!
-##DONE
 func process_autoshift():
 	
 	for current_piece in current_pieces:
@@ -297,10 +322,8 @@ func process_autoshift():
 
 
 # Called to instantly drop the piece to the bottom
-##DONE
+
 func hard_drop():
-	
-	
 	
 	for current_piece in current_pieces:
 		var score = 0
@@ -327,14 +350,12 @@ func hard_drop():
 
 # I can't find this timer.
 # Maybe it was removed?
-##DONE
 func _on_DropTrailDelay_timeout():
 	$Matrix/DropTrail.visible = false
 
 
 # Moves the piece down every certain amount of time.
 # Based on level!
-##DONE
 func _on_DropTimer_timeout():
 	for current_piece in current_pieces:
 		current_piece.move(movements["soft_drop"])
@@ -351,7 +372,6 @@ func _on_LockDelay_timeout():
 
 
 # Transforms the piece from a falling object to a group of blocks resting on the floor
-##NOT DONE
 func lock():
 	for current_piece in current_pieces:
 		if $Matrix/GridMap.lock(current_piece):
@@ -376,7 +396,6 @@ func lock():
 		
 		
 # Implements holding a piece in the upper left
-##DONE - but logic is tricky
 func hold():
 	
 	# If the current piece is NOT falling
@@ -413,7 +432,6 @@ func hold():
 		
 
 # Called when game is resumed after being paused
-##DONE
 func resume():
 	playing = true
 	$DropTimer.start()
@@ -441,7 +459,6 @@ func resume():
 		next_piece.visible = true
 
 # Run when game gets paused
-##DONE 
 func pause(gui=null):
 	playing = false
 	$MidiPlayer.stop()
@@ -469,7 +486,6 @@ func pause(gui=null):
 			next_piece.visible = false
 
 # Called when the player loses
-##DONE
 func game_over():
 	pause()
 	$FlashText.print("GAME\nOVER")
@@ -477,7 +493,6 @@ func game_over():
 
 
 # Called when the replay-button is pressed
-##DONE
 func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
 	for next_piece in next_pieces:
@@ -494,81 +509,130 @@ func _on_ReplayButton_pressed():
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
-##DONE
 func _notification(what):
 	match what:
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
 			if playing:
 				pause($controls_ui)
 
+########################   Quantum Functionality   ######################## 
 
-#func set_current_pieces(pieces):
-#
-#	current_pieces = pieces
-#
-#func get_current_pieces():
-#
-#	return current_pieces
+func evaluate_probabilities(action):
+	if action == "hgate":
+		_H_gate_request()
+		yield(self, "response_received")
+		_evaluate_superposition()
+
+		if current_pieces.size()>2:
+			entangled_pieces = true
+			_H_gate_request()
+			yield(self, "response_received")
+			_evaluate_superposition()
+			
+	elif action == "xgate":
+		_X_gate_request()
+		yield(self, "response_received")
+		_evaluate_superposition()
+
+		if current_pieces.size()>2:
+			entangled_pieces = true
+			_H_gate_request()
+			yield(self, "response_received")
+			_evaluate_superposition()
+	else:
+		print("Action not recognized")
+		
+		
+
+func set_current_pieces(pieces):
+
+	current_pieces = pieces
+
+func get_current_pieces():
+
+	return current_pieces
 	
 	
 	
 ########################## Http Request Fuctions
 #
-#func _superposition_request():
-#	var headers = ["Content-Type: application/json"]
-#	# Add 'Content-Type' header:
-#	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
-#
+func _superposition_request():
+	var headers = ["Content-Type: application/json"]
+	# Add 'Content-Type' header:
+	super_response = true
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
 
-#func _H_gate_request()
+func _evaluate_superposition():
+	var headers = ["Content-Type: application/json"]
+	# Add 'Content-Type' header:
+	super_response = true
+	var prob
+	if(entangled_pieces):
+		prob = String(probabilities[2])
+	else:
+		prob = String(probabilities[0])
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/#api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+
+func _H_gate_request():
 ### Build query
-#$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/applyHGate,  headers, false, HTTPClient.METHOD_POST,query)
-#
-#
-#
-#func _entanglement_request():
-#	var data_to_send = {}
-#	var inner_data = {}
-#	var true_tiles = _block.get_tiles(_block.block_position)
-#	var rows = []
-#	for tile in true_tiles:
-#		if(rows.find(tile[1]) == -1):
-#			rows.append(tile[1])
-#	var index = 0 
-#	for y in rows:
-#		for x in range(1, board_size.x+1):
-#			if(true_tiles.find(Vector2(x,y)) == -1):	
-#				var value
-#				if($board_tiles.get_cell(x,y) > -1):
-#					value =1
-#				else: 
-#					value = 0
-#
-#				var position_value = {"value": value, "x":x,"y":y }
-#				inner_data[String(index)] = position_value
-#				index += 1
-#
-#	data_to_send["grid"] = inner_data
-#
-#	var query = JSON.print(data_to_send)
-#	#Add 'Content-Type' header:
-#	var headers = ["Content-Type: application/json"]
-#	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/flipGrid", headers, false, HTTPClient.METHOD_POST, query)
-#
-#func _on_HTTPRequest_request_completed(result, response_code, headers, body):
-#	response = JSON.parse(body.get_string_from_utf8())
-#
-#	if typeof(response.result.result) == TYPE_REAL:
-#		var server = response.result.result
-#		temp_server = server
-#		if int(server) == 0:
-#			_true_block = temp_block_i
-#		else:
-#			_true_block = temp_block_j
-#
-#	else:
-#		var server = response.result.result
-#		for server_val in server.values():
-#			var pos = Vector2(int(server_val["x"]), int(server_val["y"]))
-#			var value = server_val["value"]
-#			entanglement[pos] = value
+	print("YEET")
+	var data_to_send = _create_request_data(entangled_pieces)
+	var query = JSON.print(data_to_send)
+	#Add 'Content-Type' header:
+	var headers = ["Content-Type: application/json"]	
+	gate_response = true
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/applyHGate",  headers, false, HTTPClient.METHOD_POST,query)
+
+func _X_gate_request():
+	var data_to_send = _create_request_data(entangled_pieces)
+	var query = JSON.print(data_to_send)
+	#Add 'Content-Type' header:
+	var headers = ["Content-Type: application/json"]	
+	gate_response = true
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/applyHGate",  headers, false, HTTPClient.METHOD_POST,query)
+
+
+func _create_request_data(entangle):
+	var data_to_send = {}
+	var piece1 = {}
+	var piece2 = {}
+	if entangle:
+		piece1["prob"] = probabilities[2]
+		piece1["type"] = piece_names[current_pieces[2].get_name()]
+		piece2["prob"] = probabilities[3]
+		piece2["type"] = piece_names[current_pieces[3].get_name()]
+	else:
+		piece1["prob"] = probabilities[0]
+		piece1["type"] = piece_names[current_pieces[0].get_name()]
+		piece2["prob"] = probabilities[1]
+		piece2["type"] = piece_names[current_pieces[1].get_name()]
+	data_to_send["piece1"] = piece1
+	data_to_send["piece2"] = piece2
+	return data_to_send
+
+func _on_HTTPRequest_request_completed(result, response_code, headers, body):
+	var response = JSON.parse(body.get_string_from_utf8())
+	var server = response.result.result
+	print("got response")
+	if (super_response):
+		#update probabilities
+		print("super")
+		print(response)
+		if(entangled_pieces):
+			entangled_pieces = false
+	elif(gate_response):
+		#update probabilities
+		print("h or x")
+		print(response)
+		if(entangled_pieces):
+			entangled_pieces = false
+	elif(eval_response):
+		print("eval")
+		print(response)
+		if(entangled_pieces):
+			entangled_pieces = false
+		#change is_trues?
+
+	else:
+		print("Response type not known")
+	emit_signal("response_received")
