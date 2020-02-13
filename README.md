@@ -2,7 +2,7 @@
 
 Quantum Tetris is your traditional tetris game game who has several twists based on the concepts of quantum computing. Additionally, to implement this quantum functionality it uses IBM's qiskit library found [here](https://qiskit.org) which runs in the cloud on IBM's quantum computers.
 
-To play our game you can go here: http://quantumtetris.surge.sh/
+To play our game you can go here: http://quantumtetris.com
 
 Backend can accessed via https://q-tetris-backend.herokuapp.com/
 
