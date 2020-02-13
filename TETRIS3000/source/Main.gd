@@ -43,8 +43,10 @@ var autoshift_action
 var playing = false
 
 ################ Superposition and Entanglement Variables
-var create_super_piece = true
+var create_super_piece = false
 var create_entanglement = false
+
+var turn_count = 0
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
@@ -74,18 +76,14 @@ func new_piece():
 	current_pieces = next_pieces
 	for current_piece in current_pieces:
 		
-		if (!create_entanglement): 
-			# This is the line that places the piece in the middle of the center grid when it starts falling
-			current_piece.translation = $Matrix/Position3D.translation
 		
+		if( current_piece.entanglement < 0 ):
+			current_piece.translation = $Matrix/PosEntA.translation
+		elif( current_piece.entanglement > 0 ):
+			current_piece.translation = $Matrix/PosEntB.translation
 		else:
-			if( current_piece.entanglement < 0 ):
-				current_piece.translation = $Matrix/PosEntA.translation
-			elif( current_piece.entanglement > 0 ):
-				current_piece.translation = $Matrix/PosEntB.translation
-			else:
-				current_piece.translation = $Matrix/Position3D.translation
-				$FlashText.print("ERROR")
+			current_piece.translation = $Matrix/Position3D.translation
+			#$FlashText.print("ERROR - NO ENTANGLEMENT")
 		
 		# Initializes the ghost-piece at the bottom
 		current_piece.move_ghost()
@@ -110,7 +108,7 @@ func new_piece():
 		else:
 			game_over()
 		
-	if (current_pieces.size() > 1 && create_super_piece):
+	if (current_pieces.size() > 1 && current_pieces[1].is_fake):
 		$FakeGhost.visible = true
 		
 		# If we have both superposition and entanglement,
@@ -119,11 +117,25 @@ func new_piece():
 	else:
 		$FakeGhost.visible = false
 		$FakeGhostB.visible = false
+		
+		
+	# Always sets theese two variables back to false after piece-generation
+	create_super_piece = false
+	create_entanglement = false
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
 ## AND ENTANGLEMENT
 func random_piece():
+	
+	turn_count += 1
+	
+	if( (turn_count % 3) == 0): 
+		create_super_piece = true
+		
+	if( (turn_count % 4) == 0):
+		create_entanglement = true
+		
 	
 	if random_bag.size()<5:
 		# Creates an array of each different piece
@@ -170,6 +182,9 @@ func random_piece():
 		pieces.append(create_superposition(pieces, true))
 		$FlashText.print("SUPERPOSITION")
 	
+	
+	create_super_piece = false
+	create_entanglement = false
 		
 			
 	# Returns the piece randomly selected from random_bag
@@ -377,7 +392,8 @@ func lock(current_piece):
 		var lines_cleared = $Matrix/GridMap.clear_lines()
 		
 		var super = ""
-		if(create_super_piece): super = "SUPER"
+		if(current_pieces.size() > 1):
+			if(current_pieces[1].is_fake): super = "SUPER"
 		
 		$Stats.piece_locked(lines_cleared, t_spin, super)
 		
@@ -453,11 +469,11 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
-	if(create_entanglement):
+	if(current_pieces[0].entanglement < 0):
 		$GhostB.visible = true
 	
 	# Only make the fake ghost visible if there is a second piece AND we are superimposing
-	if( current_pieces.size() > 1 && create_super_piece == true ): 
+	if( current_pieces.size() > 1 && current_pieces[1].is_fake ): 
 		$FakeGhost.visible = true
 		
 		if( current_pieces.size() >= 4 ):
