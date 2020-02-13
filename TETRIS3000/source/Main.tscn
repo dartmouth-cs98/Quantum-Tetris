@@ -321,6 +321,7 @@ text = "X Gate"
 [connection signal="level_up" from="Stats" to="." method="new_level"]
 [connection signal="start" from="Start" to="." method="new_game"]
 [connection signal="pressed" from="ReplayButton" to="." method="_on_ReplayButton_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
 
 [editable path="H Gate"]
 

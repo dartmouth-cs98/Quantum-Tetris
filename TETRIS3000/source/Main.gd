@@ -21,15 +21,14 @@ const movements = {
 	"soft_drop": Vector3(0, -1, 0)
 }
 
-const piece_names = {
-	"TetroI": 0, 
-	"TetroJ": 1, 
-	"TetroL": 2,
-	"TetroO": 3,
-	"TetroS": 4,
-	"TetroT": 5,
-	"TetroZ": 6
-	
+const piece_scene_to_int= {
+	TetroI: 0,
+	TetroJ: 1,
+	TetroL: 2,
+	TetroO: 3,
+	TetroS: 4,
+ 	TetroT: 5,
+	TetroZ: 6
 }
 
 var random_bag = []
@@ -59,7 +58,12 @@ var create_super_piece = true
 var create_entanglement = false
 
 ## Probabilities
-var probabilities = [12,88,14,86]
+var probabilities = [0.49,0.51,0.14,0.86]
+
+## For requests
+var current_names = []
+var next_names = []
+
 
 ## For responce
 var super_response = false
@@ -139,6 +143,9 @@ func new_piece():
 		$FakeGhost.visible = true
 	else:
 		$FakeGhost.visible = false
+		
+	print("Superpiece Set, Piece 0 is_fake: ", current_pieces[0].get_is_fake())
+	print("Superpiece Set, Piece 1 is_fake: ", current_pieces[1].get_is_fake())
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
@@ -163,16 +170,16 @@ func random_piece():
 	add_child(piece)
 
 	if create_entanglement && create_super_piece: 
-		pieces.append(create_superposition(pieces, true))
-		pieces.append(create_superposition(pieces, false))
-		pieces.append(create_superposition(pieces, true))
+		pieces.append(create_superposition(true))
+		pieces.append(create_superposition(false))
+		pieces.append(create_superposition(true))
 		$FlashText.print("ENTANGLEMENT")
 		
 	elif create_entanglement:
 		
 		# Appends the second piece
 		# (and adds it as a child to the tree within the function)
-		pieces.append(create_superposition(pieces, false))
+		pieces.append(create_superposition(false))
 		
 		# Entangles the two pieces
 		pieces[0].entangle(-1)
@@ -182,16 +189,16 @@ func random_piece():
 		
 		
 	elif create_super_piece:
-		pieces = create_superposition(pieces, true)
+		pieces.append(create_superposition(true))
 		$FlashText.print("SUPERPOSITION")
-	
+		
 		
 			
 	# Returns the piece randomly selected from random_bag
 	return pieces
 	
 	
-func create_superposition(pieces, is_fake):  	# create a superposition piece
+func create_superposition(is_fake):  	# create a superposition piece
 	var second_choice = randi() % random_bag.size()
 	var second_piece = random_bag[second_choice].instance()
 	random_bag.remove(second_choice)
@@ -533,23 +540,31 @@ func evaluate_probabilities(action):
 		_H_gate_request()
 		yield(self, "response_received")
 		_evaluate_superposition()
+		yield(self, "response_received")
+		print("After Eval, Piece 0 is_fake: ", current_pieces[0].get_is_fake())
+		print("After Eval, Piece 1 is_fake: ", current_pieces[1].get_is_fake())
 
 		if current_pieces.size()>2:
 			entangled_pieces = true
 			_H_gate_request()
 			yield(self, "response_received")
 			_evaluate_superposition()
+			yield(self, "response_received")
 			
 	elif action == "xgate":
 		_X_gate_request()
 		yield(self, "response_received")
 		_evaluate_superposition()
+		yield(self, "response_received")
+		print("After Eval, Piece 0 is_fake: ", current_pieces[0].get_is_fake())
+		print("After Eval, Piece 1 is_fake: ", current_pieces[1].get_is_fake())
 
 		if current_pieces.size()>2:
 			entangled_pieces = true
-			_H_gate_request()
+			_X_gate_request()
 			yield(self, "response_received")
 			_evaluate_superposition()
+			yield(self, "response_received")
 	else:
 		print("Action not recognized")
 		
@@ -576,17 +591,16 @@ func _superposition_request():
 func _evaluate_superposition():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
-	super_response = true
+	eval_response = true
 	var prob
 	if(entangled_pieces):
 		prob = String(probabilities[2])
 	else:
 		prob = String(probabilities[0])
-	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/#api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 
 func _H_gate_request():
 ### Build query
-	print("YEET")
 	var data_to_send = _create_request_data(entangled_pieces)
 	var query = JSON.print(data_to_send)
 	#Add 'Content-Type' header:
@@ -600,7 +614,7 @@ func _X_gate_request():
 	#Add 'Content-Type' header:
 	var headers = ["Content-Type: application/json"]	
 	gate_response = true
-	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/applyHGate",  headers, false, HTTPClient.METHOD_POST,query)
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/applyXGate",  headers, false, HTTPClient.METHOD_POST,query)
 
 
 func _create_request_data(entangle):
@@ -609,39 +623,56 @@ func _create_request_data(entangle):
 	var piece2 = {}
 	if entangle:
 		piece1["prob"] = probabilities[2]
-		piece1["type"] = piece_names[current_pieces[2].get_name()]
+#		piece1["type"] = piece_names[current_pieces[2].get_name()]
 		piece2["prob"] = probabilities[3]
-		piece2["type"] = piece_names[current_pieces[3].get_name()]
+#		piece2["type"] = piece_names[current_pieces[3].get_name()]
 	else:
 		piece1["prob"] = probabilities[0]
-		piece1["type"] = piece_names[current_pieces[0].get_name()]
+#		piece1["type"] = piece_names[current_pieces[0].get_name()]
 		piece2["prob"] = probabilities[1]
-		piece2["type"] = piece_names[current_pieces[1].get_name()]
+#		piece2["type"] = piece_names[current_pieces[1].get_name()]
 	data_to_send["piece1"] = piece1
 	data_to_send["piece2"] = piece2
 	return data_to_send
 
 func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
-	var server = response.result.result
-	print("got response")
 	if (super_response):
+		super_response = false
 		#update probabilities
-		print("super")
-		print(response)
+		
 		if(entangled_pieces):
 			entangled_pieces = false
+		else:
+			pass
 	elif(gate_response):
-		#update probabilities
-		print("h or x")
-		print(response)
+		gate_response = false
+		
 		if(entangled_pieces):
 			entangled_pieces = false
+			probabilities[2] = response.result.result["piece1"]["prob"]
+			probabilities[3] = response.result.result["piece2"]["prob"]
+		else:
+			probabilities[0] = response.result.result["piece1"]["prob"]
+			probabilities[1] = response.result.result["piece2"]["prob"]
 	elif(eval_response):
-		print("eval")
-		print(response)
+		eval_response = false
+
 		if(entangled_pieces):
 			entangled_pieces = false
+			#eval other pieces
+		else:
+			print("Eval Response: " + String(response.result["result"]))
+			if(response.result["result"] == 0):
+				print("Hit 0")
+				current_pieces[0].set_fake()
+				current_pieces[1].set_real()
+			elif(response.result["result"] == 1):
+				print("Hit 1")
+				current_pieces[1].set_fake()
+				current_pieces[0].set_real()
+			else:
+				print("Eval Response: Response code not recognized")
 		#change is_trues?
 
 	else:

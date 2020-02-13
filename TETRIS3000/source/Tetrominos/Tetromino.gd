@@ -268,6 +268,9 @@ func unlocking():
 ####################### Superposition Functions
 func set_fake():
 	is_fake = true
+
+func set_real():
+	is_fake = false
 	
 func get_is_fake():
 	return is_fake
