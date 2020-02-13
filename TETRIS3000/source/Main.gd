@@ -109,7 +109,7 @@ func count_turns():
 			create_super_piece = true
 			
 		
-		turns = randi()%5
+		turns = randi()%5 + 1
 	
 
 # The new piece gets generated
@@ -134,18 +134,14 @@ func new_piece():
 		
 	for current_piece in current_pieces:
 		
-		if (!create_entanglement): 
-			# This is the line that places the piece in the middle of the center grid when it starts falling
-			current_piece.translation = $Matrix/Position3D.translation
 		
+		if( current_piece.entanglement < 0 ):
+			current_piece.translation = $Matrix/PosEntA.translation
+		elif( current_piece.entanglement > 0 ):
+			current_piece.translation = $Matrix/PosEntB.translation
 		else:
-			if( current_piece.entanglement < 0 ):
-				current_piece.translation = $Matrix/PosEntA.translation
-			elif( current_piece.entanglement > 0 ):
-				current_piece.translation = $Matrix/PosEntB.translation
-			else:
-				current_piece.translation = $Matrix/Position3D.translation
-				$FlashText.print("ERROR")
+			current_piece.translation = $Matrix/Position3D.translation
+			#$FlashText.print("ERROR - NO ENTANGLEMENT")
 		
 		# Initializes the ghost-piece at the bottom
 		current_piece.move_ghost()
@@ -158,8 +154,15 @@ func new_piece():
 	
 	for next_piece in next_pieces:
 		
-		# This places the next piece in the upper-right box
-		next_piece.translation = $Next/Position3D.translation
+		if(next_pieces.size()>2):
+			next_piece.translation = $Next/Position3D.translation
+			if next_piece.entanglement < 0:
+				next_piece.translation = $Next/Position3D.translation + (Vector3(1,0,0))
+			else:
+				next_piece.translation = $Next/Position3D.translation + (Vector3(1,-4,0))
+		else:
+			# This places the next piece in the upper-right box
+			next_piece.translation = $Next/Position3D.translation
 	
 	# THERE is a 0-magnitude 3D-vector
 	for current_piece in current_pieces:
@@ -173,7 +176,7 @@ func new_piece():
 		else:
 			game_over()
 		
-	if (current_pieces.size() > 1 && create_super_piece):
+	if (current_pieces.size() > 1):# && current_pieces[1].is_fake):
 		$FakeGhost.visible = true
 		
 		# If we have both superposition and entanglement,
@@ -183,15 +186,15 @@ func new_piece():
 		$FakeGhost.visible = false
 		
 		$FakeGhostB.visible = false
-	create_entanglement = false
+	# Always sets theese two variables back to false after piece-generation
 	create_super_piece = false
+	create_entanglement = false
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
 ## AND ENTANGLEMENT
 func random_piece():
 	
-
 	
 	# Add first piece
 	var pieces = []
@@ -479,7 +482,8 @@ func lock(current_piece):
 		var lines_cleared = $Matrix/GridMap.clear_lines()
 		
 		var super = ""
-		if(create_super_piece): super = "SUPER"
+		if(current_pieces.size() > 1):
+			if(current_pieces[1].is_fake): super = "SUPER"
 		
 		$Stats.piece_locked(lines_cleared, t_spin, super)
 		
@@ -553,11 +557,12 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
-	if(create_entanglement):
+	if(current_pieces[0].entanglement < 0):
 		$GhostB.visible = true
 		
 	# Only make the fake ghost visible if there is a second piece AND we are superimposing
-	if( current_pieces.size() > 1):# && create_super_piece == true ): 
+
+	if( current_pieces.size() > 1 && current_pieces[1].is_fake ): 
 		$FakeGhost.visible = true
 		
 		if( current_pieces.size() >= 4 ):
@@ -714,14 +719,14 @@ func _create_request_data(entangle):
 	var piece2 = {}
 	if entangle:
 		piece1["prob"] = probabilities[2]
-#		piece1["type"] = piece_names[current_pieces[2].get_name()]
+		piece1["type"] = 2 #piece_names[current_pieces[2].get_name()]
 		piece2["prob"] = probabilities[3]
-#		piece2["type"] = piece_names[current_pieces[3].get_name()]
+		piece2["type"] = 3 #piece_names[current_pieces[3].get_name()]
 	else:
 		piece1["prob"] = probabilities[0]
-#		piece1["type"] = piece_names[current_pieces[0].get_name()]
+		piece1["type"] = 0 #piece_names[current_pieces[0].get_name()]
 		piece2["prob"] = probabilities[1]
-#		piece2["type"] = piece_names[current_pieces[1].get_name()]
+		piece2["type"] = 1 #piece_names[current_pieces[1].get_name()]
 	data_to_send["piece1"] = piece1
 	data_to_send["piece2"] = piece2
 	return data_to_send
@@ -783,8 +788,19 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 				current_pieces[0].set_real()
 			else:
 				print("Eval Response: Response code not recognized")
-		#change is_trues?
 
 	else:
 		print("Response type not known")
 	emit_signal("response_received")
+
+
+# Bug, ghost
+# Bug, all 4 entanglement pieces evaluated
+# Graphics - cant tell superposition pieces apart
+# Graphics - ghost needs to disappear before the piece hits.
+# Error 500 on X gate, but not on H gate
+# Entanglement, says game over
+# Implement notifications for powerups when pressed
+# GUI for powerups
+# Probabilities on screen? How about in the notification?
+# 
