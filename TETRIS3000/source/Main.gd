@@ -373,11 +373,12 @@ func lock(current_piece):
 		remove_child(current_piece)
 		
 		# You should now remove current_piece from the array current_pieces
-		current_pieces.remove(current_pieces.find(current_piece))
+		# current_pieces.remove(current_pieces.find(current_piece))
 		
 		# Spawns the next piece after this one is locked to the ground.
-		# This gets run twice with entanglement!
-		if(current_pieces.size() == 0):
+		# If we're locking the last piece,
+		# make the new pieces!
+		if(current_pieces.find(current_piece) == current_pieces.size()-1):
 			new_piece()
 		
 	# If the piece doesn't successfully lock into the grid, game over!
