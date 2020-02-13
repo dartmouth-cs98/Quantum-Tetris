@@ -275,6 +275,9 @@ text = "play again"
 [node name="Ghost" parent="." instance=ExtResource( 15 )]
 visible = false
 
+[node name="GhostB" parent="." instance=ExtResource( 15 )]
+visible = false
+
 [node name="FakeGhost" parent="." instance=ExtResource( 15 )]
 visible = false
 
