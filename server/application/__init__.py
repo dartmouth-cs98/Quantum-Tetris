@@ -164,7 +164,7 @@ def createSuperposition():
 # prob: float (0-1)
 #
 # Sample Request
-# [SERVER_NAME]/api/determineSuperposition?prob=60
+# [SERVER_NAME]/api/determineSuperposition?prob=.60
 #
 # Sample result
 # {
