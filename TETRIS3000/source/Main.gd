@@ -444,10 +444,73 @@ func _notification(what):
 				pause($controls_ui)
 
 
-func set_current_pieces(pieces):
+#func set_current_pieces(pieces):
+#
+#	current_pieces = pieces
+#
+#func get_current_pieces():
+#
+#	return current_pieces
 	
-	current_pieces = pieces
+	
+	
+########################## Http Request Fuctions
+#
+#func _superposition_request():
+#	var headers = ["Content-Type: application/json"]
+#	# Add 'Content-Type' header:
+#	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
+#
 
-func get_current_pieces():
-	
-	return current_pieces
+#func _H_gate_request()
+### Build query
+#$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/applyHGate,  headers, false, HTTPClient.METHOD_POST,query)
+#
+#
+#
+#func _entanglement_request():
+#	var data_to_send = {}
+#	var inner_data = {}
+#	var true_tiles = _block.get_tiles(_block.block_position)
+#	var rows = []
+#	for tile in true_tiles:
+#		if(rows.find(tile[1]) == -1):
+#			rows.append(tile[1])
+#	var index = 0 
+#	for y in rows:
+#		for x in range(1, board_size.x+1):
+#			if(true_tiles.find(Vector2(x,y)) == -1):	
+#				var value
+#				if($board_tiles.get_cell(x,y) > -1):
+#					value =1
+#				else: 
+#					value = 0
+#
+#				var position_value = {"value": value, "x":x,"y":y }
+#				inner_data[String(index)] = position_value
+#				index += 1
+#
+#	data_to_send["grid"] = inner_data
+#
+#	var query = JSON.print(data_to_send)
+#	#Add 'Content-Type' header:
+#	var headers = ["Content-Type: application/json"]
+#	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/flipGrid", headers, false, HTTPClient.METHOD_POST, query)
+#
+#func _on_HTTPRequest_request_completed(result, response_code, headers, body):
+#	response = JSON.parse(body.get_string_from_utf8())
+#
+#	if typeof(response.result.result) == TYPE_REAL:
+#		var server = response.result.result
+#		temp_server = server
+#		if int(server) == 0:
+#			_true_block = temp_block_i
+#		else:
+#			_true_block = temp_block_j
+#
+#	else:
+#		var server = response.result.result
+#		for server_val in server.values():
+#			var pos = Vector2(int(server_val["x"]), int(server_val["y"]))
+#			var value = server_val["value"]
+#			entanglement[pos] = value
