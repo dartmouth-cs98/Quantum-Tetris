@@ -84,7 +84,8 @@ func new_piece():
 			elif( current_piece.entanglement > 0 ):
 				current_piece.translation = $Matrix/PosEntB.translation
 			else:
-				print("entanglement error.")
+				current_piece.translation = $Matrix/Position3D.translation
+				$FlashText.print("ERROR")
 		
 		# Initializes the ghost-piece at the bottom
 		current_piece.move_ghost()
@@ -109,7 +110,7 @@ func new_piece():
 		else:
 			game_over()
 		
-	if (current_pieces.size() > 1):
+	if (current_pieces.size() > 1 && create_super_piece):
 		$FakeGhost.visible = true
 	else:
 		$FakeGhost.visible = false
@@ -129,6 +130,7 @@ func random_piece():
 	var choice = randi() % random_bag.size()
 	var piece = random_bag[choice].instance()
 	random_bag.remove(choice)
+	piece.entangle(0)
 	
 	# Add first piece
 	var pieces = []
@@ -136,14 +138,16 @@ func random_piece():
 	add_child(piece)
 
 	if create_entanglement && create_super_piece: 
-		pieces = create_superposition(pieces, true)
-		pieces = create_superposition(pieces, false)
-		pieces = create_superposition(pieces, true)
+		pieces.append(create_superposition(pieces, true))
+		pieces.append(create_superposition(pieces, false))
+		pieces.append(create_superposition(pieces, true))
 		$FlashText.print("ENTANGLEMENT")
 		
 	elif create_entanglement:
 		
-		pieces = create_superposition(pieces, false)
+		# Appends the second piece
+		# (and adds it as a child to the tree within the function)
+		pieces.append(create_superposition(pieces, false))
 		
 		# Entangles the two pieces
 		pieces[0].entangle(-1)
@@ -166,8 +170,9 @@ func create_superposition(pieces, is_fake):  	# create a superposition piece
 	var second_choice = randi() % random_bag.size()
 	var second_piece = random_bag[second_choice].instance()
 	random_bag.remove(second_choice)
+	second_piece.entangle(0)
 		
-	pieces.append(second_piece)
+	# pieces.append(second_piece)
 	add_child(second_piece)
 			
 	############## FOR TESTING ############## 
@@ -176,7 +181,7 @@ func create_superposition(pieces, is_fake):  	# create a superposition piece
 	############## TESTING DONE ############## 
 	# evaluate which piece is the superposition piece
 	# turn off create_superposition
-	return pieces
+	return second_piece
 	
 
 # Increments the difficulty upon reaching a new level
@@ -306,7 +311,7 @@ func hard_drop():
 		var score = 0
 		
 		# Stats
-		# (Also drops the piece until it can be dropped no more
+		# (Also drops the piece until it can be dropped no more)
 		while current_piece.move(movements["soft_drop"]):
 			score += 2
 		$Stats.piece_dropped(score)
@@ -322,7 +327,8 @@ func hard_drop():
 	$Matrix/DropTrail.visible = true
 	$Matrix/DropTrail/Delay.start()
 	$LockDelay.stop()
-	lock()
+	for current_piece in current_pieces:
+		lock(current_piece)
 
 
 # I can't find this timer.
@@ -346,33 +352,37 @@ func _on_DropTimer_timeout():
 ## LOOP FUNCTION, NOT DONE
 func _on_LockDelay_timeout():
 	for current_piece in current_pieces:
-		if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"]):
-			lock()
+		if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"], current_piece.entanglement):
+			lock(current_piece)
 
 
 # Transforms the piece from a falling object to a group of blocks resting on the floor
 ##NOT DONE
-func lock():
-	for current_piece in current_pieces:
-		if $Matrix/GridMap.lock(current_piece):
-			var t_spin = current_piece.t_spin()
-			var lines_cleared = $Matrix/GridMap.clear_lines()
-			
-			var super = ""
-			if(create_super_piece): super = "SUPER"
-			
-			$Stats.piece_locked(lines_cleared, t_spin, super)
-			
-			if lines_cleared or t_spin:
-				$MidiPlayer.piece_locked(lines_cleared)
-			remove_child(current_piece)
-			
-			# Spawns the next piece after this one is locked to the ground.
+func lock(current_piece):
+	if $Matrix/GridMap.lock(current_piece):
+		var t_spin = current_piece.t_spin()
+		var lines_cleared = $Matrix/GridMap.clear_lines()
+		
+		var super = ""
+		if(create_super_piece): super = "SUPER"
+		
+		$Stats.piece_locked(lines_cleared, t_spin, super)
+		
+		if lines_cleared or t_spin:
+			$MidiPlayer.piece_locked(lines_cleared)
+		remove_child(current_piece)
+		
+		# You should now remove current_piece from the array current_pieces
+		current_pieces.remove(current_pieces.find(current_piece))
+		
+		# Spawns the next piece after this one is locked to the ground.
+		# This gets run twice with entanglement!
+		if(current_pieces.size() == 0):
 			new_piece()
-			
-		# If the piece doesn't successfully lock into the grid, game over!
-		elif(playing == true):
-			game_over()
+		
+	# If the piece doesn't successfully lock into the grid, game over!
+	elif(playing == true):
+		game_over()
 		
 		
 # Implements holding a piece in the upper left
@@ -429,9 +439,10 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
+	$GhostB.visible = true
 	
-	# Only make the fake ghost visible if there is a second piece
-	if( current_pieces.size() > 1 ): 
+	# Only make the fake ghost visible if there is a second piece AND we are superimposing
+	if( current_pieces.size() > 1 && create_super_piece == true ): 
 		$FakeGhost.visible = true
 		
 	if held_pieces.size()>0:
@@ -461,6 +472,7 @@ func pause(gui=null):
 		for current_piece in current_pieces:
 			current_piece.visible = false
 		$Ghost.visible = false
+		$GhostB.visible = false
 		$FakeGhost.visible = false
 		if held_pieces.size()>0:
 			for held_piece in held_pieces:

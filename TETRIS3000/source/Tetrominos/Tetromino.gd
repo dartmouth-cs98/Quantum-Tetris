@@ -97,7 +97,9 @@ var lock_delay
 
 # ghost pieces
 var ghost
+var ghostB	# For a real entangled piece
 var ghost_fake
+var ghost_fakeB
 
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
@@ -121,6 +123,7 @@ func _ready():
 	grid_map = get_node("../Matrix/GridMap")
 	lock_delay = get_node("../LockDelay")
 	ghost = get_node("../Ghost")
+	ghostB = get_node("../GhostB")
 	ghost_fake = get_node("../FakeGhost")
 	
 
@@ -198,7 +201,7 @@ func turn(direction):
 	# Superposition list: split by orientations then turn of direction.
 	var movements = super_rotation_system[orientation][direction]
 	for i in range(movements.size()):
-		if grid_map.possible_positions(rotated_translations, movements[i]):
+		if grid_map.possible_positions(rotated_translations, movements[i], 0):
 			
 			#Set new orientation
 			# Rotate the piece's position by either +1 or -1
@@ -224,12 +227,20 @@ func move_ghost():
 			ghost_fake.translate(DROP_MOVEMENT)
 
 	else:
-		# ghost is the "Ghost" scene
+		var this_ghost
+		if(entanglement >= 0):
+			this_ghost = ghost
+		else:
+			this_ghost = ghostB
+		
+		
+		# this_ghost is the "Ghost" scene
 		# See res://Tetrominos/Ghost.tscn
-		ghost.set_translations(get_translations())
+		this_ghost.set_translations(get_translations())
 		# While possible, keep dropping piece. 
-		while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT, entanglement):
-			ghost.translate(DROP_MOVEMENT)
+		while grid_map.possible_positions(this_ghost.get_translations(), DROP_MOVEMENT, entanglement):
+			this_ghost.translate(DROP_MOVEMENT)
+		
 		
 		
 ####################### Scoring
