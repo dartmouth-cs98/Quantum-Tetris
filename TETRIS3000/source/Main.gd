@@ -53,16 +53,21 @@ var autoshift_action
 var playing = false
 
 ## Creating Pieces
-var create_super_piece = true
+var create_super_piece = false
 var create_entanglement = false
 
 ## Probabilities
-var probabilities = [0.49,0.51,0.14,0.86]
+var probabilities = [0,0,0,0]
 
 ## For requests
 var current_names = []
 var next_names = []
 
+## idk
+var turns = 2
+
+## From response for create piece
+var types = [0,0,0,0]
 
 ## For responce
 var super_response = false
@@ -72,6 +77,7 @@ var entangled_pieces = false
 
 ##Signals
 signal response_received
+signal have_pieces
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -84,13 +90,26 @@ func new_game(level):
 	# hide the title screen
 	$Start.visible = false
 	# generate the next piece
-	next_pieces = random_piece()
+	random_piece()
 	autoshift_action = ""
 	$LockDelay.wait_time = 0.5
 	$MidiPlayer.position = 0
 	$Stats.new_game(level)
 	new_piece()
 	resume()
+
+func count_turns():
+	turns -= 1
+	if turns == 0:
+		var coin = randi()%11+1
+		if (coin)>7:
+			create_super_piece = true
+			create_entanglement = true
+		else:
+			create_super_piece = true
+			
+		
+		turns = randi()%5
 	
 
 # The new piece gets generated
@@ -100,6 +119,19 @@ func new_piece():
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
 	current_pieces = next_pieces
+	
+	if current_pieces.size()>1 and current_pieces.size()<3:
+		_evaluate_superposition()
+		yield(self, "response_received")
+		$FlashText.print("SUPERPOSITION")
+	elif current_pieces.size()>2:
+		_evaluate_superposition()
+		yield(self, "response_received")
+		entangled_pieces = true
+		_evaluate_superposition()
+		yield(self, "response_received")
+		$FlashText.print("ENTANGLEMENT")
+		
 	for current_piece in current_pieces:
 		
 		if (!create_entanglement): 
@@ -117,9 +149,12 @@ func new_piece():
 		
 		# Initializes the ghost-piece at the bottom
 		current_piece.move_ghost()
-	
+	count_turns()
 	# Generates the next piece
-	next_pieces = random_piece()
+	random_piece()
+
+	yield(self, "have_pieces")
+
 	
 	for next_piece in next_pieces:
 		
@@ -148,79 +183,121 @@ func new_piece():
 		$FakeGhost.visible = false
 		
 		$FakeGhostB.visible = false
+	create_entanglement = false
+	create_super_piece = false
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
 ## AND ENTANGLEMENT
 func random_piece():
 	
-	if random_bag.size()<5:
-		# Creates an array of each different piece
-		# Each piece is a SCENE
-		random_bag = [
-			TetroI, TetroJ, TetroL, TetroO,
-			TetroS, TetroT, TetroZ
-		]
-	var choice = randi() % random_bag.size()
-	var piece = random_bag[choice].instance()
-	random_bag.remove(choice)
-	piece.entangle(0)
+
 	
 	# Add first piece
 	var pieces = []
-	pieces.append(piece)
-	add_child(piece)
+
 
 	if (create_entanglement && create_super_piece): 
-		pieces.append(create_superposition(pieces, true))
-		pieces.append(create_superposition(pieces, false))
-		pieces.append(create_superposition(pieces, true))
+		_superposition_request()
+		yield(self, "response_received")
+		var piece0 = return_name(types[0]).instance()
+		pieces.append(piece0)
+		add_child(piece0)
+		
+		var piece1 = return_name(types[1]).instance()
+		pieces.append(piece1)
+		add_child(piece1)
+		
+		
+		entangled_pieces = true
+		_superposition_request()
+		yield(self, "response_received")
+		var piece2 = return_name(types[2]).instance()
+		pieces.append(piece2)
+		add_child(piece2)
+		
+		var piece3 = return_name(types[3]).instance()
+		pieces.append(piece3)
+		add_child(piece3)
+		
+
 		
 		pieces[0].entangle(-1)
 		pieces[1].entangle(-1)
 		pieces[2].entangle(1)
 		pieces[3].entangle(1)
-		$FlashText.print("ENTANGLEMENT")
+
 		
-	elif create_entanglement:
-		
-		# Appends the second piece
-		# (and adds it as a child to the tree within the function)
-		pieces.append(create_superposition(false))
-		
-		# Entangles the two pieces
-		pieces[0].entangle(-1)
-		pieces[1].entangle(1)
-		
-		$FlashText.print("ENTANGLEMENT")
-		
+#	elif create_entanglement:
+#
+#		# Appends the second piece
+#		# (and adds it as a child to the tree within the function)
+#		pieces.append(create_superposition(false))
+#
+#		# Entangles the two pieces
+#		pieces[0].entangle(-1)
+#		pieces[1].entangle(1)
+#
+#		$FlashText.print("ENTANGLEMENT")
+#
 		
 	elif create_super_piece:
-		pieces.append(create_superposition(true))
-		$FlashText.print("SUPERPOSITION")
+		_superposition_request()
+		print("before yield")
+		yield(self, "response_received")
+		print("after yield")
+		print("types: " + String(types[0]) +" "+ String(types[1]) +" " + String(types[2]) +" "+ String(types[3]) +" ")
+		var piece1 = return_name(types[0]).instance()
+		piece1.entangle(0)
+		pieces.append(piece1)
+		add_child(piece1)
+		
+		var piece2 = return_name(types[1]).instance()
+		piece2.entangle(0)
+		pieces.append(piece2)
+		add_child(piece2)
 		
 		
+	else:
+		if random_bag.size()<5:
+			# Creates an array of each different piece
+			# Each piece is a SCENE
+			random_bag = [
+				TetroI, TetroJ, TetroL, TetroO,
+				TetroS, TetroT, TetroZ
+			]
+		var choice = randi() % random_bag.size()
+		var piece = random_bag[choice].instance()
+		random_bag.remove(choice)
+		piece.entangle(0)
+		pieces.append(piece)
+		add_child(piece)
 			
 	# Returns the piece randomly selected from random_bag
-	return pieces
+	next_pieces = pieces
+	emit_signal("have_pieces")
 	
+func return_name(i):
+	for key in piece_scene_to_int.keys():
+		if piece_scene_to_int[key] == i:
+			return key
 	
-func create_superposition(is_fake):  	# create a superposition piece
-	var second_choice = randi() % random_bag.size()
-	var second_piece = random_bag[second_choice].instance()
-	random_bag.remove(second_choice)
-	second_piece.entangle(0)
-		
-	# pieces.append(second_piece)
-	add_child(second_piece)
-			
-	############## FOR TESTING ############## 
-	if is_fake:
-		second_piece.set_fake()
-	############## TESTING DONE ############## 
-	# evaluate which piece is the superposition piece
-	# turn off create_superposition
-	return second_piece
+#func create_superposition(is_fake):  	# create a superposition piece
+#	var second_choice = randi() % random_bag.size()
+#	var second_piece = random_bag[second_choice].instance()
+#	random_bag.remove(second_choice)
+#	second_piece.entangle(0)
+#
+#	# pieces.append(second_piece)
+#	add_child(second_piece)
+#
+#	############## FOR TESTING ############## 
+#	if is_fake:
+#		second_piece.set_fake()
+#	############## TESTING DONE ############## 
+#	# evaluate which piece is the superposition piece
+#	# turn off create_superposition
+#	return second_piece
 	
 
 # Increments the difficulty upon reaching a new level
@@ -478,9 +555,9 @@ func resume():
 	$Ghost.visible = true
 	if(create_entanglement):
 		$GhostB.visible = true
-	
+		
 	# Only make the fake ghost visible if there is a second piece AND we are superimposing
-	if( current_pieces.size() > 1 && create_super_piece == true ): 
+	if( current_pieces.size() > 1):# && create_super_piece == true ): 
 		$FakeGhost.visible = true
 		
 		if( current_pieces.size() >= 4 ):
@@ -559,8 +636,6 @@ func evaluate_probabilities(action):
 		yield(self, "response_received")
 		_evaluate_superposition()
 		yield(self, "response_received")
-		print("After Eval, Piece 0 is_fake: ", current_pieces[0].get_is_fake())
-		print("After Eval, Piece 1 is_fake: ", current_pieces[1].get_is_fake())
 
 		if current_pieces.size()>2:
 			entangled_pieces = true
@@ -574,8 +649,6 @@ func evaluate_probabilities(action):
 		yield(self, "response_received")
 		_evaluate_superposition()
 		yield(self, "response_received")
-		print("After Eval, Piece 0 is_fake: ", current_pieces[0].get_is_fake())
-		print("After Eval, Piece 1 is_fake: ", current_pieces[1].get_is_fake())
 
 		if current_pieces.size()>2:
 			entangled_pieces = true
@@ -657,12 +730,34 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
 	if (super_response):
 		super_response = false
-		#update probabilities
-		
 		if(entangled_pieces):
 			entangled_pieces = false
+			probabilities[2] = response.result.result["piece1"]["prob"]
+			probabilities[3] = response.result.result["piece2"]["prob"]
+			
+			var type2 = response.result.result["piece1"]["type"]
+			var type3 = response.result.result["piece2"]["type"]
+			if(type2>6):
+				type2 = 6
+			if(type3>6):
+				type3 = 6
+			
+			types[2] = type2
+			types[3] = type3
 		else:
-			pass
+			probabilities[0] = response.result.result["piece1"]["prob"]
+			probabilities[1] = response.result.result["piece2"]["prob"]
+	
+			var type0 = response.result.result["piece1"]["type"]
+			var type1 = response.result.result["piece2"]["type"]
+			if(type0>6):
+				type0 = 6
+			if(type1>6):
+				type1 = 6
+			
+			types[0] = type0
+			types[1] = type1
+			
 	elif(gate_response):
 		gate_response = false
 		
@@ -680,13 +775,10 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 			entangled_pieces = false
 			#eval other pieces
 		else:
-			print("Eval Response: " + String(response.result["result"]))
 			if(response.result["result"] == 0):
-				print("Hit 0")
 				current_pieces[0].set_fake()
 				current_pieces[1].set_real()
 			elif(response.result["result"] == 1):
-				print("Hit 1")
 				current_pieces[1].set_fake()
 				current_pieces[0].set_real()
 			else:

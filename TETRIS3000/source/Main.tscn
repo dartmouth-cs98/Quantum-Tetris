@@ -281,8 +281,8 @@ visible = false
 [node name="FakeGhost" parent="." instance=ExtResource( 15 )]
 visible = false
 
-<<<<<<< HEAD
 [node name="H Gate" parent="." instance=ExtResource( 16 )]
+editor/display_folded = true
 visible = false
 margin_right = -620.0
 margin_bottom = -380.0
@@ -295,6 +295,7 @@ margin_right = 74.0
 text = "H Gate"
 
 [node name="X Gate" parent="." instance=ExtResource( 16 )]
+editor/display_folded = true
 visible = false
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -311,10 +312,9 @@ margin_right = 70.0
 text = "X Gate"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
-=======
+
 [node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
 visible = false
->>>>>>> 0fb43a7b355d2c5522cb625f6a459b393aedc107
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]
