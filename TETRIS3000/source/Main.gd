@@ -52,7 +52,6 @@ var autoshift_action
 # and set to true when player starts playing
 var playing = false
 
-################ Superposition and Entanglement Variables
 ## Creating Pieces
 var create_super_piece = true
 var create_entanglement = false
@@ -141,11 +140,14 @@ func new_piece():
 		
 	if (current_pieces.size() > 1 && create_super_piece):
 		$FakeGhost.visible = true
+		
+		# If we have both superposition and entanglement,
+		if(current_pieces.size() >= 4):
+			$FakeGhostB.visible = true
 	else:
 		$FakeGhost.visible = false
 		
-	print("Superpiece Set, Piece 0 is_fake: ", current_pieces[0].get_is_fake())
-	print("Superpiece Set, Piece 1 is_fake: ", current_pieces[1].get_is_fake())
+		$FakeGhostB.visible = false
 
 ## random_piece: Generate a random piece
 ## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
@@ -169,10 +171,15 @@ func random_piece():
 	pieces.append(piece)
 	add_child(piece)
 
-	if create_entanglement && create_super_piece: 
-		pieces.append(create_superposition(true))
-		pieces.append(create_superposition(false))
-		pieces.append(create_superposition(true))
+	if (create_entanglement && create_super_piece): 
+		pieces.append(create_superposition(pieces, true))
+		pieces.append(create_superposition(pieces, false))
+		pieces.append(create_superposition(pieces, true))
+		
+		pieces[0].entangle(-1)
+		pieces[1].entangle(-1)
+		pieces[2].entangle(1)
+		pieces[3].entangle(1)
 		$FlashText.print("ENTANGLEMENT")
 		
 	elif create_entanglement:
@@ -387,7 +394,10 @@ func _on_LockDelay_timeout():
 # Transforms the piece from a falling object to a group of blocks resting on the floor
 ##NOT DONE
 func lock(current_piece):
-	if $Matrix/GridMap.lock(current_piece):
+	if(current_piece.is_fake):
+		remove_child(current_piece)
+		
+	elif $Matrix/GridMap.lock(current_piece):
 		var t_spin = current_piece.t_spin()
 		var lines_cleared = $Matrix/GridMap.clear_lines()
 		
@@ -400,15 +410,18 @@ func lock(current_piece):
 			$MidiPlayer.piece_locked(lines_cleared)
 		remove_child(current_piece)
 		
-		# Spawns the next piece after this one is locked to the ground.
-		# If we're locking the last piece,
-		# make the new pieces!
-		if(current_pieces.find(current_piece) == current_pieces.size()-1):
-			new_piece()
+		
 		
 	# If the piece doesn't successfully lock into the grid, game over!
 	elif(playing == true):
 		game_over()
+		
+		
+	# Spawns the next piece after this one is locked to the ground.
+		# If we're locking the last piece,
+		# make the new pieces!
+	if(current_pieces.find(current_piece) == current_pieces.size()-1):
+		new_piece()
 		
 		
 # Implements holding a piece in the upper left
@@ -463,11 +476,15 @@ func resume():
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
-	$GhostB.visible = true
+	if(create_entanglement):
+		$GhostB.visible = true
 	
 	# Only make the fake ghost visible if there is a second piece AND we are superimposing
 	if( current_pieces.size() > 1 && create_super_piece == true ): 
 		$FakeGhost.visible = true
+		
+		if( current_pieces.size() >= 4 ):
+			$FakeGhostB.visible = true
 		
 	if held_pieces.size()>0:
 		for held_piece in held_pieces:
@@ -497,6 +514,7 @@ func pause(gui=null):
 		$Ghost.visible = false
 		$GhostB.visible = false
 		$FakeGhost.visible = false
+		$FakeGhostB.visible = false
 		if held_pieces.size()>0:
 			for held_piece in held_pieces:
 				held_piece.visible = false
