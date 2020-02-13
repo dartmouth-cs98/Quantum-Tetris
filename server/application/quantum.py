@@ -89,28 +89,28 @@ class Quantum():
 		return abort(make_response(jsonify(error), 400))
 
 
-	def flipGrid(self, grid):
-		self.flipEntangledGrid(grid)
+	def flipEntangledPiece(self, state):
+		newState = self.flipPiece(state)
 
 		error = None
-		if grid is None:
-			error = "Error in flipping grid"
+		if newState is None:
+			error = "Error in flipping state"
 
 		if error is None:
 			return jsonify(
-				result=grid,
+				result=newState,
 			)
 
 		return abort(make_response(jsonify(error), 400))
 
-	def flipEntangledGrid(self, grid):
-		for k in grid.keys():
+	def flipPiece(self, state):
+  		
 			q = QuantumRegister(2)
 			c = ClassicalRegister(1)
 			qc = QuantumCircuit(q, c)
 
 			# Uses entanglement to flip the bits of the grid
-			if grid[k]['value'] == 1:
+			if state == 1:
 				qc.x(1)
 			qc.x(0)
 			qc.cx(0,1)
@@ -123,9 +123,9 @@ class Quantum():
 
 			try:
 				if sim_result.get_counts(qc)['0'] == 1:
-					grid[k]['value'] = 0
+					return 0
 			except KeyError:
-				grid[k]['value'] = 1
+				return 1
 
 
 	def findSuperposition(self, piece1_prob):
@@ -234,8 +234,6 @@ class Quantum():
 		q = QuantumRegister(1)
 		c = ClassicalRegister(1)
 		return QuantumCircuit(q, c), angle
-
-
 
 	def random_int(self, maxInt):
 		bits = ''

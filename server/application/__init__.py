@@ -260,45 +260,22 @@ def applyXGate():
         response = quantum.applyXGate(params)
         return response
     return None
-# Purpose: Flips all the values in the provided grid using entanglement
+
+# Purpose: Flips piece based on state
 # Data contract
-# value: int
-# x: int
-# y: int
-# Sample JSON body
+# piece: int
+# Sample request
+# [SERVER_NAME]/api/flipEntangledPiece?state=1
+#
+#
+# Sample response
 # {
-# 	"grid" : {
-# 		"0": {
-# 			"value": 0,
-# 			"x": 0,
-# 			"y": 0
-# 		},
-# 		"1": {
-# 			"value": 1,
-# 			"x": 0,
-# 			"y": 1
-# 		}
-# 	}
+#   "result": 0
 # }
-# Sample JSON response
-# {
-#   "result": {
-#     "0": {
-#       "value": 1,
-#       "x": 0,
-#       "y": 0
-#     },
-#     "1": {
-#       "value": 0,
-#       "x": 0,
-#       "y": 0
-#     }
-#   }
-# }
-@app.route('/api/flipGrid', methods=['POST'])
-def flipGrid():
-    if request.method == 'POST':
-        params=request.get_json()
-        response = quantum.flipGrid(params['grid'])
+@app.route('/api/flipEntangledPiece', methods=['GET'])
+def flipEntangledPiece():
+    if request.method == 'GET':
+        state = request.args.get('state', default= None, type= int)
+        response = quantum.flipEntangledPiece(state)
         return response
     return None

@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "heroku": "git subtree push --prefix server heroku master",
-    "server-setup": "cd ./server; pip install flask; export FLASK_APP=app; export FLASK_ENV=development; pip install flask-cors; pip install sqlalchemy; flask init-db; flask run; cd ..",
+    "server-setup": "cd ./server; ./setup.sh",
     "server": "cd ./server; flask init-db; flask run; cd .."
   },
   "dependencies": {
