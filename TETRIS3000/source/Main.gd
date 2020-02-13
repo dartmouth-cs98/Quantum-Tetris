@@ -44,7 +44,7 @@ var playing = false
 
 ################ Superposition and Entanglement Variables
 var create_super_piece = true
-var create_entanglement = true
+var create_entanglement = false
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():

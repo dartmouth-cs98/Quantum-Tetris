@@ -229,7 +229,7 @@ func move_ghost():
 		else:
 			this_ghost = ghostB
 	else:
-		if (entanglement < 0):
+		if (entanglement >= 0):
 			this_ghost = ghost_fake
 		else:
 			this_ghost = ghost_fakeB
