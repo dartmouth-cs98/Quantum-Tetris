@@ -115,7 +115,7 @@ var entanglement = 0
 
 #####################################  Functions  ##################################### 
 
-####################### Start Game or Level
+
 ### _ready - assign all nodes to associated variables
 func _ready():
 	for i in range(NB_MINOES):
@@ -125,6 +125,7 @@ func _ready():
 	ghost = get_node("../Ghost")
 	ghostB = get_node("../GhostB")
 	ghost_fake = get_node("../FakeGhost")
+	ghost_fakeB = get_node("../FakeGhostB")
 	
 
 ####################### Controlling Piece
@@ -173,18 +174,16 @@ func move(movement):
 				
 			else:
 				
-				# Removes itself from the array of current pieces
-				var piece_array = get_parent().get_current_pieces()
-				piece_array.pop_back();
-				get_parent().set_current_pieces(piece_array)
-				
 				# ...and removes itself from the scene-tree!
 				# (along with its ghost)
-				ghost_fake.visible = false
-				get_parent().remove_child(self)
-			
-			
+				if(entanglement >= 0):
+					ghost_fake.visible = false
+				else:
+					ghost_fakeB.visible = false
+				
 		return false
+		
+		
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
 func turn(direction):
@@ -221,25 +220,28 @@ func turn(direction):
 ####################### Ghost
 ### move_ghost
 func move_ghost():
-	if is_fake:
-		ghost_fake.set_translations(get_translations())
-		while grid_map.possible_positions(ghost_fake.get_translations(), DROP_MOVEMENT, entanglement):
-			ghost_fake.translate(DROP_MOVEMENT)
-
-	else:
-		var this_ghost
-		if(entanglement >= 0):
+	
+	var this_ghost
+	
+	if (!is_fake):
+		if (entanglement >= 0):
 			this_ghost = ghost
 		else:
 			this_ghost = ghostB
+	else:
+		if (entanglement < 0):
+			this_ghost = ghost_fake
+		else:
+			this_ghost = ghost_fakeB
+	
 		
 		
-		# this_ghost is the "Ghost" scene
-		# See res://Tetrominos/Ghost.tscn
-		this_ghost.set_translations(get_translations())
-		# While possible, keep dropping piece. 
-		while grid_map.possible_positions(this_ghost.get_translations(), DROP_MOVEMENT, entanglement):
-			this_ghost.translate(DROP_MOVEMENT)
+	# this_ghost is the "Ghost" scene
+	# See res://Tetrominos/Ghost.tscn
+	this_ghost.set_translations(get_translations())
+	# While possible, keep dropping piece. 
+	while grid_map.possible_positions(this_ghost.get_translations(), DROP_MOVEMENT, entanglement):
+		this_ghost.translate(DROP_MOVEMENT)
 		
 		
 		
