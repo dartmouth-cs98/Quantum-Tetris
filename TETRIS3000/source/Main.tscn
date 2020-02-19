@@ -192,6 +192,7 @@ material/0 = null
 
 [node name="Position3D" type="Position3D" parent="Next"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 16, 0 )
+visible = false
 
 [node name="DropTimer" type="Timer" parent="."]
 
@@ -281,6 +282,9 @@ visible = false
 [node name="FakeGhost" parent="." instance=ExtResource( 15 )]
 visible = false
 
+[node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
+visible = false
+
 [node name="H Gate" parent="." instance=ExtResource( 16 )]
 editor/display_folded = true
 visible = false
@@ -312,9 +316,6 @@ margin_right = 70.0
 text = "X Gate"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
-
-[node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
-visible = false
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]

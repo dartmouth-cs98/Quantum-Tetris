@@ -33,14 +33,15 @@ const piece_scene_to_int= {
 
 var random_bag = []
 
-# The next piece queued in the upper right
+## Arrays to Hold Pieces
+var backlist = []
 var next_pieces = []
-
-# The pieces currently falling
 var current_pieces = []
-
-# The "held" piece in the upper left
 var held_pieces = []
+
+# Probabilities
+var probabilities_backlist = []
+var probabilities = [0,0,0,0]
 
 # Boolean - used to prevent code from breaking if user holds down the hold-piece-command
 var current_piece_held
@@ -53,18 +54,18 @@ var autoshift_action
 var playing = false
 
 ## Creating Pieces
-var create_super_piece = false
-var create_entanglement = false
+var running = false
 
-## Probabilities
-var probabilities = [0,0,0,0]
+## For MultiThreading
+var thread
+var mutex
 
 ## For requests
 var current_names = []
 var next_names = []
 
 ## idk
-var turns = 2
+var turns = 4
 
 ## From response for create piece
 var types = [0,0,0,0]
@@ -72,6 +73,7 @@ var types = [0,0,0,0]
 ## For responce
 var super_response = false
 var gate_response = false
+var init_eval_response = false
 var eval_response = false
 var entangled_pieces = false
 
@@ -83,138 +85,107 @@ signal have_pieces
 ## _ready: Randomize random number generator seeds
 func _ready():
 	randomize()
+	running = true
+	mutex = Mutex.new()
+	thread = Thread.new()
+	thread.start(self,"handle_backlist")
+	
 
-## new_game: Start a new game
-## DONE
-func new_game(level):
-	# hide the title screen
-	$Start.visible = false
-	# generate the next piece
-	random_piece()
-	autoshift_action = ""
-	$LockDelay.wait_time = 0.5
-	$MidiPlayer.position = 0
-	$Stats.new_game(level)
-	new_piece()
-	resume()
+
+##################### Handle Piece Backlist
+func handle_backlist(userdata):
+	var num_turns = 10
+	var total_pieces = backlist.size()
+	for i in range(num_turns - total_pieces):
+		var turn_type = count_turns()
+		var to_append = []
+		# Superposition
+		
+		if(turn_type == 1):
+#			print("TESTING, 1-Handle_Backlist, adding superposition to backlist")
+			# Get Pieces
+			random_piece(true, false)
+			yield(self, "have_pieces")
+			
+#			print("TESTING, 8-Handle_Backlist, have pieces, calling evaluate") 
+			# Determine which pieces are fake
+			_initial_evaluate_superposition()
+			yield(self, "response_received")
+#			print("TESTING, 11-Handle_Backlist, done adding super piece") 
+		# Superposition and Entanglement
+		elif(turn_type == 2):
+#			print("TESTING, 1-Handle_Backlist, adding entanglement to backlist")
+			random_piece(true, true)
+			yield(self, "have_pieces")
+
+			# Determine which pieces are fake
+#			print("TESTING, 8-Handle_Backlist, have pieces, calling evaluate") 
+			_initial_evaluate_superposition()
+			yield(self, "response_received")
+			entangled_pieces = true
+#			print("TESTING, 11-Handle_Backlist, have pieces, calling evaluate") 
+			_initial_evaluate_superposition()
+			yield(self, "response_received")
+#			print("TESTING, 14-Handle_Backlist, done adding entangled pieces") 
+		else:
+			random_piece(false, false)
+#			print("TESTING, 1-Handle_Backlist, adding normal to backlist")
+
+		for piece in backlist[backlist.size()-1]:#to_append:
+			piece.visible = false
+
+	running = false
+
 
 func count_turns():
 	turns -= 1
+#	print("TESTING - ALT - TURNS init: " + String(turns))
 	if turns == 0:
 		var coin = randi()%11+1
+		turns = randi()%4 + 1
+#		print("TESTING - ALT - TURNS after 0: " + String(turns))
 		if (coin)>7:
-			create_super_piece = true
-			create_entanglement = true
+			return(2)
 		else:
-			create_super_piece = true
+			return(1)
 			
 		
-		turns = randi()%5 + 1
-	
-
-# The new piece gets generated
-func new_piece():
-	
-	
-	# current_piece, next_piece, etc. are all Tetromino objects
-	# See res://Tetrominos/Tetromino.gd
-	current_pieces = next_pieces
-	
-	if current_pieces.size()>1 and current_pieces.size()<3:
-		_evaluate_superposition()
-		yield(self, "response_received")
-		$FlashText.print("SUPERPOSITION")
-	elif current_pieces.size()>2:
-		_evaluate_superposition()
-		yield(self, "response_received")
-		entangled_pieces = true
-		_evaluate_superposition()
-		yield(self, "response_received")
-		$FlashText.print("ENTANGLEMENT")
-		
-	for current_piece in current_pieces:
 		
 		
-		if( current_piece.entanglement < 0 ):
-			current_piece.translation = $Matrix/PosEntA.translation
-		elif( current_piece.entanglement > 0 ):
-			current_piece.translation = $Matrix/PosEntB.translation
-		else:
-			current_piece.translation = $Matrix/Position3D.translation
-			#$FlashText.print("ERROR - NO ENTANGLEMENT")
-		
-		# Initializes the ghost-piece at the bottom
-		current_piece.move_ghost()
-	count_turns()
-	# Generates the next piece
-	random_piece()
-
-	yield(self, "have_pieces")
-
-	
-	for next_piece in next_pieces:
-		
-		if(next_pieces.size()>2):
-			next_piece.translation = $Next/Position3D.translation
-			if next_piece.entanglement < 0:
-				next_piece.translation = $Next/Position3D.translation + (Vector3(1,0,0))
-			else:
-				next_piece.translation = $Next/Position3D.translation + (Vector3(1,-4,0))
-		else:
-			# This places the next piece in the upper-right box
-			next_piece.translation = $Next/Position3D.translation
-	
-	# THERE is a 0-magnitude 3D-vector
-	for current_piece in current_pieces:
-		
-		# Checks whether the piece has room to spawn
-		if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE, current_piece.entanglement):
-			$DropTimer.start()
-			current_piece_held = false
-			
-		# If the piece can't spawn, you lose!
-		else:
-			game_over()
-		
-	if (current_pieces.size() > 1):# && current_pieces[1].is_fake):
-		$FakeGhost.visible = true
-		
-		# If we have both superposition and entanglement,
-		if(current_pieces.size() >= 4):
-			$FakeGhostB.visible = true
 	else:
-		$FakeGhost.visible = false
-		
-		$FakeGhostB.visible = false
-	# Always sets theese two variables back to false after piece-generation
-	create_super_piece = false
-	create_entanglement = false
-
-## random_piece: Generate a random piece
-## IMPLEMENT FUNCTIONS FOR ACTUALLY DETERMINING SUPERPOSITION
-## AND ENTANGLEMENT
-func random_piece():
+		return(0)
 	
-	
+func random_piece( create_super_piece, create_entanglement):
 	# Add first piece
 	var pieces = []
 
 
 	if (create_entanglement && create_super_piece): 
+#		print("TESTING, 2-Random_Piece, creating first entanglement pieces and calling request")
+		
+		# Call superposition request, which gets piece probabilities and types
 		_superposition_request()
+		
+		# Wait till http request node received a server responce
 		yield(self, "response_received")
+#		print("TESTING, 5-Random_Piece, back in Random_Piece")
+		# instantiate the piece returned by server
 		var piece0 = return_name(types[0]).instance()
+		# add it to pieces list
 		pieces.append(piece0)
+		# add piece to the game board
 		add_child(piece0)
 		
 		var piece1 = return_name(types[1]).instance()
 		pieces.append(piece1)
 		add_child(piece1)
 		
-		
+#		print("TESTING, 2-Random_Piece, creating second entanglement pieces and calling request")
+		# Repeat for pieces 2 and 3 (during entanglement)
 		entangled_pieces = true
 		_superposition_request()
 		yield(self, "response_received")
+#		print("TESTING, 5-Random_Piece, back in Random_Piece")
 		var piece2 = return_name(types[2]).instance()
 		pieces.append(piece2)
 		add_child(piece2)
@@ -229,27 +200,16 @@ func random_piece():
 		pieces[1].entangle(-1)
 		pieces[2].entangle(1)
 		pieces[3].entangle(1)
+#		print("TESTING, 6-Random_Piece, result: " + String(pieces))
 
 		
-#	elif create_entanglement:
-#
-#		# Appends the second piece
-#		# (and adds it as a child to the tree within the function)
-#		pieces.append(create_superposition(false))
-#
-#		# Entangles the two pieces
-#		pieces[0].entangle(-1)
-#		pieces[1].entangle(1)
-#
-#		$FlashText.print("ENTANGLEMENT")
-#
-		
 	elif create_super_piece:
+#		print("TESTING, 2-Random_Piece, creating superpiece and calling superposition")
 		_superposition_request()
-		print("before yield")
+	
 		yield(self, "response_received")
-		print("after yield")
-		print("types: " + String(types[0]) +" "+ String(types[1]) +" " + String(types[2]) +" "+ String(types[3]) +" ")
+#		print("TESTING, 5-Random_Piece, back in Random_Piece")
+
 		var piece1 = return_name(types[0]).instance()
 		piece1.entangle(0)
 		pieces.append(piece1)
@@ -259,7 +219,7 @@ func random_piece():
 		piece2.entangle(0)
 		pieces.append(piece2)
 		add_child(piece2)
-		
+#		print("TESTING, 6-Random_Piece, result: " + String(pieces))
 		
 	else:
 		if random_bag.size()<5:
@@ -275,32 +235,115 @@ func random_piece():
 		piece.entangle(0)
 		pieces.append(piece)
 		add_child(piece)
+		
+		# Add placeholder in probabilities_backlist
+		probabilities_backlist.append([0,0,0,0])
 			
-	# Returns the piece randomly selected from random_bag
-	next_pieces = pieces
+	# Reset other variables (types)
+	types = [-1,-1,-1,-1]
+	
+	# Add pieces to backlist, emit completed signal, and exit
+	backlist.append(pieces)
+#	print("TESTING, 7-Random_Piece, added pieces to backlist")
 	emit_signal("have_pieces")
 	
 func return_name(i):
 	for key in piece_scene_to_int.keys():
 		if piece_scene_to_int[key] == i:
 			return key
+			
+##################### Game Functions
+## new_game: Start a new game
+func new_game(level):
+	# hide the title screen
+	$Start.visible = false
+	# generate the next piece
+	autoshift_action = ""
+	$LockDelay.wait_time = 0.5
+	$MidiPlayer.position = 0
+	$Stats.new_game(level)
 	
-#func create_superposition(is_fake):  	# create a superposition piece
-#	var second_choice = randi() % random_bag.size()
-#	var second_piece = random_bag[second_choice].instance()
-#	random_bag.remove(second_choice)
-#	second_piece.entangle(0)
-#
-#	# pieces.append(second_piece)
-#	add_child(second_piece)
-#
-#	############## FOR TESTING ############## 
-#	if is_fake:
-#		second_piece.set_fake()
-#	############## TESTING DONE ############## 
-#	# evaluate which piece is the superposition piece
-#	# turn off create_superposition
-#	return second_piece
+	next_pieces = backlist.pop_front()
+	new_piece()
+	resume()
+
+# The new piece gets generated
+func new_piece():
+	
+	
+	# current_piece, next_piece, etc. are all Tetromino objects
+	# See res://Tetrominos/Tetromino.gd
+	# Check the backlist
+	# Thread this?
+	if !running:
+		#Wait for thread to finish
+		# Call new thread here
+		
+		running = true
+		#handle_backlist()
+	
+	#Transfer pieces
+	current_pieces = next_pieces
+	next_pieces = backlist.pop_front()
+	probabilities = probabilities_backlist.pop_front()
+		
+	#Move current pieces into position
+	for current_piece in current_pieces:
+		
+		current_piece.visible = true
+		if( current_piece.entanglement < 0 ):
+			current_piece.translation = $Matrix/PosEntA.translation
+		elif( current_piece.entanglement > 0 ):
+			current_piece.translation = $Matrix/PosEntB.translation
+		else:
+			current_piece.translation = $Matrix/Position3D.translation
+			#$FlashText.print("ERROR - NO ENTANGLEMENT")
+		
+		# Initializes the ghost-piece at the bottom
+		current_piece.move_ghost()
+	# Generates the next piece
+	
+	#Place next piece
+	for next_piece in next_pieces: 
+ 		
+		if(next_pieces.size()>2):
+			next_piece.translation = $Next/Position3D.translation
+			if next_piece.entanglement < 0:
+				next_piece.translation = $Next/Position3D.translation + (Vector3(1,0,0))
+			else:
+				next_piece.translation = $Next/Position3D.translation + (Vector3(1,-4,0))
+		else:
+			# This places the next piece in the upper-right box
+			next_piece.translation = $Next/Position3D.translation
+	
+	## Place current pieces
+	# THERE is a 0-magnitude 3D-vector
+	for current_piece in current_pieces:
+		
+		# Checks whether the piece has room to spawn
+		if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE, current_piece.entanglement):
+			$DropTimer.start()
+			current_piece_held = false
+			
+		# If the piece can't spawn, you lose!
+		else:
+			game_over()
+		
+	if (current_pieces.size() > 1 && current_pieces.size()<3):# && current_pieces[1].is_fake):
+		$FakeGhost.visible = true
+		$FlashText.print("SUPERPOSITION")
+		
+		# If we have both superposition and entanglement,
+	elif(current_pieces.size() > 2):
+		$GhostB.visible = true
+		$FakeGhostB.visible = true
+		$FlashText.print("ENTANGLEMENT")
+	else:
+		$GhostB.visible = true
+		$FakeGhost.visible = false
+		
+		$FakeGhostB.visible = false
+
 	
 
 # Increments the difficulty upon reaching a new level
@@ -314,7 +357,6 @@ func new_level(level):
 
 # Handles all of the keyboard-inputs
 # Mapping happens in res://controls.gd
-##DONE
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
 		if playing:
@@ -561,11 +603,11 @@ func resume():
 		$GhostB.visible = true
 		
 	# Only make the fake ghost visible if there is a second piece AND we are superimposing
-
-	if( current_pieces.size() > 1 && current_pieces[1].is_fake ): 
+	#CHANGE THIS
+	if( current_pieces.size() > 1):# && current_pieces[1].is_fake ): 
 		$FakeGhost.visible = true
 		
-		if( current_pieces.size() >= 4 ):
+		if( current_pieces.size() > 2 ):
 			$FakeGhostB.visible = true
 		
 	if held_pieces.size()>0:
@@ -633,6 +675,12 @@ func _notification(what):
 			if playing:
 				pause($controls_ui)
 
+func set_current_pieces(pieces):
+	current_pieces = pieces
+
+func get_current_pieces():
+	return current_pieces
+	
 ########################   Quantum Functionality   ######################## 
 
 func evaluate_probabilities(action):
@@ -663,25 +711,14 @@ func evaluate_probabilities(action):
 			yield(self, "response_received")
 	else:
 		print("Action not recognized")
-		
-		
-
-func set_current_pieces(pieces):
-
-	current_pieces = pieces
-
-func get_current_pieces():
-
-	return current_pieces
-	
-	
 	
 ########################## Http Request Fuctions
-#
+
 func _superposition_request():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
 	super_response = true
+#	print("TESTING, 3-_Superposition_Request, sending request ")
 	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
 
 func _evaluate_superposition():
@@ -693,6 +730,19 @@ func _evaluate_superposition():
 		prob = String(probabilities[2])
 	else:
 		prob = String(probabilities[0])
+	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+	
+func _initial_evaluate_superposition():
+	var headers = ["Content-Type: application/json"]
+	# Add 'Content-Type' header:
+	init_eval_response = true
+	var prob
+	if(entangled_pieces):
+#		print("TESTING, 9-initial_evaluate_superposition, making eval request") 
+		prob = String(probabilities_backlist.back()[2])
+	else:
+		prob = String(probabilities_backlist.back()[0])
+#		print("TESTING, 12-initial_evaluate_superposition, making eval request") 
 	$HTTPRequest.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 
 func _H_gate_request():
@@ -731,14 +781,19 @@ func _create_request_data(entangle):
 	data_to_send["piece2"] = piece2
 	return data_to_send
 
+# For creating HTTP Request Nodes on the fly
+func _send_data():
+	pass
+
 func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
 	if (super_response):
 		super_response = false
+#		print("TESTING, 4-_on_HTTPRequest_request, creating superposition request ")
 		if(entangled_pieces):
 			entangled_pieces = false
-			probabilities[2] = response.result.result["piece1"]["prob"]
-			probabilities[3] = response.result.result["piece2"]["prob"]
+			probabilities_backlist[probabilities_backlist.size()-1][2] = response.result.result["piece1"]["prob"]
+			probabilities_backlist[probabilities_backlist.size()-1][3] = response.result.result["piece2"]["prob"]
 			
 			var type2 = response.result.result["piece1"]["type"]
 			var type3 = response.result.result["piece2"]["type"]
@@ -750,8 +805,9 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 			types[2] = type2
 			types[3] = type3
 		else:
-			probabilities[0] = response.result.result["piece1"]["prob"]
-			probabilities[1] = response.result.result["piece2"]["prob"]
+			var to_append_prob = [0,0,0,0]
+			to_append_prob[0] = response.result.result["piece1"]["prob"]
+			to_append_prob[1] = response.result.result["piece2"]["prob"]
 	
 			var type0 = response.result.result["piece1"]["type"]
 			var type1 = response.result.result["piece2"]["type"]
@@ -762,6 +818,7 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 			
 			types[0] = type0
 			types[1] = type1
+			probabilities_backlist.append(to_append_prob)
 			
 	elif(gate_response):
 		gate_response = false
@@ -778,7 +835,14 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 
 		if(entangled_pieces):
 			entangled_pieces = false
-			#eval other pieces
+			if(response.result["result"] == 0):
+				current_pieces[2].set_fake()
+				current_pieces[3].set_real()
+			elif(response.result["result"] == 1):
+				current_pieces[3].set_fake()
+				current_pieces[2].set_real()
+			else:
+				print("Eval Response: Response code not recognized")
 		else:
 			if(response.result["result"] == 0):
 				current_pieces[0].set_fake()
@@ -788,6 +852,31 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 				current_pieces[0].set_real()
 			else:
 				print("Eval Response: Response code not recognized")
+	elif(init_eval_response):
+		init_eval_response = false
+
+		if(entangled_pieces):
+#			print("TESTING, 13-_on_HTTPRequest_completed, setting second entangled pieces")
+			entangled_pieces = false
+			if(response.result["result"] == 0):
+				backlist[backlist.size()-1][2].set_fake()
+				backlist[backlist.size()-1][3].set_real() 
+			elif(response.result["result"] == 1):
+				backlist[backlist.size()-1][3].set_fake()
+				backlist[backlist.size()-1][2].set_real()
+			else:
+				print("Initial Eval Response: Response code not recognized")
+		else:
+#			print("TESTING, 10-_on_HTTPRequest_completed, setting first entangled pieces")
+#			print("TESTING Init eval with repsonse: " + String(response.result["result"]))
+			if(response.result["result"] == 0):
+				backlist[backlist.size()-1][0].set_fake()
+				backlist[backlist.size()-1][1].set_real()
+			elif(response.result["result"] == 1):
+				backlist[backlist.size()-1][1].set_fake()
+				backlist[backlist.size()-1][0].set_real()
+			else:
+				print("Initial Eval Response: Response code not recognized")
 
 	else:
 		print("Response type not known")
@@ -803,4 +892,4 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 # Implement notifications for powerups when pressed
 # GUI for powerups
 # Probabilities on screen? How about in the notification?
-# 
+# Limit piece setting time
