@@ -108,6 +108,7 @@ func new_piece():
 		else:
 			game_over()
 		
+	# If we have superposition
 	if (current_pieces.size() > 1 && current_pieces[1].is_fake):
 		$FakeGhost.visible = true
 		
@@ -117,6 +118,11 @@ func new_piece():
 	else:
 		$FakeGhost.visible = false
 		$FakeGhostB.visible = false
+		
+	
+	# If we have just entanglement,
+	if (current_pieces[0].entanglement < 0): 
+		$GhostB.visible = true
 		
 		
 	# Always sets theese two variables back to false after piece-generation

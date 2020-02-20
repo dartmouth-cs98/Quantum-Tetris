@@ -223,7 +223,7 @@ func turn(direction):
 					# Kick the piece to the left if it's entangled left
 					translate(Vector3(-1, 0, 0))
 				elif( entanglement > 0):
-					# Kick the piece to the right 
+					# Kick the piece to the right if it's entangled right
 					translate(Vector3(1, 0, 0))
 			
 			unlocking()
