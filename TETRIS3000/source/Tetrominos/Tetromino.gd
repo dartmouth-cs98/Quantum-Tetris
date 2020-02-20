@@ -191,8 +191,11 @@ func turn(direction):
 	var translations = get_translations()
 	var rotated_translations = [translations[0]]
 	var center = translations[0]
+	
 	# Check if rotation is possible
 	for i in range(1, NB_MINOES):
+		
+		# Logic for moving the cubes correctly for a rotation
 		var rt = translations[i] - center
 		rt = Vector3(-1*direction*rt.y, direction*rt.x, 0)
 		rt += center
@@ -206,10 +209,23 @@ func turn(direction):
 			#Set new orientation
 			# Rotate the piece's position by either +1 or -1
 			orientation = (orientation - direction) % 4
+			
+			# Actually moves the piece
 			set_translations(rotated_translations)
 			
-			
+			# Moves the piece back in bounds if it's rotated out of bounds!
 			translate(movements[i])
+			
+			# If the piece is still somehow in an illegal position,
+			# (This happens in the center with entanglement)
+			if grid_map.possible_positions(rotated_translations, movements[i], 0):
+				if( entanglement < 0):
+					# Kick the piece to the left if it's entangled left
+					translate(Vector3(-1, 0, 0))
+				elif( entanglement > 0):
+					# Kick the piece to the right 
+					translate(Vector3(1, 0, 0))
+			
 			unlocking()
 			rotated_last = true
 			if i == 4:

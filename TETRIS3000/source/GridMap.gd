@@ -54,6 +54,7 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 	
 	# For each block in the piece,
 	for i in range(4):
+		# The hypothetical new position of the cube
 		position = initial_translations[i] + movement
 		
 		# Checks here whether the move is possible
