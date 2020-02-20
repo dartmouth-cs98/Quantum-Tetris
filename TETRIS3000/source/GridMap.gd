@@ -52,7 +52,7 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 	var position
 	var test_translations = []
 	
-	# For each possible orientation,
+	# For each block in the piece,
 	for i in range(4):
 		position = initial_translations[i] + movement
 		
@@ -62,7 +62,9 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 		# one of the cells is full
 		else:
 			break
-	# if test_translations has the same size, then no break so all cells are empty.
+			
+	# if test_translations has the same size, then no break,
+	# so all 4 cubes can do this translation
 	if test_translations.size() == Tetromino.NB_MINOES:
 		return test_translations
 	else:

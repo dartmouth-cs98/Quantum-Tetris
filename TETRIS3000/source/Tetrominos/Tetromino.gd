@@ -197,6 +197,7 @@ func turn(direction):
 		rt = Vector3(-1*direction*rt.y, direction*rt.x, 0)
 		rt += center
 		rotated_translations.append(rt)
+		
 	# Superposition list: split by orientations then turn of direction.
 	var movements = super_rotation_system[orientation][direction]
 	for i in range(movements.size()):
