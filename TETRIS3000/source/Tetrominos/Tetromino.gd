@@ -203,6 +203,8 @@ func turn(direction):
 		
 	# Superposition list: split by orientations then turn of direction.
 	var movements = super_rotation_system[orientation][direction]
+	
+	# Only loops until success
 	for i in range(movements.size()):
 		if grid_map.possible_positions(rotated_translations, movements[i], 0):
 			
@@ -219,12 +221,14 @@ func turn(direction):
 			# If the piece is still somehow in an illegal position,
 			# (This happens in the center with entanglement)
 			if grid_map.possible_positions(rotated_translations, movements[i], 0):
-				if( entanglement < 0):
+				if( entanglement < 0 && grid_map.possible_positions(rotated_translations, Vector3(-1, 0, 0), 0)):
 					# Kick the piece to the left if it's entangled left
 					translate(Vector3(-1, 0, 0))
-				elif( entanglement > 0):
+				elif( entanglement > 0 && grid_map.possible_positions(rotated_translations, Vector3(1, 0, 0), 0)):
 					# Kick the piece to the right if it's entangled right
 					translate(Vector3(1, 0, 0))
+					
+			
 			
 			unlocking()
 			rotated_last = true

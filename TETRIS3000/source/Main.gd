@@ -197,18 +197,23 @@ func random_piece():
 	return pieces
 	
 	
-func create_superposition(pieces, is_fake):  	# create a superposition piece
+# CREATES A NEW PIECE
+func create_superposition(pieces, is_fake):
 	var second_choice = randi() % random_bag.size()
 	var second_piece = random_bag[second_choice].instance()
 	random_bag.remove(second_choice)
+	
+	# If the piece is fake, make it fake
+	if is_fake:
+		second_piece.set_fake()
+		
+	# Default entanglement
 	second_piece.entangle(0)
 		
 	# pieces.append(second_piece)
 	add_child(second_piece)
 			
 	############## FOR TESTING ############## 
-	if is_fake:
-		second_piece.set_fake()
 	############## TESTING DONE ############## 
 	# evaluate which piece is the superposition piece
 	# turn off create_superposition
