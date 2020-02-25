@@ -43,10 +43,13 @@ var autoshift_action
 var playing = false
 
 ################ Superposition and Entanglement Variables
-var create_super_piece = false
-var create_entanglement = false
+var create_super_piece: bool = false
+var create_entanglement: bool = false
 
-var turn_count = 0
+var turn_count: int = 0
+
+var num_H_gates: int = 0
+var num_X_gates: int = 0
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
@@ -138,9 +141,11 @@ func random_piece():
 	
 	if( (turn_count % 3) == 0): 
 		create_super_piece = true
-		
+		num_H_gates += 1
+
 	if( (turn_count % 4) == 0):
 		create_entanglement = true
+		num_X_gates += 1
 		
 	
 	if random_bag.size()<5:

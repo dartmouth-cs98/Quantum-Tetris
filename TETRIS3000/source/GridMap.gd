@@ -39,7 +39,7 @@ func is_free_cell(cell, entanglement): #3D Vector
 	return (
 	
 		# Right here is where you set the bounds for entanglement!!
-		# Within grid columns (not at side edge)
+		# Within grid collumns (not at side edge)
 		left_bound <= cell.x and cell.x < right_bound
 		# Above the bottom
 		and cell.y >= 0

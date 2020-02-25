@@ -96,20 +96,21 @@ var grid_map
 var lock_delay
 
 # ghost pieces
-var ghost
-var ghostB	# For a real entangled piece
-var ghost_fake
-var ghost_fakeB
+var ghost: Node
+var ghostB: Node	# For a real entangled piece
+var ghost_fake: Node
+var ghost_fakeB: Node
+
 
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
-var is_fake = false
+var is_fake: bool = false
 
 # int
 # 0 -> this piece is not entangled
 # negative -> this piece is entangled into the left side of the grid
 # positive -> right side of the grid
-var entanglement = 0
+var entanglement: int = 0
 
 
 
@@ -180,6 +181,7 @@ func move(movement):
 					ghost_fake.visible = false
 				else:
 					ghost_fakeB.visible = false
+					
 				
 		return false
 		
@@ -222,10 +224,12 @@ func turn(direction):
 			# (This happens in the center with entanglement)
 			if grid_map.possible_positions(rotated_translations, movements[i], 0):
 				if( entanglement < 0 && grid_map.possible_positions(rotated_translations, Vector3(-1, 0, 0), 0)):
-					# Kick the piece to the left if it's entangled left
+					# Kick the piece to the left if it's entangled left 
+					# (and if it can be kicked left)
 					translate(Vector3(-1, 0, 0))
 				elif( entanglement > 0 && grid_map.possible_positions(rotated_translations, Vector3(1, 0, 0), 0)):
 					# Kick the piece to the right if it's entangled right
+					# (and if it can be kicked right)
 					translate(Vector3(1, 0, 0))
 					
 			
@@ -298,7 +302,7 @@ func get_is_fake():
 	
 ####################### Entanglement functions
 
-func entangle(entangle_int): 
+func entangle(entangle_int: int): 
 	
 	entanglement = entangle_int
 	
