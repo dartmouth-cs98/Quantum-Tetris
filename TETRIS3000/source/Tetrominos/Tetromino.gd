@@ -159,7 +159,15 @@ func move(movement):
 		translate(movement)
 		unlocking()
 		rotated_last = false
-		move_ghost()
+		
+		# If the piece still has at least 3 spaces below it, 
+		if (grid_map.possible_positions(get_translations(), Vector3(0, -3, 0), entanglement)):
+			move_ghost(false) # Keep the ghost visible
+		
+		# If it doesn't have that space, 
+		else: 
+			move_ghost(true) # Make the ghost disappear
+		
 		return true
 		
 	# the move is not possible
@@ -238,15 +246,15 @@ func turn(direction):
 			rotated_last = true
 			if i == 4:
 				rotation_point_5_used = true
-			move_ghost()
+			move_ghost(false)
 			return true
 	return false
 	
 ####################### Ghost
 ### move_ghost
-func move_ghost():
+func move_ghost(var vanish: bool):
 	
-	var this_ghost
+	var this_ghost: Node
 	
 	if (!is_fake):
 		if (entanglement >= 0):
@@ -259,6 +267,10 @@ func move_ghost():
 		else:
 			this_ghost = ghost_fakeB
 	
+	if( vanish ):
+		this_ghost.visible = false
+	else: 
+		this_ghost.visible = true
 		
 		
 	# this_ghost is the "Ghost" scene

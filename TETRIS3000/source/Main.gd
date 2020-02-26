@@ -475,7 +475,7 @@ func new_piece():
 			#$FlashText.print("ERROR - NO ENTANGLEMENT")
 		
 		# Initializes the ghost-piece at the bottom
-		current_piece.move_ghost()
+		current_piece.move_ghost(false)
 	# Generates the next piece
 	
 	#Place next piece
@@ -515,7 +515,7 @@ func new_piece():
 		$FakeGhostB.visible = true
 		$FlashText.print("ENTANGLEMENT")
 	else:
-		$GhostB.visible = true
+		$GhostB.visible = false
 		$FakeGhost.visible = false
 
 		$FakeGhostB.visible = false
