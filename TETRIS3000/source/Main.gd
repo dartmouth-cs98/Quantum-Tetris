@@ -289,7 +289,31 @@ func return_name(i):
 		if piece_scene_to_int[key] == i:
 			return key
 			
-			
+func abort():
+	print("abort!")
+	var pieces = []
+	if random_bag.size()<5:
+			# Creates an array of each different piece
+			# Each piece is a SCENE
+			random_bag = [
+				TetroI, TetroJ, TetroL, TetroO,
+				TetroS, TetroT, TetroZ
+			]
+	var choice = randi() % random_bag.size()
+	var piece = random_bag[choice].instance()
+	random_bag.remove(choice)
+	piece.entangle(0)
+	pieces.append(piece)
+	add_child(piece)
+	piece.visible = false
+	
+	backlist.append(pieces)
+	probabilities_backlist.append([0,0,0,0])
+	h_backlist.append([0,0,0,0])
+	x_backlist.append([0,0,0,0])
+	h_backlist_eval.append([true, false, true, false])
+	x_backlist_eval.append([true, false, true, false])
+	
 ##################### Handle Powerup Backlist
 func handle_powerups_backlist(userdata):
 	print("TESTING: Another handle_powerups")
@@ -446,9 +470,16 @@ func new_piece():
 		print("TESTING: another one!")
 	
 	#Transfer pieces
+	if backlist.size() < 2:
+		mutex.lock()
+		powerup_mutex.lock()
+		abort()
+		mutex.unlock()
+		powerup_mutex.unlock()
+	
 	current_pieces = backlist.pop_front()
 	mutex.lock()
-	next_pieces = backlist[0]
+	next_pieces =  backlist[0]
 	probabilities = probabilities_backlist.pop_front()
 	mutex.unlock()
 	
