@@ -151,6 +151,8 @@ class Quantum():
 
 		qc.rx(angle, 0)
 		qc.rz(angle, 0)
+		if superposition['piece1']["prob"] < superposition['piece2']["prob"]:
+			qc.z(0)
 		qc.h(0)
 
 		simulator = BasicAer.get_backend("statevector_simulator")
