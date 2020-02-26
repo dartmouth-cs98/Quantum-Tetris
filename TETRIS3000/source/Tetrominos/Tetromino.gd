@@ -241,8 +241,8 @@ func turn(direction):
 					translate(Vector3(1, 0, 0))
 					
 			
-			
-			unlocking()
+			# Now piece doesn't infinitely spin
+			# unlocking()
 			rotated_last = true
 			if i == 4:
 				rotation_point_5_used = true
@@ -269,8 +269,18 @@ func move_ghost(var vanish: bool = false):
 	
 	if( vanish ):
 		this_ghost.visible = false
+		
+		# Vanishes the superimposed counterpart as well
+		if( this_ghost == ghost_fake ): ghost.visible = false
+		elif( this_ghost == ghost_fakeB ): ghostB.visible = false
 	else: 
+		# Makes the ghost visible again if the piece somehow gets space under it again
 		this_ghost.visible = true
+		
+		# Superimposed counterpart also reappears
+		if( this_ghost == ghost_fake ): ghost.visible = true
+		elif( this_ghost == ghost_fakeB ): ghostB.visible = true
+		
 		
 		
 	# this_ghost is the "Ghost" scene
