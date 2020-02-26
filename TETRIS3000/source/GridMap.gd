@@ -39,7 +39,7 @@ func is_free_cell(cell, entanglement): #3D Vector
 	return (
 	
 		# Right here is where you set the bounds for entanglement!!
-		# Within grid columns (not at side edge)
+		# Within grid collumns (not at side edge)
 		left_bound <= cell.x and cell.x < right_bound
 		# Above the bottom
 		and cell.y >= 0
@@ -52,8 +52,9 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 	var position
 	var test_translations = []
 	
-	# For each possible orientation,
+	# For each block in the piece,
 	for i in range(4):
+		# The hypothetical new position of the cube
 		position = initial_translations[i] + movement
 		
 		# Checks here whether the move is possible
@@ -62,7 +63,9 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 		# one of the cells is full
 		else:
 			break
-	# if test_translations has the same size, then no break so all cells are empty.
+			
+	# if test_translations has the same size, then no break,
+	# so all 4 cubes can do this translation
 	if test_translations.size() == Tetromino.NB_MINOES:
 		return test_translations
 	else:

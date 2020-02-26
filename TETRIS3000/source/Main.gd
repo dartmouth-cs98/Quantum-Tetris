@@ -69,6 +69,7 @@ var autoshift_action
 # and set to true when player starts playing
 var playing = false
 
+
 ## Creating Pieces
 var running = false
 var powerups_running = false
@@ -102,6 +103,9 @@ signal x_eval_response_received
 signal init_eval_response_received
 signal have_pieces
 signal start_thread
+
+var num_H_gates: int = 0
+var num_X_gates: int = 0
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -500,7 +504,8 @@ func new_piece():
 		else:
 			game_over()
 		
-	if (current_pieces.size() > 1 && current_pieces.size()<3):# && current_pieces[1].is_fake):
+	if (current_pieces.size() > 1 && current_pieces.size()<3):
+
 		$FakeGhost.visible = true
 		$FlashText.print("SUPERPOSITION")
 		
@@ -512,9 +517,14 @@ func new_piece():
 	else:
 		$GhostB.visible = true
 		$FakeGhost.visible = false
-		
-		$FakeGhostB.visible = false
 
+		$FakeGhostB.visible = false
+		
+	
+	# If we have just entanglement,
+	if (current_pieces[0].entanglement < 0): 
+		$GhostB.visible = true
+		$FakeGhostB.visible = true
 	
 
 # Increments the difficulty upon reaching a new level
