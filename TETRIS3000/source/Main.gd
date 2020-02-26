@@ -476,7 +476,7 @@ func new_piece():
 			#$FlashText.print("ERROR - NO ENTANGLEMENT")
 		
 		# Initializes the ghost-piece at the bottom
-		current_piece.move_ghost(false)
+		current_piece.move_ghost()
 	# Generates the next piece
 	
 	#Place next piece
