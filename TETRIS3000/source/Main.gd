@@ -117,8 +117,6 @@ func _ready():
 	powerup_mutex = Mutex.new()
 	backlist_thread = Thread.new()
 	backlist_thread.start(self,"handle_backlist")
-	powerup_thread = Thread.new()
-	powerup_thread.start(self,"handle_powerups_backlist")
 	
 
 
@@ -136,6 +134,8 @@ func handle_backlist(userdata):
 			random_piece(true, false)
 			yield(self, "have_pieces")
 			
+			powerup_thread = Thread.new()
+			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
 #			print("TESTING, 8-Handle_Backlist, have pieces, calling evaluate") 
 			# Determine which pieces are fake
 			_initial_evaluate_superposition()
@@ -148,6 +148,8 @@ func handle_backlist(userdata):
 			random_piece(true, true)
 			yield(self, "have_pieces")
 
+			powerup_thread = Thread.new()
+			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
 			# Determine which pieces are fake
 #			print("TESTING, 8-Handle_Backlist, have pieces, calling evaluate") 
 			_initial_evaluate_superposition()
@@ -161,8 +163,6 @@ func handle_backlist(userdata):
 			random_piece(false, false)
 #			print("TESTING, 1-Handle_Backlist, adding normal to backlist")
 		#print("TESTING, i = " + String(i) + "  num_turns-total pieces = " + String(num_turns - total_pieces -1))
-		if i == (num_turns - total_pieces -1  ):
-			emit_signal("start_thread")
 	running = false
 
 
@@ -293,37 +293,39 @@ func return_name(i):
 ##################### Handle Powerup Backlist
 func handle_powerups_backlist(userdata):
 	print("TESTING: Another handle_powerups")
-	yield(self, "start_thread")
+#	yield(self, "start_thread")
+	
+	var pieces = userdata
+	######  Kinda dont need this anymore
 	var h_size = h_backlist.size()
 	var test_size = x_backlist.size()
 	
 	if h_size != test_size:
 		print("ERROR, x and h powerup lists do not match")
+	######  To here
 	else:
 		# Only cover indices that haven't been covered
 		#print("TESTING, handle_powerups_backlist, backlist size = "+ String(backlist.size()))
 
-		for pieces in backlist: #range(backlist.size()):
-			#print("TESTING, handle_powerups_backlist, index = "+ String(index))
-			# Wait change to objects
-			#if index>backlist.size():
-			#	break
-			#var pieces = backlist[index]
-			#var piece_probs = probabilities_backlist[index]
-			mutex.lock()
-			var piece_probs = probabilities_backlist[backlist.find(pieces)]
-			mutex.unlock()
+		#for pieces in backlist: #range(backlist.size()):
+		#print("TESTING, handle_powerups_backlist, index = "+ String(index))
+		# Wait change to objects
+		#if index>backlist.size():
+		#	break
+		#var pieces = backlist[index]
+		#var piece_probs = probabilities_backlist[index]
+		mutex.lock()
+		var piece_probs = probabilities_backlist[backlist.find(pieces)]
+		mutex.unlock()
 			
-#			print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
-			if pieces.size()>1:
-				## THREADING HERE
-				yield(self.apply_H([piece_probs, false, pieces]), "completed")
-				if pieces.size()>2:
-					yield(self.apply_H([piece_probs, true, pieces]), "completed")
-					
-				yield(self.apply_X([piece_probs, false, pieces]), "completed")
-				if pieces.size()>2:
-					yield(self.apply_X([piece_probs, true, pieces]), "completed")
+#		print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
+		if pieces.size()>1:
+			## THREADING HERE
+			yield(self.apply_H([piece_probs, false, pieces]), "completed")
+			yield(self.apply_X([piece_probs, false, pieces]), "completed")
+			if pieces.size()>2:
+				yield(self.apply_H([piece_probs, true, pieces]), "completed")
+				yield(self.apply_X([piece_probs, true, pieces]), "completed")
 
 	powerups_running = false
 	
@@ -419,9 +421,8 @@ func new_game(level):
 	$MidiPlayer.position = 0
 	$Stats.new_game(level)
 	
-	mutex.lock()
 	next_pieces = backlist[0]
-	mutex.unlock()
+
 	
 	new_piece()
 	resume()
@@ -440,9 +441,6 @@ func new_piece():
 		backlist_thread.wait_to_finish()
 		powerup_thread.wait_to_finish()
 		running = true
-		powerup_thread = Thread.new()
-		powerup_thread.start(self,"handle_powerups_backlist")
-		powerups_running = true
 		backlist_thread = Thread.new()
 		backlist_thread.start(self,"handle_backlist")
 		print("TESTING: another one!")
