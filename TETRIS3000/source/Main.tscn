@@ -286,7 +286,6 @@ visible = false
 visible = false
 
 [node name="H Gate" parent="." instance=ExtResource( 16 )]
-editor/display_folded = true
 visible = false
 margin_right = -620.0
 margin_bottom = -380.0
@@ -317,13 +316,15 @@ text = "X Gate"
 
 [node name="HTTPSuper" type="HTTPRequest" parent="."]
 
-[node name="HTTPX" type="HTTPRequest" parent="."]
-
 [node name="HTTPH" type="HTTPRequest" parent="."]
 
-[node name="HTTPEval" type="HTTPRequest" parent="."]
+[node name="HTTPHEval" type="HTTPRequest" parent="."]
 
 [node name="HTTPInitEval" type="HTTPRequest" parent="."]
+
+[node name="HTTPX" type="HTTPRequest" parent="."]
+
+[node name="HTTPXEval" type="HTTPRequest" parent="."]
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]
@@ -336,10 +337,11 @@ text = "X Gate"
 [connection signal="start" from="Start" to="." method="new_game"]
 [connection signal="pressed" from="ReplayButton" to="." method="_on_ReplayButton_pressed"]
 [connection signal="request_completed" from="HTTPSuper" to="." method="_on_HTTPRequest_super_completed"]
-[connection signal="request_completed" from="HTTPX" to="." method="_on_HTTPRequest_Xgate_completed"]
 [connection signal="request_completed" from="HTTPH" to="." method="_on_HTTPRequest_Hgate_completed"]
-[connection signal="request_completed" from="HTTPEval" to="." method="_on_HTTPRequest_eval_completed"]
+[connection signal="request_completed" from="HTTPHEval" to="." method="_on_HTTPRequest_Heval_completed"]
 [connection signal="request_completed" from="HTTPInitEval" to="." method="_on_HTTPRequest_init_eval_completed"]
+[connection signal="request_completed" from="HTTPX" to="." method="_on_HTTPRequest_Xgate_completed"]
+[connection signal="request_completed" from="HTTPXEval" to="." method="_on_HTTPRequest_Xeval_completed"]
 
 [editable path="H Gate"]
 

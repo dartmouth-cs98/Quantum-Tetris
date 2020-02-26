@@ -51,7 +51,6 @@ var x_backlist = []
 var h_backlist_eval = []
 var x_backlist_eval = []
 # Object names to hold place in list
-var object_to_index
 var x_probabilities = []
 var h_probabilities = []
 var x_evals = []
@@ -59,7 +58,6 @@ var h_evals = []
 # Variables to limit powerup usage
 var h_use = false
 var x_use = false
-
 
 # Boolean - used to prevent code from breaking if user holds down the hold-piece-command
 var current_piece_held
@@ -73,9 +71,11 @@ var playing = false
 
 ## Creating Pieces
 var running = false
+var powerups_running = false
 
 ## For MultiThreading
 var backlist_thread
+var powerup_thread
 var mutex
 var powerup_mutex
 
@@ -97,18 +97,24 @@ var init_entangled_pieces = false
 signal super_response_received
 signal h_response_received
 signal x_response_received
-signal eval_response_received
+signal h_eval_response_received
+signal x_eval_response_received
 signal init_eval_response_received
 signal have_pieces
+signal start_thread
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
 	randomize()
 	running = true
+	powerups_running = true
 	mutex = Mutex.new()
+	powerup_mutex = Mutex.new()
 	backlist_thread = Thread.new()
 	backlist_thread.start(self,"handle_backlist")
+	powerup_thread = Thread.new()
+	powerup_thread.start(self,"handle_powerups_backlist")
 	
 
 
@@ -117,7 +123,7 @@ func handle_backlist(userdata):
 	var num_turns = 11
 	var total_pieces = backlist.size()
 	for i in range(num_turns - total_pieces):
-		print(backlist.size())
+		#print("TESTING, backlist.size = " + String(backlist.size()))
 		var turn_type = count_turns()
 		# Superposition
 		if(turn_type == 1):
@@ -150,10 +156,9 @@ func handle_backlist(userdata):
 		else:
 			random_piece(false, false)
 #			print("TESTING, 1-Handle_Backlist, adding normal to backlist")
-
-		for piece in backlist[backlist.size()-1]:
-			piece.visible = false
-
+		#print("TESTING, i = " + String(i) + "  num_turns-total pieces = " + String(num_turns - total_pieces -1))
+		if i == (num_turns - total_pieces -1  ):
+			emit_signal("start_thread")
 	running = false
 
 
@@ -168,10 +173,6 @@ func count_turns():
 			return(2)
 		else:
 			return(1)
-			
-		
-		
-		
 	else:
 		return(0)
 	
@@ -193,8 +194,6 @@ func random_piece( create_super_piece, create_entanglement):
 		var types = state["type"]
 		probs = state["prob"]
 		
-		
-
 #		print("TESTING, 5-Random_Piece, back in Random_Piece")
 		# instantiate the piece returned by server
 		var piece0 = return_name(types[0]).instance()
@@ -202,15 +201,16 @@ func random_piece( create_super_piece, create_entanglement):
 		pieces.append(piece0)
 		# add piece to the game board
 		add_child(piece0)
+		piece0.visible = false
 		
 		var piece1 = return_name(types[1]).instance()
 		pieces.append(piece1)
 		add_child(piece1)
+		piece1.visible = false
 		
 		if(create_entanglement):
-#		print("TESTING, 2-Random_Piece, creating second entanglement pieces and calling request")
+#			print("TESTING, 2-Random_Piece, creating second entanglement pieces and calling request")
 		# Repeat for pieces 2 and 3 (during entanglement)
-#			entangled_pieces = true
 			_superposition_request()
 			
 					# Wait till http request node received a server responce
@@ -220,14 +220,16 @@ func random_piece( create_super_piece, create_entanglement):
 			
 			for entangled_prob in probs_entangled:
 				probs.append(entangled_prob)
-	#		print("TESTING, 5-Random_Piece, back in Random_Piece")
+#			print("TESTING, 5-Random_Piece, back in Random_Piece")
 			var piece2 = return_name(types_entangled[0]).instance()
 			pieces.append(piece2)
 			add_child(piece2)
+			piece2.visible = false
 			
 			var piece3 = return_name(types_entangled[1]).instance()
 			pieces.append(piece3)
 			add_child(piece3)
+			piece3.visible = false
 			
 	
 			
@@ -235,7 +237,7 @@ func random_piece( create_super_piece, create_entanglement):
 			pieces[1].entangle(-1)
 			pieces[2].entangle(1)
 			pieces[3].entangle(1)
-	#		print("TESTING, 6-Random_Piece, result: " + String(pieces))
+		#	print("TESTING, 6-Random_Piece, result: " + String(pieces))
 		else:
 			pieces[0].entangle(0)
 			pieces[1].entangle(0)
@@ -259,9 +261,7 @@ func random_piece( create_super_piece, create_entanglement):
 		piece.entangle(0)
 		pieces.append(piece)
 		add_child(piece)
-			
-	# Reset other variables (types)
-#	types = [-1,-1,-1,-1]
+		piece.visible = false
 	
 	# Add pieces to backlist, emit completed signal, and exit
 	mutex.lock()
@@ -278,58 +278,129 @@ func return_name(i):
 			
 			
 ##################### Handle Powerup Backlist
-func handle_Hpowerups_backlist(userdata):
-	var h_size = h_backlist.size()-1
-	var test_size = x_backlist.size()-1
+func handle_powerups_backlist(userdata):
+	print("TESTING: Another handle_powerups")
+	yield(self, "start_thread")
+	var h_size = h_backlist.size()
+	var test_size = x_backlist.size()
 	
 	if h_size != test_size:
 		print("ERROR, x and h powerup lists do not match")
 	else:
 		# Only cover indices that haven't been covered
-		for index in range(h_size, backlist.size()):
-			var pieces = backlist[index]
+		#print("TESTING, handle_powerups_backlist, backlist size = "+ String(backlist.size()))
+
+		for pieces in backlist: #range(backlist.size()):
+			#print("TESTING, handle_powerups_backlist, index = "+ String(index))
+			# Wait change to objects
+			#if index>backlist.size():
+			#	break
+			#var pieces = backlist[index]
+			#var piece_probs = probabilities_backlist[index]
+			mutex.lock()
+			var piece_probs = probabilities_backlist[backlist.find(pieces)]
+			mutex.unlock()
+			
+			
+			powerup_mutex.lock()
+			h_backlist.append([0,0,0,0])
+			x_backlist.append([0,0,0,0])
+			h_backlist_eval.append([false, false, false, false])
+			x_backlist_eval.append([false, false, false, false])
+			powerup_mutex.unlock()
+			
+#			print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
 			if pieces.size()>1:
-				pass
-				# do functions here to calculate for superposition and else
-				# call new functions on new threads?
-			else: # this is just a normal piece
-				h_backlist.append([0,0,0,0])
-				x_backlist.append([0,0,0,0])
-				#x_backlist_eval
-				h_backlist_eval.append(pieces[0].get_is_fake(), pieces[1].get_is_fake(), pieces[2].get_is_fake(), pieces[3].get_is_fake())
-				x_backlist_eval.append(pieces[0].get_is_fake(), pieces[1].get_is_fake(), pieces[2].get_is_fake(), pieces[3].get_is_fake())
+				## THREADING HERE
+				yield(self.apply_H([piece_probs, false]), "completed")
+				if pieces.size()>2:
+					yield(self.apply_H([piece_probs, true]), "completed")
+					
+				yield(self.apply_X([piece_probs, false]), "completed")
+				if pieces.size()>2:
+					yield(self.apply_X([piece_probs, true]), "completed")
+
+	powerups_running = false
 	
-#var hlist = []
-#var xlist = []
-## List of lists of bools
-#var heval = []
-#var xeval = []
-#		_H_gate_request()
-#		yield(self, "gate_response_received")
-#		_evaluate_superposition()
-#		yield(self, "eval_response_received")
-#
-#		if current_pieces.size()>2:
-#			entangled_pieces = true
-#			_H_gate_request()
-#			yield(self, "gate_response_received")
-#			_evaluate_superposition()
-#			yield(self, "eval_response_received")
-			# List of floats (probabilities - for display)
-		probabilities = x_probabilities
+func apply_H(userdata):
+	
+	#print("TESTING, apply H (1), in apply h")
+	var probability_list = userdata[0]
+	var entangle = userdata[1]
+	#print("TESTING, apply H (2), entangle is " + String(entangle))
+	
+	if !entangle:
+		_H_gate_request([probability_list[0], probability_list[1]])
+	else:
+		_H_gate_request([probability_list[2], probability_list[3]])
 		
+	var state = yield(self,  "h_response_received")
+	#print("TESTING, apply H (3), state = " + String(state) + " entangle is "+ String(entangle))
+	powerup_mutex.lock()
+	if !entangle:
+		h_backlist[h_backlist.size()-1][0] = state[0]
+		h_backlist[h_backlist.size()-1][1] = state[1]
+	
+	else:
+		h_backlist[h_backlist.size()-1][2] = state[0]
+		h_backlist[h_backlist.size()-1][3] = state[1]
+	powerup_mutex.unlock()
 		
-#		_X_gate_request()
-#		yield(self, "gate_response_received")
-#		_evaluate_superposition()
-#		yield(self, "eval_response_received")
-#
-#		if current_pieces.size()>2:
-#			entangled_pieces = true
-#			_X_gate_request()
-#			yield(self, "gate_response_received")
-#			_evaluate_superposition()
-#			yield(self, "eval_response_received")
+	#print("TESTING, apply_H (4), entangle is " + String(entangle) + " h_backlist is " +  String(h_backlist[h_backlist.size()-1]))
+		
+	_evaluate_superposition(state, "hgate")
+	var eval_state = yield(self, "h_eval_response_received")
+	#print("TESTING, apply H (5), eval_state = " + String(eval_state) + " entangle is "+ String(entangle))
+	powerup_mutex.lock()
+	if !entangle:
+		h_backlist_eval[h_backlist_eval.size()-1][0] = (eval_state[0])
+		h_backlist_eval[h_backlist_eval.size()-1][1] = (eval_state[1])
+	else:
+		h_backlist_eval[h_backlist_eval.size()-1][2] = (eval_state[0])
+		h_backlist_eval[h_backlist_eval.size()-1][3] = (eval_state[1])
+	powerup_mutex.unlock()
+	#print("TESTING, apply_H (6), entangle is " + String(entangle) + " h_eval_backlist is " + String(h_backlist_eval[h_backlist_eval.size()-1]))
+		
+func apply_X(userdata):
+	
+	#print("TESTING, apply_X (1), in apply X")
+	var probability_list = userdata[0]
+	var entangle = userdata[1]
+	#print("TESTING, apply_X (2), entangle is " + String(entangle))
+	
+	if !entangle:
+		_X_gate_request([probability_list[0], probability_list[1]])
+	else:
+		_X_gate_request([probability_list[2], probability_list[3]])
+		
+	var state = yield(self,  "x_response_received")
+	#print("TESTING, apply_X (3), state = " + String(state) + " entangle is "+ String(entangle))
+	powerup_mutex.lock()
+	if !entangle:
+		x_backlist[x_backlist.size()-1][0] = state[0]
+		x_backlist[x_backlist.size()-1][1] = state[1]
+	
+	else:
+		x_backlist[x_backlist.size()-1][2] = state[0]
+		x_backlist[x_backlist.size()-1][3] = state[1]
+	powerup_mutex.unlock()
+	
+	#print("TESTING, apply_X (4), entangle is " + String(entangle) + " x_backlist is " +  String(x_backlist[x_backlist.size()-1]))
+		
+	_evaluate_superposition(state, "xgate")
+	var eval_state = yield(self, "x_eval_response_received")
+	#print("TESTING, apply_X (5), eval_state = " + String(eval_state) + " entangle is "+ String(entangle))
+	powerup_mutex.lock()
+	if !entangle:
+		x_backlist_eval[x_backlist_eval.size()-1][0] = (eval_state[0])
+		x_backlist_eval[x_backlist_eval.size()-1][1] = (eval_state[1])
+	else:
+		x_backlist_eval[x_backlist_eval.size()-1][2] = (eval_state[0])
+		x_backlist_eval[x_backlist_eval.size()-1][3] = (eval_state[1])
+	powerup_mutex.unlock()
+	#print("TESTING, apply_X (6), entangle is " + String(entangle) + " x_eval_backlist is " + String(x_backlist_eval[x_backlist_eval.size()-1]))
+		
+
 ##################### Game Functions
 ## new_game: Start a new game
 func new_game(level):
@@ -342,7 +413,7 @@ func new_game(level):
 	$Stats.new_game(level)
 	
 	mutex.lock()
-	next_pieces = backlist.pop_front()
+	next_pieces = backlist[0]
 	mutex.unlock()
 	
 	new_piece()
@@ -356,18 +427,23 @@ func new_piece():
 	# See res://Tetrominos/Tetromino.gd
 	# Check the backlist
 	# Thread this?
-	if !running:
+	if !running:# and !powerups_running:
 		#Wait for thread to finish
 		# Call new thread here
 		backlist_thread.wait_to_finish()
+		powerup_thread.wait_to_finish()
 		running = true
+		powerup_thread = Thread.new()
+		powerup_thread.start(self,"handle_powerups_backlist")
+		powerups_running = true
 		backlist_thread = Thread.new()
 		backlist_thread.start(self,"handle_backlist")
+		print("TESTING: another one!")
 	
 	#Transfer pieces
-	current_pieces = next_pieces
+	current_pieces = backlist.pop_front()
 	mutex.lock()
-	next_pieces = backlist.pop_front()
+	next_pieces = backlist[0]
 	probabilities = probabilities_backlist.pop_front()
 	mutex.unlock()
 	
@@ -400,7 +476,7 @@ func new_piece():
 	
 	#Place next piece
 	for next_piece in next_pieces: 
- 		
+		next_piece.visible = true
 		if(next_pieces.size()>2):
 			next_piece.translation = $Next/Position3D.translation
 			if next_piece.entanglement < 0:
@@ -629,20 +705,15 @@ func lock(current_piece):
 			$MidiPlayer.piece_locked(lines_cleared)
 		remove_child(current_piece)
 		
-		
-		
 	# If the piece doesn't successfully lock into the grid, game over!
 	elif(playing == true):
 		game_over()
-		
-		
 	# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
 	if(current_pieces.find(current_piece) == current_pieces.size()-1):
 		new_piece()
-		
-		
+
 # Implements holding a piece in the upper left
 func hold():
 	
@@ -783,9 +854,9 @@ func evaluate_probabilities(action):
 	if action == "hgate":
 		# List of floats (probabilities - for display)
 		probabilities = h_probabilities
-		
 		var index = 0
 		for current_piece in current_pieces:
+			print("TESTING, H Gate pressed,  index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
 			if h_evals[index]:
 				current_piece.set_fake()
 			else:
@@ -798,6 +869,7 @@ func evaluate_probabilities(action):
 		
 		var index = 0
 		for current_piece in current_pieces:
+			print("TESTING, X Gate pressed, index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
 			if x_evals[index]:
 				current_piece.set_fake()
 			else:
@@ -815,16 +887,17 @@ func _superposition_request():
 #	print("TESTING, 3-_Superposition_Request, sending request ")
 	$HTTPSuper.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
 
-func _evaluate_superposition():
+func _evaluate_superposition(probability_list, action):
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
-	var prob
-	if(entangled_pieces):
-		prob = String(probabilities[2])
+	var prob = String(probability_list[0])
+	if(action == "hgate"):
+		$HTTPHEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+	elif(action == "xgate"):
+		$HTTPXEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 	else:
-		prob = String(probabilities[0])
-	$HTTPEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
-	
+		print("Creating request, action not recognized")
+
 func _initial_evaluate_superposition():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
@@ -837,50 +910,47 @@ func _initial_evaluate_superposition():
 #		print("TESTING, 12-initial_evaluate_superposition, making eval request") 
 	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 
-func _H_gate_request():
+func _H_gate_request(probability_list):
 ### Build query
-	var data_to_send = _create_request_data(entangled_pieces)
+	var data_to_send = _create_request_data(probability_list)
 	var query = JSON.print(data_to_send)
+#	print("TESTING, H Gate Request Query " + String(query))
 	#Add 'Content-Type' header:
 	var headers = ["Content-Type: application/json"]	
 	$HTTPH.request("https://q-tetris-backend.herokuapp.com/api/applyHGate",  headers, false, HTTPClient.METHOD_POST,query)
 
-func _X_gate_request():
-	var data_to_send = _create_request_data(entangled_pieces)
+func _X_gate_request(probability_list):
+	var data_to_send = _create_request_data(probability_list)
 	var query = JSON.print(data_to_send)
+#	print("TESTING, X Gate Request Query " + String(query))
 	#Add 'Content-Type' header:
 	var headers = ["Content-Type: application/json"]	
 	$HTTPX.request("https://q-tetris-backend.herokuapp.com/api/applyXGate",  headers, false, HTTPClient.METHOD_POST,query)
 
 
-func _create_request_data(entangle):
+func _create_request_data(probability_list):
 	var data_to_send = {}
 	var piece1 = {}
 	var piece2 = {}
-	if entangle:
-		piece1["prob"] = probabilities[2]
-		piece1["type"] = 2 #piece_names[current_pieces[2].get_name()]
-		piece2["prob"] = probabilities[3]
-		piece2["type"] = 3 #piece_names[current_pieces[3].get_name()]
-	else:
-		piece1["prob"] = probabilities[0]
-		piece1["type"] = 0 #piece_names[current_pieces[0].get_name()]
-		piece2["prob"] = probabilities[1]
-		piece2["type"] = 1 #piece_names[current_pieces[1].get_name()]
+
+	piece1["prob"] = probability_list[0]
+	piece1["type"] = 0 #piece_names[current_pieces[0].get_name()]
+	piece2["prob"] = probability_list[1]
+	piece2["type"] = 1 #piece_names[current_pieces[1].get_name()]
+
 	data_to_send["piece1"] = piece1
 	data_to_send["piece2"] = piece2
 	return data_to_send
 
-# For creating HTTP Request Nodes on the fly
-func _send_data():
-	pass
 
 func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
+#	print("TESTING, Superposition, response from Server: " + String(response.result))
 	var to_append_prob = [0,0]
 	var types = [0,0]
 	to_append_prob[0] = response.result.result["piece1"]["prob"]
 	to_append_prob[1] = response.result.result["piece2"]["prob"]
+	
 	var type0 = response.result.result["piece1"]["type"]
 	var type1 = response.result.result["piece2"]["type"]
 	if(type0>6):
@@ -889,9 +959,7 @@ func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 		type1 = 6
 	types[0] = type0
 	types[1] = type1
-#	mutex.lock()
-#	probabilities_backlist.append(to_append_prob)
-#	mutex.unlock()
+
 	emit_signal("super_response_received", {"prob":to_append_prob, "type": types})
 		
 func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
@@ -922,53 +990,46 @@ func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
 
 func _on_HTTPRequest_Hgate_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
+#	print("TESTING, H Gate, response from Server: " + String(response.result.result))
+	var to_send = [0,0]
+	to_send[0] = response.result.result["piece1"]["prob"]
+	to_send[1] = response.result.result["piece2"]["prob"]
 		
-	if(entangled_pieces):
-		entangled_pieces = false
-		probabilities[2] = response.result.result["piece1"]["prob"]
-		probabilities[3] = response.result.result["piece2"]["prob"]
-	else:
-		probabilities[0] = response.result.result["piece1"]["prob"]
-		probabilities[1] = response.result.result["piece2"]["prob"]
-		
-	emit_signal("h_response_received")
+	emit_signal("h_response_received", to_send)
 	
 func _on_HTTPRequest_Xgate_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
-		
-	if(entangled_pieces):
-		entangled_pieces = false
-		probabilities[2] = response.result.result["piece1"]["prob"]
-		probabilities[3] = response.result.result["piece2"]["prob"]
-	else:
-		probabilities[0] = response.result.result["piece1"]["prob"]
-		probabilities[1] = response.result.result["piece2"]["prob"]
-		
-	emit_signal("x_response_received")
+#	print("TESTING, X Gate, response from Server: " + String(response.result.result))
+	var to_send = [0,0]
+	to_send[0] = response.result.result["piece1"]["prob"]
+	to_send[1] = response.result.result["piece2"]["prob"]
+#	print("TESTING, XGate Completed: " + String(to_send))
+	emit_signal("x_response_received", to_send)
 
-func _on_HTTPRequest_eval_completed(result, response_code, headers, body):
+func _on_HTTPRequest_Heval_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
-	if(entangled_pieces):
-		entangled_pieces = false
-		if(response.result["result"] == 0):
-			current_pieces[2].set_fake()
-			current_pieces[3].set_real()
-		elif(response.result["result"] == 1):
-			current_pieces[3].set_fake()
-			current_pieces[2].set_real()
-		else:
-			print("Eval Response: Response code not recognized")
+	var to_send
+	if(response.result["result"] == 0):
+		to_send=[true, false]
+	elif(response.result["result"] == 1):
+		to_send = [false, true]
 	else:
-		if(response.result["result"] == 0):
-			current_pieces[0].set_fake()
-			current_pieces[1].set_real()
-		elif(response.result["result"] == 1):
-			current_pieces[1].set_fake()
-			current_pieces[0].set_real()
-		else:
-			print("Eval Response: Response code not recognized")
-	emit_signal("eval_response_received")
+		print("Eval Response: Response code not recognized")
+	
+	emit_signal("h_eval_response_received", to_send)
 
+
+func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
+	var response = JSON.parse(body.get_string_from_utf8())
+	var to_send
+	if(response.result["result"] == 0):
+		to_send=[true, false]
+	elif(response.result["result"] == 1):
+		to_send = [false, true]
+	else:
+		print("Eval Response: Response code not recognized")
+	
+	emit_signal("x_eval_response_received", to_send)
 
 # Bug, ghost - rafa
 # Bug, all 4 entanglement pieces evaluated
