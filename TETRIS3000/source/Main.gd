@@ -1041,4 +1041,5 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 # Limit amount of time a piece has to set
 # Move game over button
 # X powerups and h powerups should be separate threads
-# Set 
+# PROBABILITIES FOR HOLDING
+# THAT WIERD FALSE FALSE FALSE FALSE BUG
