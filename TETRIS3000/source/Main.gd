@@ -85,7 +85,7 @@ var current_names = []
 var next_names = []
 
 ## idk
-var turns = 4
+var turns = 5
 
 ## From response for create piece
 #var types = [0,0,0,0]
@@ -124,7 +124,7 @@ func _ready():
 
 ##################### Handle Piece Backlist
 func handle_backlist(userdata):
-	var num_turns = 11
+	var num_turns = 20
 	var total_pieces = backlist.size()
 	for i in range(num_turns - total_pieces):
 		#print("TESTING, backlist.size = " + String(backlist.size()))
@@ -191,6 +191,7 @@ func random_piece( create_super_piece, create_entanglement):
 		## GET FIRST PIECES
 		# Call superposition request, which gets piece probabilities and types
 		_superposition_request()
+		
 		
 		# Wait till http request node received a server responce
 		var state = yield(self, "super_response_received")
@@ -272,6 +273,14 @@ func random_piece( create_super_piece, create_entanglement):
 	backlist.append(pieces)
 	probabilities_backlist.append(probs)
 	mutex.unlock()
+	
+	powerup_mutex.lock()
+	h_backlist.append([0,0,0,0])
+	x_backlist.append([0,0,0,0])
+	h_backlist_eval.append([true, false, true, false])
+	x_backlist_eval.append([true, false, true, false])
+	powerup_mutex.unlock()
+			
 #	print("TESTING, 7-Random_Piece, added pieces to backlist")
 	emit_signal("have_pieces")
 	
@@ -305,24 +314,16 @@ func handle_powerups_backlist(userdata):
 			var piece_probs = probabilities_backlist[backlist.find(pieces)]
 			mutex.unlock()
 			
-			
-			powerup_mutex.lock()
-			h_backlist.append([0,0,0,0])
-			x_backlist.append([0,0,0,0])
-			h_backlist_eval.append([false, false, false, false])
-			x_backlist_eval.append([false, false, false, false])
-			powerup_mutex.unlock()
-			
 #			print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
 			if pieces.size()>1:
 				## THREADING HERE
-				yield(self.apply_H([piece_probs, false]), "completed")
+				yield(self.apply_H([piece_probs, false, pieces]), "completed")
 				if pieces.size()>2:
-					yield(self.apply_H([piece_probs, true]), "completed")
+					yield(self.apply_H([piece_probs, true, pieces]), "completed")
 					
-				yield(self.apply_X([piece_probs, false]), "completed")
+				yield(self.apply_X([piece_probs, false, pieces]), "completed")
 				if pieces.size()>2:
-					yield(self.apply_X([piece_probs, true]), "completed")
+					yield(self.apply_X([piece_probs, true, pieces]), "completed")
 
 	powerups_running = false
 	
@@ -331,6 +332,7 @@ func apply_H(userdata):
 	#print("TESTING, apply H (1), in apply h")
 	var probability_list = userdata[0]
 	var entangle = userdata[1]
+	var pieces = userdata[2]
 	#print("TESTING, apply H (2), entangle is " + String(entangle))
 	
 	if !entangle:
@@ -342,12 +344,12 @@ func apply_H(userdata):
 	#print("TESTING, apply H (3), state = " + String(state) + " entangle is "+ String(entangle))
 	powerup_mutex.lock()
 	if !entangle:
-		h_backlist[h_backlist.size()-1][0] = state[0]
-		h_backlist[h_backlist.size()-1][1] = state[1]
+		h_backlist[backlist.find(pieces)][0] = state[0]
+		h_backlist[backlist.find(pieces)][1] = state[1]
 	
 	else:
-		h_backlist[h_backlist.size()-1][2] = state[0]
-		h_backlist[h_backlist.size()-1][3] = state[1]
+		h_backlist[backlist.find(pieces)][2] = state[0]
+		h_backlist[backlist.find(pieces)][3] = state[1]
 	powerup_mutex.unlock()
 		
 	#print("TESTING, apply_H (4), entangle is " + String(entangle) + " h_backlist is " +  String(h_backlist[h_backlist.size()-1]))
@@ -357,11 +359,11 @@ func apply_H(userdata):
 	#print("TESTING, apply H (5), eval_state = " + String(eval_state) + " entangle is "+ String(entangle))
 	powerup_mutex.lock()
 	if !entangle:
-		h_backlist_eval[h_backlist_eval.size()-1][0] = (eval_state[0])
-		h_backlist_eval[h_backlist_eval.size()-1][1] = (eval_state[1])
+		h_backlist_eval[backlist.find(pieces)][0] = (eval_state[0])
+		h_backlist_eval[backlist.find(pieces)][1] = (eval_state[1])
 	else:
-		h_backlist_eval[h_backlist_eval.size()-1][2] = (eval_state[0])
-		h_backlist_eval[h_backlist_eval.size()-1][3] = (eval_state[1])
+		h_backlist_eval[backlist.find(pieces)][2] = (eval_state[0])
+		h_backlist_eval[backlist.find(pieces)][3] = (eval_state[1])
 	powerup_mutex.unlock()
 	#print("TESTING, apply_H (6), entangle is " + String(entangle) + " h_eval_backlist is " + String(h_backlist_eval[h_backlist_eval.size()-1]))
 		
@@ -370,6 +372,7 @@ func apply_X(userdata):
 	#print("TESTING, apply_X (1), in apply X")
 	var probability_list = userdata[0]
 	var entangle = userdata[1]
+	var pieces = userdata[2]
 	#print("TESTING, apply_X (2), entangle is " + String(entangle))
 	
 	if !entangle:
@@ -381,12 +384,12 @@ func apply_X(userdata):
 	#print("TESTING, apply_X (3), state = " + String(state) + " entangle is "+ String(entangle))
 	powerup_mutex.lock()
 	if !entangle:
-		x_backlist[x_backlist.size()-1][0] = state[0]
-		x_backlist[x_backlist.size()-1][1] = state[1]
+		x_backlist[backlist.find(pieces)][0] = state[0]
+		x_backlist[backlist.find(pieces)][1] = state[1]
 	
 	else:
-		x_backlist[x_backlist.size()-1][2] = state[0]
-		x_backlist[x_backlist.size()-1][3] = state[1]
+		x_backlist[backlist.find(pieces)][2] = state[0]
+		x_backlist[backlist.find(pieces)][3] = state[1]
 	powerup_mutex.unlock()
 	
 	#print("TESTING, apply_X (4), entangle is " + String(entangle) + " x_backlist is " +  String(x_backlist[x_backlist.size()-1]))
@@ -396,11 +399,11 @@ func apply_X(userdata):
 	#print("TESTING, apply_X (5), eval_state = " + String(eval_state) + " entangle is "+ String(entangle))
 	powerup_mutex.lock()
 	if !entangle:
-		x_backlist_eval[x_backlist_eval.size()-1][0] = (eval_state[0])
-		x_backlist_eval[x_backlist_eval.size()-1][1] = (eval_state[1])
+		x_backlist_eval[backlist.find(pieces)][0] = (eval_state[0])
+		x_backlist_eval[backlist.find(pieces)][1] = (eval_state[1])
 	else:
-		x_backlist_eval[x_backlist_eval.size()-1][2] = (eval_state[0])
-		x_backlist_eval[x_backlist_eval.size()-1][3] = (eval_state[1])
+		x_backlist_eval[backlist.find(pieces)][2] = (eval_state[0])
+		x_backlist_eval[backlist.find(pieces)][3] = (eval_state[1])
 	powerup_mutex.unlock()
 	#print("TESTING, apply_X (6), entangle is " + String(entangle) + " x_eval_backlist is " + String(x_backlist_eval[x_backlist_eval.size()-1]))
 		
@@ -524,7 +527,7 @@ func new_piece():
 	# If we have just entanglement,
 	if (current_pieces[0].entanglement < 0): 
 		$GhostB.visible = true
-		$FakeGhostB.visible = true
+		$FakeGhostB.visible = false
 	
 
 # Increments the difficulty upon reaching a new level
@@ -1053,3 +1056,6 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 # X powerups and h powerups should be separate threads
 # PROBABILITIES FOR HOLDING
 # THAT WIERD FALSE FALSE FALSE FALSE BUG
+# If server hangs too long, abort and make normal piece
+# ASync getting logging the new piece H and X gate stuff
+# Integrate getting powerups list with allowing powerups etc
