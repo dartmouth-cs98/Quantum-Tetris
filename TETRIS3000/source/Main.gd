@@ -597,10 +597,10 @@ func _unhandled_input(event):
 				current_piece.turn(Tetromino.COUNTERCLOCKWISE)
 		if event.is_action_pressed("hold"):
 			hold()
-		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use:
+		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and num_H_gates>0:
 			h_use = true
 			evaluate_probabilities("hgate")
-		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use:
+		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and num_X_gates>0: 
 			x_use = true
 			evaluate_probabilities("xgate")
 			
@@ -897,6 +897,7 @@ func evaluate_probabilities(action):
 		# List of floats (probabilities - for display)
 		probabilities = h_probabilities
 		var index = 0
+		$FlashText.print("H GATE")
 		for current_piece in current_pieces:
 			print("TESTING, H Gate pressed,  index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
 			if h_evals[index]:
@@ -908,7 +909,7 @@ func evaluate_probabilities(action):
 	elif action == "xgate":
 			# List of floats (probabilities - for display)
 		probabilities = x_probabilities
-		
+		$FlashText.print("X GATE")
 		var index = 0
 		for current_piece in current_pieces:
 			print("TESTING, X Gate pressed, index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
@@ -1073,18 +1074,13 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 	
 	emit_signal("x_eval_response_received", to_send)
 
-# Bug, ghost - rafa
-# Bug, all 4 entanglement pieces evaluated
 # Graphics - cant tell superposition pieces apart
-# Graphics - ghost needs to disappear before the piece hits. - Rafa
-# Implement notifications for powerups when pressed
 # GUI for powerups
 # Probabilities on screen? How about in the notification?
-# Limit amount of time a piece has to set
 # Move game over button
-# X powerups and h powerups should be separate threads
 # PROBABILITIES FOR HOLDING
 # THAT WIERD FALSE FALSE FALSE FALSE BUG
 # If server hangs too long, abort and make normal piece
-# ASync getting logging the new piece H and X gate stuff
-# Integrate getting powerups list with allowing powerups etc
+# Test server, abort
+# if backlist runs out, then abort
+
