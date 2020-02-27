@@ -104,6 +104,7 @@ signal init_eval_response_received
 signal have_pieces
 signal start_thread
 
+var turn_count: int = 0
 var num_H_gates: int = 0
 var num_X_gates: int = 0
 
@@ -454,6 +455,11 @@ func new_game(level):
 # The new piece gets generated
 func new_piece():
 	
+	# New turn!
+	turn_count += 1
+	
+	if( turn_count % 3 == 0): num_H_gates += 1
+	if( turn_count % 5 == 0): num_X_gates += 1
 	
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
