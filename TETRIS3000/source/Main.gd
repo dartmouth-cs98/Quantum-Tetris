@@ -735,6 +735,8 @@ func lock(current_piece):
 		
 	elif $Matrix/GridMap.lock(current_piece):
 		var t_spin = current_piece.t_spin()
+		
+		# Here we check if we completed a line
 		var lines_cleared = $Matrix/GridMap.clear_lines()
 		
 		var super = ""

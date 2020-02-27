@@ -30,8 +30,8 @@ func clear():
 func is_free_cell(cell, entanglement): #3D Vector
 	
 	# The two boundaries restricting the piece's lateral movement
-	var left_bound = 0
-	var right_bound = nb_collumns
+	var left_bound = -2
+	var right_bound = nb_collumns -2
 	
 	if( entanglement < 0 ): right_bound = 5
 	elif( entanglement > 0 ): left_bound = 5
@@ -88,11 +88,15 @@ func lock(piece):
 ### clear_lines
 func clear_lines():
 	var lines_cleared = 0
+	
+	# For each row, 
 	for y in range(nb_lines-1, -1, -1):
 		# Assume the line is full.
 		var line_cleared = true
+		
+		# For each block in this row, 
 		# If there is an empty space, move to the next line.
-		for x in range(nb_collumns):
+		for x in range(-2, nb_collumns-2):
 			if not get_cell_item(x, y, 0) == MINO:
 				line_cleared = false
 				break
