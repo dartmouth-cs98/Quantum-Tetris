@@ -10,7 +10,7 @@ func _ready():
 
 
 func add_powerup():
-	if num + 1< 11:
+	if num < 3 :
 		num += 1
 		$MarginContainer/VBoxContainer.get_child(num).visible = true
 		return true
@@ -18,10 +18,11 @@ func add_powerup():
 		return false
 
 func use_powerup():
-	if num>0:
+	if num > 0:
 		$MarginContainer/VBoxContainer.get_child(num).visible = false
 		num -= 1
 		return true
 	else:
 		return false
+	
 	

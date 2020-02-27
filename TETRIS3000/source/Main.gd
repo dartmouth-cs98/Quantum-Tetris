@@ -458,8 +458,8 @@ func new_piece():
 	# New turn!
 	turn_count += 1
 	
-	if( turn_count % 3 == 0): num_H_gates += 1
-	if( turn_count % 5 == 0): num_X_gates += 1
+	if( turn_count % 3 == 0): get_node("HGate").add_powerup()
+	if( turn_count % 5 == 0): get_node("XGate").add_powerup()
 	
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
@@ -605,9 +605,11 @@ func _unhandled_input(event):
 			hold()
 		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and num_H_gates>0:
 			h_use = true
+			get_node("HGate").use_powerup()
 			evaluate_probabilities("hgate")
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and num_X_gates>0: 
 			x_use = true
+			get_node("XGate").use_powerup()
 			evaluate_probabilities("xgate")
 			
 func process_new_action(event):
@@ -685,6 +687,7 @@ func process_autoshift():
 # Called to instantly drop the piece to the bottom
 
 func hard_drop():
+	
 	
 	for current_piece in current_pieces:
 		var score = 0

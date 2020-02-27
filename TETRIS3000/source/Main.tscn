@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://Environment.tres" type="Environment" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
@@ -15,6 +15,10 @@
 [ext_resource path="res://Start.tscn" type="PackedScene" id=13]
 [ext_resource path="res://fonts/Gamer.ttf" type="DynamicFontData" id=14]
 [ext_resource path="res://Tetrominos/Ghost.tscn" type="PackedScene" id=15]
+[ext_resource path="res://powerup.tscn" type="PackedScene" id=16]
+[ext_resource path="res://fonts/TitleFont.tres" type="DynamicFont" id=17]
+[ext_resource path="res://icons/HICON.png" type="Texture" id=18]
+[ext_resource path="res://icons/XICON.png" type="Texture" id=19]
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_transparent = true
@@ -281,6 +285,61 @@ visible = false
 
 [node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
 visible = false
+
+[node name="HGate" parent="." instance=ExtResource( 16 )]
+
+[node name="VBoxContainer" parent="HGate/MarginContainer" index="0"]
+margin_right = 195.0
+
+[node name="Label" parent="HGate/MarginContainer/VBoxContainer" index="0"]
+margin_right = 195.0
+margin_bottom = 34.0
+custom_fonts/font = ExtResource( 17 )
+text = "H Gates"
+
+[node name="Sprite" parent="HGate/MarginContainer/VBoxContainer" index="1"]
+position = Vector2( 25, 50 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 18 )
+
+[node name="Sprite2" parent="HGate/MarginContainer/VBoxContainer" index="2"]
+position = Vector2( 25, 100 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 18 )
+
+[node name="Sprite3" parent="HGate/MarginContainer/VBoxContainer" index="3"]
+position = Vector2( 25, 150 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 18 )
+
+[node name="XGate" parent="." instance=ExtResource( 16 )]
+margin_top = 200.0
+margin_right = -900.0
+margin_bottom = -300.0
+
+[node name="VBoxContainer" parent="XGate/MarginContainer" index="0"]
+margin_right = 195.0
+
+[node name="Label" parent="XGate/MarginContainer/VBoxContainer" index="0"]
+margin_right = 195.0
+margin_bottom = 34.0
+custom_fonts/font = ExtResource( 17 )
+text = "X Gates"
+
+[node name="Sprite" parent="XGate/MarginContainer/VBoxContainer" index="1"]
+position = Vector2( 25, 50 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 19 )
+
+[node name="Sprite2" parent="XGate/MarginContainer/VBoxContainer" index="2"]
+position = Vector2( 25, 100 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 19 )
+
+[node name="Sprite3" parent="XGate/MarginContainer/VBoxContainer" index="3"]
+position = Vector2( 25, 150 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 19 )
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]
@@ -292,3 +351,7 @@ visible = false
 [connection signal="level_up" from="Stats" to="." method="new_level"]
 [connection signal="start" from="Start" to="." method="new_game"]
 [connection signal="pressed" from="ReplayButton" to="." method="_on_ReplayButton_pressed"]
+
+[editable path="HGate"]
+
+[editable path="XGate"]
