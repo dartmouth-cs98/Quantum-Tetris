@@ -80,7 +80,8 @@ func lock(piece):
 			
 		# This function seems to lock the piece into the grid
 		# However, it appears to affect all pieces in the grid
-		set_cell_item(position.x, position.y, 0, MINO)
+		var colored_mino = piece.get_color_map()
+		set_cell_item(position.x, position.y, 0, colored_mino)
 	return minoes_over_grid < Tetromino.NB_MINOES
 
 

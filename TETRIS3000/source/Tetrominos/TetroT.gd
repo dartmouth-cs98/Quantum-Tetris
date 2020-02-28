@@ -1,5 +1,15 @@
 extends "Tetromino.gd"
-    
+
+####################### Setting piece color
+func assignColor():
+	for mino in minoes:
+		var material = load("res://Tetrominos/TetroTMaterial.tres")
+		mino.get_node("MinoMesh").set_material_override(material)
+
+func _ready():
+	assignColor()
+	color_mapping = 6
+   
 const T_SLOT = [
 	Vector3(-1, 1, 0),
 	Vector3(1, 1, 0),

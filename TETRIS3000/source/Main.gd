@@ -69,8 +69,6 @@ func new_game(level):
 
 # The new piece gets generated
 func new_piece():
-	
-	
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
 	current_pieces = next_pieces
@@ -136,7 +134,6 @@ func random_piece():
 	if( (turn_count % 4) == 0):
 		create_entanglement = true
 		
-	
 	if random_bag.size()<5:
 		# Creates an array of each different piece
 		# Each piece is a SCENE
@@ -144,6 +141,7 @@ func random_piece():
 			TetroI, TetroJ, TetroL, TetroO,
 			TetroS, TetroT, TetroZ
 		]
+		
 	var choice = randi() % random_bag.size()
 	var piece = random_bag[choice].instance()
 	random_bag.remove(choice)
@@ -225,6 +223,11 @@ func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
 		if playing:
 			pause($controls_ui)
+		else:
+			resume()
+	if event.is_action_pressed("tutorial"):
+		if playing:
+			pause($tutorial)
 		else:
 			resume()
 	if event.is_action_pressed("toggle_fullscreen"):
@@ -461,6 +464,7 @@ func resume():
 	$Stats/Clock.start()
 	$MidiPlayer.resume()
 	$controls_ui.visible = false
+	$tutorial.visible = false
 	$Stats.visible = true
 	$Matrix.visible = true
 	$Matrix/GridMap.visible = true
@@ -547,7 +551,7 @@ func _notification(what):
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
 			if playing:
 				pause($controls_ui)
-
+				pause($tutorial)
 
 func set_current_pieces(pieces):
 	

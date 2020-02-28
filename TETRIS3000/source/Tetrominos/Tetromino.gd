@@ -110,8 +110,7 @@ var is_fake = false
 # negative -> this piece is entangled into the left side of the grid
 # positive -> right side of the grid
 var entanglement = 0
-
-
+var color_mapping = 0
 
 #####################################  Functions  ##################################### 
 
@@ -281,8 +280,9 @@ func get_is_fake():
 func entangle(entangle_int): 
 	
 	entanglement = entangle_int
-	
-	
+
+func get_color_map(): 
+	return color_mapping
 	
 	
 	
