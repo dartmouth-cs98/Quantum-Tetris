@@ -107,6 +107,7 @@ signal init_eval_response_received
 signal have_pieces
 signal start_thread
 
+var turn_count: int = 0
 var num_H_gates: int = 0
 var num_X_gates: int = 0
 
@@ -183,6 +184,12 @@ func count_turns():
 			return(2)
 		else:
 			return(1)
+			
+		if( coin % 2 == 1 ): 
+			get_node("HGate").add_powerup()
+		else: 
+			get_node("XGate").add_powerup()
+		
 	else:
 		return(0)
 	
@@ -460,6 +467,11 @@ func new_game(level):
 # The new piece gets generated
 func new_piece():
 	
+	# New turn!
+	turn_count += 1
+	
+	if( turn_count % 3 == 0): get_node("HGate").add_powerup()
+	if( turn_count % 5 == 0): get_node("XGate").add_powerup()
 	
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
@@ -540,7 +552,7 @@ func new_piece():
 			
 		# If the piece can't spawn, you lose!
 		else:
-			game_over()
+			game_over(current_piece)
 		
 	if (current_pieces.size() > 1 && current_pieces.size()<3):
 
@@ -605,10 +617,15 @@ func _unhandled_input(event):
 			hold()
 		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and num_H_gates>0:
 			h_use = true
-			evaluate_probabilities("hgate")
+			
+			if( get_node("HGate").use_powerup() ): 
+				evaluate_probabilities("hgate")
+				
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and num_X_gates>0: 
 			x_use = true
-			evaluate_probabilities("xgate")
+			
+			if( get_node("XGate").use_powerup() ): 
+				evaluate_probabilities("xgate")
 			
 func process_new_action(event):
 	
@@ -686,6 +703,7 @@ func process_autoshift():
 
 func hard_drop():
 	
+	
 	for current_piece in current_pieces:
 		var score = 0
 		
@@ -735,12 +753,15 @@ func _on_LockDelay_timeout():
 
 # Transforms the piece from a falling object to a group of blocks resting on the floor
 ##NOT DONE
-func lock(current_piece):
+func lock(current_piece: Tetromino):
+	
 	if(current_piece.is_fake):
 		remove_child(current_piece)
 		
 	elif $Matrix/GridMap.lock(current_piece):
 		var t_spin = current_piece.t_spin()
+		
+		# Here we check if we completed a line
 		var lines_cleared = $Matrix/GridMap.clear_lines()
 		
 		var super = ""
@@ -755,7 +776,7 @@ func lock(current_piece):
 		
 	# If the piece doesn't successfully lock into the grid, game over!
 	elif(playing == true):
-		game_over()
+		game_over(current_piece)
 	# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
@@ -875,6 +896,11 @@ func resume():
 			held_piece.visible = true
 	for next_piece in next_pieces:
 		next_piece.visible = true
+		
+		
+	get_node("HGate").visible = true
+	get_node("XGate").visible = true
+	
 
 # Run when game gets paused
 func pause(gui=null):
@@ -904,10 +930,17 @@ func pause(gui=null):
 				held_piece.visible = false
 		for next_piece in next_pieces:
 			next_piece.visible = false
+			
+			
+	get_node("HGate").visible = false
+	get_node("XGate").visible = false
 
 # Called when the player loses
-func game_over():
-	abort()
+
+func game_over(current_piece: Tetromino):
+	
+	remove_child(current_piece)
+	abort = true
 	pause()
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
@@ -934,6 +967,9 @@ func _on_ReplayButton_pressed():
 	$Matrix/GridMap.clear()
 	pause($Start)
 	
+	get_node("HGate").clear()
+	get_node("XGate").clear()
+
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
