@@ -605,12 +605,15 @@ func _unhandled_input(event):
 			hold()
 		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and num_H_gates>0:
 			h_use = true
-			get_node("HGate").use_powerup()
-			evaluate_probabilities("hgate")
+			
+			if( get_node("HGate").use_powerup() ): 
+				evaluate_probabilities("hgate")
+				
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and num_X_gates>0: 
 			x_use = true
-			get_node("XGate").use_powerup()
-			evaluate_probabilities("xgate")
+			
+			if( get_node("XGate").use_powerup() ): 
+				evaluate_probabilities("xgate")
 			
 func process_new_action(event):
 	
