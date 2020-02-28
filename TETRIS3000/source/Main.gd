@@ -126,7 +126,7 @@ func handle_backlist(userdata):
 	var num_turns = 20
 	var total_pieces = backlist.size()
 	for i in range(num_turns - total_pieces):
-		#print("TESTING, backlist.size = " + String(backlist.size()))
+		print("TESTING, backlist.size = " + String(backlist.size()))
 		var turn_type = count_turns()
 		# Superposition
 		if(turn_type == 1):
