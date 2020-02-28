@@ -4,6 +4,8 @@ Quantum Tetris is your traditional tetris game game who has several twists based
 
 To play our game you can go here: http://quantumtetris.com
 
+To view our GoDot project you can go here: https://github.com/dartmouth-cs98/GoDot-Quantum-Tetris
+
 Backend can accessed via https://q-tetris-backend.herokuapp.com/
 
 Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1).
