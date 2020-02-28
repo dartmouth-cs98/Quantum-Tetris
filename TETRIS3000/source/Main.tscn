@@ -285,20 +285,13 @@ visible = false
 [node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
 visible = false
 
-[node name="H Gate" parent="." instance=ExtResource( 16 )]
+[node name="HGate" parent="." instance=ExtResource( 16 )]
 editor/display_folded = true
 visible = false
 margin_right = -620.0
 margin_bottom = -380.0
 
-[node name="VBoxContainer" parent="H Gate/MarginContainer" index="0"]
-margin_right = 74.0
-
-[node name="Label" parent="H Gate/MarginContainer/VBoxContainer" index="0"]
-margin_right = 74.0
-text = "H Gate"
-
-[node name="X Gate" parent="." instance=ExtResource( 16 )]
+[node name="XGate" parent="." instance=ExtResource( 16 )]
 editor/display_folded = true
 visible = false
 anchor_right = 0.0
@@ -307,13 +300,6 @@ margin_left = 200.0
 margin_top = 300.0
 margin_right = 240.0
 margin_bottom = 400.0
-
-[node name="VBoxContainer" parent="X Gate/MarginContainer" index="0"]
-margin_right = 70.0
-
-[node name="Label" parent="X Gate/MarginContainer/VBoxContainer" index="0"]
-margin_right = 70.0
-text = "X Gate"
 
 [node name="HTTPSuper" type="HTTPRequest" parent="."]
 
@@ -343,7 +329,3 @@ text = "X Gate"
 [connection signal="request_completed" from="HTTPInitEval" to="." method="_on_HTTPRequest_init_eval_completed"]
 [connection signal="request_completed" from="HTTPX" to="." method="_on_HTTPRequest_Xgate_completed"]
 [connection signal="request_completed" from="HTTPXEval" to="." method="_on_HTTPRequest_Xeval_completed"]
-
-[editable path="H Gate"]
-
-[editable path="X Gate"]
