@@ -286,6 +286,7 @@ visible = false
 visible = false
 
 [node name="H Gate" parent="." instance=ExtResource( 16 )]
+editor/display_folded = true
 visible = false
 margin_right = -620.0
 margin_bottom = -380.0
