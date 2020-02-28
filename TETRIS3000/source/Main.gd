@@ -178,6 +178,12 @@ func count_turns():
 			return(2)
 		else:
 			return(1)
+			
+		if( coin % 2 == 1 ): 
+			get_node("HGate").add_powerup()
+		else: 
+			get_node("XGate").add_powerup()
+		
 	else:
 		return(0)
 	
@@ -540,7 +546,7 @@ func new_piece():
 			
 		# If the piece can't spawn, you lose!
 		else:
-			game_over()
+			game_over(current_piece)
 		
 	if (current_pieces.size() > 1 && current_pieces.size()<3):
 
@@ -741,7 +747,8 @@ func _on_LockDelay_timeout():
 
 # Transforms the piece from a falling object to a group of blocks resting on the floor
 ##NOT DONE
-func lock(current_piece):
+func lock(current_piece: Tetromino):
+	
 	if(current_piece.is_fake):
 		remove_child(current_piece)
 		
@@ -763,7 +770,7 @@ func lock(current_piece):
 		
 	# If the piece doesn't successfully lock into the grid, game over!
 	elif(playing == true):
-		game_over()
+		game_over(current_piece)
 	# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
@@ -838,6 +845,11 @@ func resume():
 			held_piece.visible = true
 	for next_piece in next_pieces:
 		next_piece.visible = true
+		
+		
+	get_node("HGate").visible = true
+	get_node("XGate").visible = true
+	
 
 # Run when game gets paused
 func pause(gui=null):
@@ -867,9 +879,16 @@ func pause(gui=null):
 				held_piece.visible = false
 		for next_piece in next_pieces:
 			next_piece.visible = false
+			
+			
+	get_node("HGate").visible = false
+	get_node("XGate").visible = false
 
 # Called when the player loses
-func game_over():
+func game_over(current_piece: Tetromino):
+	
+	remove_child(current_piece)
+	
 	pause()
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
@@ -889,6 +908,9 @@ func _on_ReplayButton_pressed():
 	$Matrix/GridMap.clear()
 	pause($Start)
 	
+	get_node("HGate").clear()
+	get_node("XGate").clear()
+
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html

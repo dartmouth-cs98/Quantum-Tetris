@@ -24,6 +24,8 @@ func _ready():
 func clear():
 	for used_cell in get_used_cells():
 		set_cell_item(used_cell.x, used_cell.y, used_cell.z, EMPTY_CELL)
+		
+
 
 ### is_free_cell
 ## Input: A Vector 

@@ -9,15 +9,15 @@ func _ready():
 			child.visible = false
 
 
-func add_powerup():
-	if num < 3 :
+func add_powerup() -> bool:
+	if num < 4 :
 		num += 1
 		$MarginContainer/VBoxContainer.get_child(num).visible = true
 		return true
 	else:
 		return false
 
-func use_powerup():
+func use_powerup() -> bool:
 	if num > 0:
 		$MarginContainer/VBoxContainer.get_child(num).visible = false
 		num -= 1
@@ -26,3 +26,5 @@ func use_powerup():
 		return false
 	
 	
+func clear(): 
+	num = 0

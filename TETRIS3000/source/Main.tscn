@@ -178,6 +178,7 @@ wait_time = 0.06
 one_shot = true
 
 [node name="Hold" type="MeshInstance" parent="."]
+editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, -7, 16, 0 )
 visible = false
 mesh = SubResource( 3 )
@@ -187,6 +188,7 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 16, 0 )
 
 [node name="Next" type="MeshInstance" parent="."]
+editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 16, 16, 0 )
 visible = false
 mesh = SubResource( 3 )
@@ -287,6 +289,8 @@ visible = false
 visible = false
 
 [node name="HGate" parent="." instance=ExtResource( 16 )]
+editor/display_folded = true
+visible = false
 
 [node name="VBoxContainer" parent="HGate/MarginContainer" index="0"]
 margin_right = 195.0
@@ -303,16 +307,22 @@ scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 18 )
 
 [node name="Sprite2" parent="HGate/MarginContainer/VBoxContainer" index="2"]
-position = Vector2( 25, 100 )
+position = Vector2( 75, 50 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 18 )
 
 [node name="Sprite3" parent="HGate/MarginContainer/VBoxContainer" index="3"]
-position = Vector2( 25, 150 )
+position = Vector2( 125, 50 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 18 )
+
+[node name="Sprite4" parent="HGate/MarginContainer/VBoxContainer" index="4"]
+position = Vector2( 175, 50 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 18 )
 
 [node name="XGate" parent="." instance=ExtResource( 16 )]
+visible = false
 margin_top = 200.0
 margin_right = -900.0
 margin_bottom = -300.0
@@ -332,12 +342,17 @@ scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 19 )
 
 [node name="Sprite2" parent="XGate/MarginContainer/VBoxContainer" index="2"]
-position = Vector2( 25, 100 )
+position = Vector2( 75, 50 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 19 )
 
 [node name="Sprite3" parent="XGate/MarginContainer/VBoxContainer" index="3"]
-position = Vector2( 25, 150 )
+position = Vector2( 125, 50 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 19 )
+
+[node name="Sprite4" parent="XGate/MarginContainer/VBoxContainer" index="4"]
+position = Vector2( 175, 50 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 19 )
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]

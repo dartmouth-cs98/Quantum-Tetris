@@ -151,7 +151,7 @@ func get_translations():
 ### move
 ## Input: Vector, see movements in main.
 ## Function: Translate a piece. 
-func move(movement):
+func move(movement: Vector3) -> bool:
 	
 	# If the move is possible, 
 	# This is where you have to stop entangled pieces from moving through the middle-axis!
@@ -196,7 +196,7 @@ func move(movement):
 		
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
-func turn(direction):
+func turn(direction: int):
 	# Get current positions
 	var translations = get_translations()
 	var rotated_translations = [translations[0]]
@@ -272,7 +272,10 @@ func move_ghost(var vanish: bool = false):
 		
 		# Vanishes the superimposed counterpart as well
 		if( this_ghost == ghost_fake ): ghost.visible = false
+		elif( this_ghost == ghost ): ghost_fake.visible = false
 		elif( this_ghost == ghost_fakeB ): ghostB.visible = false
+		elif( this_ghost == ghostB ): ghost_fakeB.visible = false
+			
 	else: 
 		# Makes the ghost visible again if the piece somehow gets space under it again
 		this_ghost.visible = true
@@ -321,7 +324,7 @@ func set_fake():
 func set_real():
 	is_fake = false
 	
-func get_is_fake():
+func get_is_fake() -> bool:
 	return is_fake
 	
 	
