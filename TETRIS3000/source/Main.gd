@@ -112,7 +112,6 @@ var num_H_gates: int = 0
 var num_X_gates: int = 0
 
 var abort
-var first_piece
 
 
 ##################### Functions ##################### 
@@ -246,12 +245,17 @@ func random_piece( create_super_piece, create_entanglement):
 			add_child(piece3)
 			piece3.visible = false
 			
-	
-			
 			pieces[0].entangle(-1)
 			pieces[1].entangle(-1)
 			pieces[2].entangle(1)
 			pieces[3].entangle(1)
+			
+			#Connect each piece to its neighbors
+			pieces[0].connect_neighbors([pieces[1],pieces[2], pieces[3]])
+			pieces[1].connect_neighbors([pieces[0],pieces[2], pieces[3]])
+			pieces[2].connect_neighbors([pieces[0],pieces[1], pieces[3]])
+			pieces[3].connect_neighbors([pieces[0],pieces[1], pieces[2]])
+			
 		#	print("TESTING, 6-Random_Piece, result: " + String(pieces))
 		else:
 			pieces[0].entangle(0)
@@ -469,8 +473,6 @@ func new_game(level):
 # The new piece gets generated
 func new_piece():
 	
-	first_piece = true
-	
 	# New turn!
 	turn_count += 1
 	
@@ -488,7 +490,7 @@ func new_piece():
 		running = true
 		backlist_thread = Thread.new()
 		backlist_thread.start(self,"handle_backlist")
-		print("TESTING: another one!")
+		#print("TESTING: another one!")
 	
 	#Transfer pieces
 	if backlist.size() < 2:
@@ -693,12 +695,12 @@ func process_autoshift():
 			# Reverse lateral movement
 			if( autoshift_action == "move_left" ): moved = current_piece.move(movements["move_right"])
 			elif( autoshift_action == "move_right" ): moved = current_piece.move(movements["move_left"])
-			else: moved = current_piece.move(movements["soft_drop"], first_piece)
+			else: moved = current_piece.move(movements["soft_drop"])
 			
 		# If the piece is either negatively entangled or not entangled at all,
 		# behave normally
 		else:
-			moved = current_piece.move(movements[autoshift_action], first_piece)
+			moved = current_piece.move(movements[autoshift_action])
 		
 		# If the piece actually moved,
 		# And 
@@ -716,7 +718,7 @@ func hard_drop():
 		
 		# Stats
 		# (Also drops the piece until it can be dropped no more)
-		while current_piece.move(movements["soft_drop"]):
+		while current_piece.move(movements["soft_drop"]):#,first_piece):
 			score += 2
 		$Stats.piece_dropped(score)
 		
@@ -755,7 +757,6 @@ func _on_DropTimer_timeout():
 func _on_LockDelay_timeout():
 	for current_piece in current_pieces:
 		if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"], current_piece.entanglement):
-			first_piece = false
 			lock(current_piece)
 			
 			

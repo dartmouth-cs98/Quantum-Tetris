@@ -114,6 +114,11 @@ var is_locked: bool = false
 
 var color_mapping = 0
 var entanglement: int = 0
+var first_hit = true
+var TESTING = false
+
+signal switch 
+signal no_switch
 
 #####################################  Functions  ##################################### 
 
@@ -128,6 +133,7 @@ func _ready():
 	ghostB = get_node("../GhostB")
 	ghost_fake = get_node("../FakeGhost")
 	ghost_fakeB = get_node("../FakeGhostB")
+	
 	
 
 ####################### Controlling Piece
@@ -152,7 +158,7 @@ func get_translations():
 ### move
 ## Input: Vector, see movements in main.
 ## Function: Translate a piece. 
-func move(movement: Vector3, first_piece = false) -> bool:
+func move(movement: Vector3) -> bool:
 	
 	# If the move is possible, 
 	# This is where you have to stop entangled pieces from moving through the middle-axis!
@@ -176,10 +182,20 @@ func move(movement: Vector3, first_piece = false) -> bool:
 		
 		## i.e. if the move is not possible AND that movement is downwards
 		if movement == DROP_MOVEMENT:
-			
-			if entanglement>0 and first_piece:
-				is_fake = !is_fake
 			# If this piece is real
+			if entanglement > 0 and first_hit:
+				TESTING = true
+				print("switching!")
+				emit_signal("switch")
+			elif entanglement<0 and first_hit:
+				TESTING = true
+				print("not switching!")
+				emit_signal("no_switch")
+			elif entanglement != 0:
+				print("first_hit turned off!")
+			
+			if TESTING:
+				pass
 			if !is_fake:
 				# Begin locking the piece!
 				locking()
@@ -196,7 +212,15 @@ func move(movement: Vector3, first_piece = false) -> bool:
 				
 		return false
 		
-		
+func process_switch():
+	
+	first_hit = false
+	is_fake = !is_fake
+	
+func process_no_switch():
+	
+	first_hit = false
+
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
 func turn(direction: int):
@@ -343,6 +367,14 @@ func entangle(entangle_int: int):
 func get_color_map(): 
 	return color_mapping
 	
+func connect_neighbors(neighbors):
+	#Connect within itself
+	connect("switch", self, "process_switch")
+	connect("no_switch", self, "process_no_switch")
+	#Connect to each neighbor
+	for neighbor in neighbors:
+		connect("switch",neighbor,"process_switch")
+		connect("no_switch", neighbor, "process_no_switch")
 	
 	
 	
