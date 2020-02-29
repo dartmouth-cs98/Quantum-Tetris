@@ -957,7 +957,6 @@ func game_over(current_piece: Tetromino):
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
 
-
 # Called when the replay-button is pressed
 func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
