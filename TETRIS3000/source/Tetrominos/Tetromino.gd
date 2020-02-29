@@ -96,21 +96,23 @@ var grid_map
 var lock_delay
 
 # ghost pieces
-var ghost
-var ghostB	# For a real entangled piece
-var ghost_fake
-var ghost_fakeB
+var ghost: Node
+var ghostB: Node	# For a real entangled piece
+var ghost_fake: Node
+var ghost_fakeB: Node
+
 
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
-var is_fake = false
+var is_fake: bool = false
 
 # int
 # 0 -> this piece is not entangled
 # negative -> this piece is entangled into the left side of the grid
 # positive -> right side of the grid
-var entanglement = 0
+
 var color_mapping = 0
+var entanglement: int = 0
 
 #####################################  Functions  ##################################### 
 
@@ -149,7 +151,7 @@ func get_translations():
 ### move
 ## Input: Vector, see movements in main.
 ## Function: Translate a piece. 
-func move(movement):
+func move(movement: Vector3) -> bool:
 	
 	# If the move is possible, 
 	# This is where you have to stop entangled pieces from moving through the middle-axis!
@@ -157,7 +159,15 @@ func move(movement):
 		translate(movement)
 		unlocking()
 		rotated_last = false
-		move_ghost()
+		
+		# If the piece still has at least 3 spaces below it, 
+		if (grid_map.possible_positions(get_translations(), Vector3(0, -3, 0), entanglement)):
+			move_ghost() # Keep the ghost visible
+		
+		# If it doesn't have that space, 
+		else: 
+			move_ghost(true) # Make the ghost disappear
+		
 		return true
 		
 	# the move is not possible
@@ -179,19 +189,23 @@ func move(movement):
 					ghost_fake.visible = false
 				else:
 					ghost_fakeB.visible = false
+					
 				
 		return false
 		
 		
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
-func turn(direction):
+func turn(direction: int):
 	# Get current positions
 	var translations = get_translations()
 	var rotated_translations = [translations[0]]
 	var center = translations[0]
+	
 	# Check if rotation is possible
 	for i in range(1, NB_MINOES):
+		
+		# Logic for moving the cubes correctly for a rotation
 		var rt = translations[i] - center
 		rt = Vector3(-1*direction*rt.y, direction*rt.x, 0)
 		rt += center
@@ -199,17 +213,36 @@ func turn(direction):
 		
 	# Superposition list: split by orientations then turn of direction.
 	var movements = super_rotation_system[orientation][direction]
+	
+	# Only loops until success
 	for i in range(movements.size()):
 		if grid_map.possible_positions(rotated_translations, movements[i], 0):
 			
 			#Set new orientation
 			# Rotate the piece's position by either +1 or -1
 			orientation = (orientation - direction) % 4
+			
+			# Actually moves the piece
 			set_translations(rotated_translations)
 			
-			
+			# Moves the piece back in bounds if it's rotated out of bounds!
 			translate(movements[i])
-			unlocking()
+			
+			# If the piece is still somehow in an illegal position,
+			# (This happens in the center with entanglement)
+			if grid_map.possible_positions(rotated_translations, movements[i], 0):
+				if( entanglement < 0 && grid_map.possible_positions(rotated_translations, Vector3(-1, 0, 0), 0)):
+					# Kick the piece to the left if it's entangled left 
+					# (and if it can be kicked left)
+					translate(Vector3(-1, 0, 0))
+				elif( entanglement > 0 && grid_map.possible_positions(rotated_translations, Vector3(1, 0, 0), 0)):
+					# Kick the piece to the right if it's entangled right
+					# (and if it can be kicked right)
+					translate(Vector3(1, 0, 0))
+					
+			
+			# Now piece doesn't infinitely spin
+			# unlocking()
 			rotated_last = true
 			if i == 4:
 				rotation_point_5_used = true
@@ -219,9 +252,9 @@ func turn(direction):
 	
 ####################### Ghost
 ### move_ghost
-func move_ghost():
+func move_ghost(var vanish: bool = false):
 	
-	var this_ghost
+	var this_ghost: Node
 	
 	if (!is_fake):
 		if (entanglement >= 0):
@@ -234,6 +267,23 @@ func move_ghost():
 		else:
 			this_ghost = ghost_fakeB
 	
+	if( vanish ):
+		this_ghost.visible = false
+		
+		# Vanishes the superimposed counterpart as well
+		if( this_ghost == ghost_fake ): ghost.visible = false
+		elif( this_ghost == ghost ): ghost_fake.visible = false
+		elif( this_ghost == ghost_fakeB ): ghostB.visible = false
+		elif( this_ghost == ghostB ): ghost_fakeB.visible = false
+			
+	else: 
+		# Makes the ghost visible again if the piece somehow gets space under it again
+		this_ghost.visible = true
+		
+		# Superimposed counterpart also reappears
+		if( this_ghost == ghost_fake ): ghost.visible = true
+		elif( this_ghost == ghost_fakeB ): ghostB.visible = true
+		
 		
 		
 	# this_ghost is the "Ghost" scene
@@ -270,14 +320,17 @@ func unlocking():
 ####################### Superposition Functions
 func set_fake():
 	is_fake = true
+
+func set_real():
+	is_fake = false
 	
-func get_is_fake():
+func get_is_fake() -> bool:
 	return is_fake
 	
 	
 ####################### Entanglement functions
 
-func entangle(entangle_int): 
+func entangle(entangle_int: int): 
 	
 	entanglement = entangle_int
 

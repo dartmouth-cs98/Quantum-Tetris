@@ -8,7 +8,9 @@ const INPUT_ACTIONS = [
 	"soft_drop",
 	"hard_drop",
 	"hold",
-	"pause"
+	"pause",
+	"hgate",
+	"xgate"
 ]
 const CONFIG_FILE = "user://input.cfg"
 

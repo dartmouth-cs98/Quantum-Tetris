@@ -24,14 +24,16 @@ func _ready():
 func clear():
 	for used_cell in get_used_cells():
 		set_cell_item(used_cell.x, used_cell.y, used_cell.z, EMPTY_CELL)
+		
+
 
 ### is_free_cell
 ## Input: A Vector 
 func is_free_cell(cell, entanglement): #3D Vector
 	
 	# The two boundaries restricting the piece's lateral movement
-	var left_bound = 0
-	var right_bound = nb_collumns
+	var left_bound = -2
+	var right_bound = nb_collumns -2
 	
 	if( entanglement < 0 ): right_bound = 5
 	elif( entanglement > 0 ): left_bound = 5
@@ -39,7 +41,7 @@ func is_free_cell(cell, entanglement): #3D Vector
 	return (
 	
 		# Right here is where you set the bounds for entanglement!!
-		# Within grid columns (not at side edge)
+		# Within grid collumns (not at side edge)
 		left_bound <= cell.x and cell.x < right_bound
 		# Above the bottom
 		and cell.y >= 0
@@ -54,6 +56,7 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 	
 	# For each block in the piece,
 	for i in range(4):
+		# The hypothetical new position of the cube
 		position = initial_translations[i] + movement
 		
 		# Checks here whether the move is possible
@@ -88,11 +91,15 @@ func lock(piece):
 ### clear_lines
 func clear_lines():
 	var lines_cleared = 0
+	
+	# For each row, 
 	for y in range(nb_lines-1, -1, -1):
 		# Assume the line is full.
 		var line_cleared = true
+		
+		# For each block in this row, 
 		# If there is an empty space, move to the next line.
-		for x in range(nb_collumns):
+		for x in range(-2, nb_collumns-2):
 			if not get_cell_item(x, y, 0) == MINO:
 				line_cleared = false
 				break
