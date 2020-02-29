@@ -6,6 +6,7 @@
 size = Vector3( 0.9, 0.9, 0.9 )
 
 [node name="Mino" type="MeshInstance"]
+use_in_baked_light = true
 mesh = SubResource( 1 )
 skeleton = NodePath("")
 material/0 = ExtResource( 1 )

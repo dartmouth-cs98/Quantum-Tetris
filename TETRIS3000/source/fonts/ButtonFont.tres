@@ -3,11 +3,6 @@
 [ext_resource path="res://fonts/Gamer.ttf" type="DynamicFontData" id=1]
 
 [resource]
-
-size = 20
-use_mipmaps = false
-use_filter = false
+size = 30
 extra_spacing_top = -4
 font_data = ExtResource( 1 )
-_sections_unfolded = [ "Extra Spacing", "Font", "Settings" ]
-

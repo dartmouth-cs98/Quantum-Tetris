@@ -476,7 +476,7 @@ func new_piece():
 	
 	if( turn_count % 3 == 0): get_node("HGate").add_powerup()
 	if( turn_count % 5 == 0): get_node("XGate").add_powerup()
-	
+
 	# current_piece, next_piece, etc. are all Tetromino objects
 	# See res://Tetrominos/Tetromino.gd
 	# Check the backlist
@@ -485,7 +485,6 @@ func new_piece():
 		#Wait for thread to finish
 		# Call new thread here
 		backlist_thread.wait_to_finish()
-		powerup_thread.wait_to_finish()
 		running = true
 		backlist_thread = Thread.new()
 		backlist_thread.start(self,"handle_backlist")
@@ -571,7 +570,6 @@ func new_piece():
 	else:
 		$GhostB.visible = false
 		$FakeGhost.visible = false
-
 		$FakeGhostB.visible = false
 		
 	
@@ -595,6 +593,11 @@ func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
 		if playing:
 			pause($controls_ui)
+		else:
+			resume()
+	if event.is_action_pressed("tutorial"):
+		if playing:
+			pause($tutorial)
 		else:
 			resume()
 	if event.is_action_pressed("toggle_fullscreen"):
@@ -764,6 +767,8 @@ func _on_LockDelay_timeout():
 ##NOT DONE
 func lock(current_piece: Tetromino):
 	
+	current_piece.lock()
+	
 	if(current_piece.is_fake):
 		remove_child(current_piece)
 		
@@ -789,8 +794,14 @@ func lock(current_piece: Tetromino):
 	# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
-	if(current_pieces.find(current_piece) == current_pieces.size()-1):
-		new_piece()
+		
+	# If any of the pieces aren't locked yet, 
+	for current_piece in current_pieces :
+		if( !current_piece.is_locked ):
+			return
+	
+	# Dont' make a new piece!
+	new_piece()
 
 # Implements holding a piece in the upper left
 func hold():
@@ -881,6 +892,7 @@ func resume():
 	$Stats/Clock.start()
 	$MidiPlayer.resume()
 	$controls_ui.visible = false
+	$tutorial.visible = false
 	$Stats.visible = true
 	$Matrix.visible = true
 	$Matrix/GridMap.visible = true
@@ -954,7 +966,6 @@ func game_over(current_piece: Tetromino):
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
 
-
 # Called when the replay-button is pressed
 func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
@@ -987,6 +998,7 @@ func _notification(what):
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
 			if playing:
 				pause($controls_ui)
+				pause($tutorial)
 
 func set_current_pieces(pieces):
 	current_pieces = pieces

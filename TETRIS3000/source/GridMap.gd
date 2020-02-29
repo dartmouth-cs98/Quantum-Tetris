@@ -5,7 +5,6 @@ const Tetromino = preload("res://Tetrominos/Tetromino.gd")
 const ExplodingMino = preload("res://Tetrominos/Mino/ExplodingMino.tscn")
 
 const EMPTY_CELL = -1
-const MINO = 0
 
 var exploding_minoes = []
 var nb_collumns
@@ -33,7 +32,7 @@ func is_free_cell(cell, entanglement): #3D Vector
 	
 	# The two boundaries restricting the piece's lateral movement
 	var left_bound = -2
-	var right_bound = nb_collumns -2
+	var right_bound = nb_collumns -2 
 	
 	if( entanglement < 0 ): right_bound = 5
 	elif( entanglement > 0 ): left_bound = 5
@@ -83,7 +82,8 @@ func lock(piece):
 			
 		# This function seems to lock the piece into the grid
 		# However, it appears to affect all pieces in the grid
-		set_cell_item(position.x, position.y, 0, MINO)
+		var colored_mino = piece.get_color_map()
+		set_cell_item(position.x, position.y, 0, colored_mino)
 	return minoes_over_grid < Tetromino.NB_MINOES
 
 
@@ -99,7 +99,7 @@ func clear_lines():
 		# For each block in this row, 
 		# If there is an empty space, move to the next line.
 		for x in range(-2, nb_collumns-2):
-			if not get_cell_item(x, y, 0) == MINO:
+			if get_cell_item(x, y, 0) == INVALID_CELL_ITEM:
 				line_cleared = false
 				break
 		# If the line is clear, move every block down one.
