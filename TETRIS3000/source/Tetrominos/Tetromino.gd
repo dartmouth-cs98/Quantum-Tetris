@@ -151,7 +151,7 @@ func get_translations():
 ### move
 ## Input: Vector, see movements in main.
 ## Function: Translate a piece. 
-func move(movement: Vector3) -> bool:
+func move(movement: Vector3, first_piece = false) -> bool:
 	
 	# If the move is possible, 
 	# This is where you have to stop entangled pieces from moving through the middle-axis!
@@ -176,6 +176,8 @@ func move(movement: Vector3) -> bool:
 		## i.e. if the move is not possible AND that movement is downwards
 		if movement == DROP_MOVEMENT:
 			
+			if entanglement>0 and first_piece:
+				is_fake = !is_fake
 			# If this piece is real
 			if !is_fake:
 				# Begin locking the piece!

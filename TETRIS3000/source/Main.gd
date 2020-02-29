@@ -112,6 +112,8 @@ var num_H_gates: int = 0
 var num_X_gates: int = 0
 
 var abort
+var first_piece
+
 
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
@@ -467,6 +469,8 @@ func new_game(level):
 # The new piece gets generated
 func new_piece():
 	
+	first_piece = true
+	
 	# New turn!
 	turn_count += 1
 	
@@ -686,12 +690,12 @@ func process_autoshift():
 			# Reverse lateral movement
 			if( autoshift_action == "move_left" ): moved = current_piece.move(movements["move_right"])
 			elif( autoshift_action == "move_right" ): moved = current_piece.move(movements["move_left"])
-			else: moved = current_piece.move(movements["soft_drop"])
+			else: moved = current_piece.move(movements["soft_drop"], first_piece)
 			
 		# If the piece is either negatively entangled or not entangled at all,
 		# behave normally
 		else:
-			moved = current_piece.move(movements[autoshift_action])
+			moved = current_piece.move(movements[autoshift_action], first_piece)
 		
 		# If the piece actually moved,
 		# And 
@@ -748,7 +752,12 @@ func _on_DropTimer_timeout():
 func _on_LockDelay_timeout():
 	for current_piece in current_pieces:
 		if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"], current_piece.entanglement):
+			first_piece = false
 			lock(current_piece)
+			
+			
+# Check for first var here, use index to find if in 2 /3 or 0/1
+# reset first piece var in new piece
 
 
 # Transforms the piece from a falling object to a group of blocks resting on the floor
