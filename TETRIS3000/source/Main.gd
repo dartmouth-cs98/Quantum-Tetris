@@ -758,6 +758,8 @@ func _on_LockDelay_timeout():
 ##NOT DONE
 func lock(current_piece: Tetromino):
 	
+	current_piece.lock()
+	
 	if(current_piece.is_fake):
 		remove_child(current_piece)
 		
@@ -783,8 +785,14 @@ func lock(current_piece: Tetromino):
 	# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
-	if(current_pieces.find(current_piece) == current_pieces.size()-1):
-		new_piece()
+		
+	# If any of the pieces aren't locked yet, 
+	for current_piece in current_pieces :
+		if( !current_piece.is_locked ):
+			return
+	
+	# Dont' make a new piece!
+	new_piece()
 
 # Implements holding a piece in the upper left
 func hold():

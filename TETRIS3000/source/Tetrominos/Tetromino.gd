@@ -105,6 +105,7 @@ var ghost_fakeB: Node
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
 var is_fake: bool = false
+var is_locked: bool = false
 
 # int
 # 0 -> this piece is not entangled
@@ -317,6 +318,9 @@ func unlocking():
 		lock_delay.start()
 		
 		
+# Identifies the piece as locked
+func lock(): 
+	is_locked = true;
 ####################### Superposition Functions
 func set_fake():
 	is_fake = true
