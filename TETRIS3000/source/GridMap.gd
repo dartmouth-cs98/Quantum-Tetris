@@ -33,7 +33,7 @@ func is_free_cell(cell, entanglement): #3D Vector
 	
 	# The two boundaries restricting the piece's lateral movement
 	var left_bound = -2
-	var right_bound = nb_collumns -2
+	var right_bound = nb_collumns -2 
 	
 	if( entanglement < 0 ): right_bound = 5
 	elif( entanglement > 0 ): left_bound = 5
