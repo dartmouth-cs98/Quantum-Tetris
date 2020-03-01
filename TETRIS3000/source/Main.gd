@@ -99,6 +99,7 @@ signal x_response_received
 signal h_eval_response_received
 signal x_eval_response_received
 signal init_eval_response_received
+signal have_pieces
 
 
 var turn_count: int = 0
@@ -127,7 +128,6 @@ func _ready():
 
 ##################### Handle Piece Backlist
 func handle_backlist(userdata):
-	print("backlist called")
 	abort = false
 	var num_turns = 20
 	var total_pieces = backlist.size()
@@ -144,10 +144,10 @@ func handle_backlist(userdata):
 			yield(self, "have_pieces")
 			if abort:
 				return
-			
 			powerup_thread = Thread.new()
 			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
 
+			print("sending superposition request")
 			# Determine which pieces are fake
 			_initial_evaluate_superposition()
 			yield(self, "init_eval_response_received")
@@ -162,7 +162,6 @@ func handle_backlist(userdata):
 				
 			powerup_thread = Thread.new()
 			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
-			
 			# Determine which pieces are fake
 			init_entangled_pieces = true
 			_initial_evaluate_superposition()
@@ -298,7 +297,7 @@ func random_piece( create_super_piece, create_entanglement):
 	x_backlist_eval.append([true, false, true, false])
 	powerup_mutex.unlock()
 			
-#	print("TESTING, 7-Random_Piece, added pieces to backlist")
+	print("TESTING, 7-Random_Piece, added pieces to backlist")
 	emit_signal("have_pieces")
 	
 func return_name(i):
@@ -444,13 +443,12 @@ func apply_X(userdata):
 ##################### Game Functions
 ## new_game: Start a new game
 func new_game(level):
-	print("new game called")
 	# hide the title screen
 	$Start.visible = false
 	# start generating backlist
 	
-	abort()
 	if is_game_over:
+		abort()
 		is_game_over = false
 		running = true
 		backlist_thread = Thread.new()
@@ -463,7 +461,6 @@ func new_game(level):
 	is_game_over = false
 	
 	next_pieces = backlist[0]
-
 	
 	new_piece()
 	resume()
@@ -471,7 +468,6 @@ func new_game(level):
 # The new piece gets generated
 func new_piece():
 	if !is_game_over:
-		print("new piece called")
 		# New turn!
 		turn_count += 1
 		
@@ -559,7 +555,6 @@ func new_piece():
 				game_over()
 			
 		if (current_pieces.size() > 1 && current_pieces.size()<3):
-	
 			$FakeGhost.visible = true
 			$FlashText.print("SUPERPOSITION")
 			
@@ -759,10 +754,6 @@ func _on_LockDelay_timeout():
 			lock(current_piece)
 			
 			
-# Check for first var here, use index to find if in 2 /3 or 0/1
-# reset first piece var in new piece
-
-
 # Transforms the piece from a falling object to a group of blocks resting on the floor
 ##NOT DONE
 func lock(current_piece: Tetromino):
@@ -1022,7 +1013,6 @@ func _on_ReplayButton_pressed():
 	
 	get_node("HGate").clear()
 	get_node("XGate").clear()
-
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
@@ -1035,7 +1025,7 @@ func _notification(what):
 
 func set_current_pieces(pieces):
 	current_pieces = pieces
-
+	
 func get_current_pieces():
 	return current_pieces
 	
@@ -1097,11 +1087,11 @@ func _initial_evaluate_superposition():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
 	var prob
-
 	prob = String(probabilities_backlist.back()[0])
-#		print("TESTING, 12-initial_evaluate_superposition, making eval request") 
-	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+	#print("TESTING, 12-initial_evaluate_superposition, making eval request") 
 	print("TESTING: eval request")
+	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+	
 	
 
 func _H_gate_request(probability_list):
@@ -1224,9 +1214,9 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 	var to_send
 	if !abort:
 		if(response.result["result"] == 0):
-			to_send=[true, false] #[fake,real]
+			to_send = [true, false] #[fake, real]
 		elif(response.result["result"] == 1):
-			to_send = [false, true] #[real, fake]
+			to_send = [false, true] #[real, fake] 
 		else:
 			print("Eval Response: Response code not recognized")
 	
