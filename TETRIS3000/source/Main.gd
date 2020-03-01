@@ -79,7 +79,6 @@ var playing = false
 
 ## Creating Pieces
 var running = false
-var powerups_running = false
 
 ## For MultiThreading
 var backlist_thread
@@ -87,14 +86,10 @@ var powerup_thread
 var mutex
 var powerup_mutex
 
-## idk
+# Turns
 var turns = 5
 
-## From response for create piece
-#var types = [0,0,0,0]
-
 ## For responce
-var entangled_pieces = false
 var init_entangled_pieces = false
 
 ##Signals
@@ -104,14 +99,14 @@ signal x_response_received
 signal h_eval_response_received
 signal x_eval_response_received
 signal init_eval_response_received
-signal have_pieces
-signal start_thread
+
 
 var turn_count: int = 0
 var num_H_gates: int = 0
 var num_X_gates: int = 0
 
 var abort
+var is_game_over = false
 
 
 ##################### Functions ##################### 
@@ -119,9 +114,12 @@ var abort
 func _ready():
 	randomize()
 	running = true
-	powerups_running = true
+	
+	# Set mutexs for threads
 	mutex = Mutex.new()
 	powerup_mutex = Mutex.new()
+	
+	#Start backlist thread
 	backlist_thread = Thread.new()
 	backlist_thread.start(self,"handle_backlist")
 	
@@ -129,6 +127,7 @@ func _ready():
 
 ##################### Handle Piece Backlist
 func handle_backlist(userdata):
+	print("backlist called")
 	abort = false
 	var num_turns = 20
 	var total_pieces = backlist.size()
@@ -176,19 +175,19 @@ func handle_backlist(userdata):
 
 func count_turns():
 	turns -= 1
-#	print("TESTING - ALT - TURNS init: " + String(turns))
+
 	if turns == 0:
 		var coin = randi()%10 + 1
 		turns = randi()%5 + 1
-#		print("TESTING - ALT - TURNS after 0: " + String(turns))
+
 		if (coin)>8:
 			return(2)
 		else:
 			return(1)
 			
-		if( coin % 2 == 1 ): 
+		if( coin % 5 == 1 ): 
 			get_node("HGate").add_powerup()
-		else: 
+		elif (coin % 5 == 3): 
 			get_node("XGate").add_powerup()
 		
 	else:
@@ -199,6 +198,7 @@ func random_piece( create_super_piece, create_entanglement):
 	var pieces = []
 	var probs=[0,0,0,0]
 
+	#print("TESTING, random piece for " + String(create_super_piece) + "  " + String(create_entanglement))
 	if (create_super_piece): 
 #		print("TESTING, 2-Random_Piece, creating first entanglement pieces and calling request")
 		
@@ -336,39 +336,27 @@ func abort():
 	
 ##################### Handle Powerup Backlist
 func handle_powerups_backlist(userdata):
-	#print("TESTING: Another handle_powerups")
-#	yield(self, "start_thread")
 	
 	var pieces = userdata
-	######  Kinda dont need this anymore
-	var h_size = h_backlist.size()
-	var test_size = x_backlist.size()
 	
 	if abort:
 		return
 	
-	if h_size != test_size:
-		print("ERROR, x and h powerup lists do not match")
-	######  To here
-	else:
-		# Only cover indices that haven't been covered
-		mutex.lock()
-		var piece_probs = probabilities_backlist[backlist.find(pieces)]
-		mutex.unlock()
+	mutex.lock()
+	var piece_probs = probabilities_backlist[backlist.find(pieces)]
+	mutex.unlock()
 			
-#		print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
-		if pieces.size()>1 and pieces.size()<3:
-			if !abort:
-				yield(self.apply_H([piece_probs, false, pieces]), "completed")
-			if !abort:
-				yield(self.apply_X([piece_probs, false, pieces]), "completed")
-		elif pieces.size()>2:
-			if !abort:
-				yield(self.apply_H([piece_probs, true, pieces]), "completed")
-			if !abort:
-				yield(self.apply_X([piece_probs, true, pieces]), "completed")
-
-	powerups_running = false
+	#print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
+	if pieces.size()>1 and pieces.size()<3:
+		if !abort:
+			yield(self.apply_H([piece_probs, false, pieces]), "completed")
+		if !abort:
+			yield(self.apply_X([piece_probs, false, pieces]), "completed")
+	elif pieces.size()>2:
+		if !abort:
+			yield(self.apply_H([piece_probs, true, pieces]), "completed")
+		if !abort:
+			yield(self.apply_X([piece_probs, true, pieces]), "completed")
 	
 func apply_H(userdata):
 	
@@ -456,13 +444,23 @@ func apply_X(userdata):
 ##################### Game Functions
 ## new_game: Start a new game
 func new_game(level):
+	print("new game called")
 	# hide the title screen
 	$Start.visible = false
-	# generate the next piece
+	# start generating backlist
+	
+	abort()
+	if is_game_over:
+		is_game_over = false
+		running = true
+		backlist_thread = Thread.new()
+		backlist_thread.start(self,"handle_backlist")
+	
 	autoshift_action = ""
 	$LockDelay.wait_time = 0.5
 	$MidiPlayer.position = 0
 	$Stats.new_game(level)
+	is_game_over = false
 	
 	next_pieces = backlist[0]
 
@@ -472,113 +470,114 @@ func new_game(level):
 
 # The new piece gets generated
 func new_piece():
+	if !is_game_over:
+		print("new piece called")
+		# New turn!
+		turn_count += 1
+		
+		if( turn_count % 3 == 0): get_node("HGate").add_powerup()
+		if( turn_count % 5 == 0): get_node("XGate").add_powerup()
 	
-	# New turn!
-	turn_count += 1
-	
-	if( turn_count % 3 == 0): get_node("HGate").add_powerup()
-	if( turn_count % 5 == 0): get_node("XGate").add_powerup()
-
-	# current_piece, next_piece, etc. are all Tetromino objects
-	# See res://Tetrominos/Tetromino.gd
-	# Check the backlist
-	# Thread this?
-	if !running:# and !powerups_running:
-		#Wait for thread to finish
-		# Call new thread here
-		backlist_thread.wait_to_finish()
-		running = true
-		backlist_thread = Thread.new()
-		backlist_thread.start(self,"handle_backlist")
-		#print("TESTING: another one!")
-	
-	#Transfer pieces
-	if backlist.size() < 2:
+		# current_piece, next_piece, etc. are all Tetromino objects
+		# See res://Tetrominos/Tetromino.gd
+		# Check the backlist
+		# Thread this?
+		if !running:
+			#Wait for thread to finish
+			# Call new thread here
+			backlist_thread.wait_to_finish()
+			running = true
+			backlist_thread = Thread.new()
+			backlist_thread.start(self,"handle_backlist")
+			#print("TESTING: another one!")
+		
+		#Transfer pieces
+		if backlist.size() < 2:
+			mutex.lock()
+			powerup_mutex.lock()
+			abort()
+			mutex.unlock()
+			powerup_mutex.unlock()
+		
+		current_pieces = backlist.pop_front()
 		mutex.lock()
-		powerup_mutex.lock()
-		abort()
+		next_pieces =  backlist[0]
+		probabilities = probabilities_backlist.pop_front()
 		mutex.unlock()
-		powerup_mutex.unlock()
-	
-	current_pieces = backlist.pop_front()
-	mutex.lock()
-	next_pieces =  backlist[0]
-	probabilities = probabilities_backlist.pop_front()
-	mutex.unlock()
-	
-	powerup_mutex.lock()
-	h_probabilities = h_backlist.pop_front()
-	x_probabilities = x_backlist.pop_front()
 		
-	h_evals = h_backlist_eval.pop_front()
-	x_evals = x_backlist_eval.pop_front()
-	powerup_mutex.unlock()
-	
-	## powerup variables
-	h_use = false
-	x_use = false 
-	#Move current pieces into position
-	for current_piece in current_pieces:
-		
-		current_piece.visible = true
-		if( current_piece.entanglement < 0 ):
-			current_piece.translation = $Matrix/PosEntA.translation
-		elif( current_piece.entanglement > 0 ):
-			current_piece.translation = $Matrix/PosEntB.translation
-		else:
-			current_piece.translation = $Matrix/Position3D.translation
-			#$FlashText.print("ERROR - NO ENTANGLEMENT")
-		
-		# Initializes the ghost-piece at the bottom
-		current_piece.move_ghost()
-	# Generates the next piece
-	
-	#Place next piece
-	for next_piece in next_pieces: 
-		next_piece.visible = true
-		if(next_pieces.size()>2):
-			next_piece.translation = $Next/Position3D.translation
-			if next_piece.entanglement < 0:
-				next_piece.translation = $Next/Position3D.translation + (Vector3(1,0,0))
-			else:
-				next_piece.translation = $Next/Position3D.translation + (Vector3(1,-4,0))
-		else:
-			# This places the next piece in the upper-right box
-			next_piece.translation = $Next/Position3D.translation
-	
-	## Place current pieces
-	# THERE is a 0-magnitude 3D-vector
-	for current_piece in current_pieces:
-		
-		# Checks whether the piece has room to spawn
-		if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE, current_piece.entanglement):
-			$DropTimer.start()
-			current_piece_held = false
+		powerup_mutex.lock()
+		h_probabilities = h_backlist.pop_front()
+		x_probabilities = x_backlist.pop_front()
 			
-		# If the piece can't spawn, you lose!
-		else:
-			game_over(current_piece)
+		h_evals = h_backlist_eval.pop_front()
+		x_evals = x_backlist_eval.pop_front()
+		powerup_mutex.unlock()
 		
-	if (current_pieces.size() > 1 && current_pieces.size()<3):
-
-		$FakeGhost.visible = true
-		$FlashText.print("SUPERPOSITION")
+		## powerup variables
+		h_use = false
+		x_use = false 
+		#Move current pieces into position
+		for current_piece in current_pieces:
+			
+			current_piece.visible = true
+			if( current_piece.entanglement < 0 ):
+				current_piece.translation = $Matrix/PosEntA.translation
+			elif( current_piece.entanglement > 0 ):
+				current_piece.translation = $Matrix/PosEntB.translation
+			else:
+				current_piece.translation = $Matrix/Position3D.translation
+				#$FlashText.print("ERROR - NO ENTANGLEMENT")
+			
+			# Initializes the ghost-piece at the bottom
+			current_piece.move_ghost()
+		# Generates the next piece
 		
-		# If we have both superposition and entanglement,
-	elif(current_pieces.size() > 2):
-		$GhostB.visible = true
-		$FakeGhostB.visible = true
-		$FlashText.print("ENTANGLEMENT")
-	else:
-		$GhostB.visible = false
-		$FakeGhost.visible = false
-		$FakeGhostB.visible = false
+		#Place next piece
+		for next_piece in next_pieces: 
+			next_piece.visible = true
+			if(next_pieces.size()>2):
+				next_piece.translation = $Next/Position3D.translation
+				if next_piece.entanglement < 0:
+					next_piece.translation = $Next/Position3D.translation + (Vector3(1,0,0))
+				else:
+					next_piece.translation = $Next/Position3D.translation + (Vector3(1,-4,0))
+			else:
+				# This places the next piece in the upper-right box
+				next_piece.translation = $Next/Position3D.translation
 		
+		## Place current pieces
+		# THERE is a 0-magnitude 3D-vector
+		for current_piece in current_pieces:
+			
+			# Checks whether the piece has room to spawn
+			if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE, current_piece.entanglement):
+				$DropTimer.start()
+				current_piece_held = false
+				
+			# If the piece can't spawn, you lose!
+			elif !is_game_over:
+				game_over()
+			
+		if (current_pieces.size() > 1 && current_pieces.size()<3):
 	
-	# If we have just entanglement,
-	if (current_pieces[0].entanglement < 0): 
-		$GhostB.visible = true
-		$FakeGhostB.visible = false
+			$FakeGhost.visible = true
+			$FlashText.print("SUPERPOSITION")
+			
+			# If we have both superposition and entanglement,
+		elif(current_pieces.size() > 2):
+			$GhostB.visible = true
+			$FakeGhostB.visible = true
+			$FlashText.print("ENTANGLEMENT")
+		else:
+			$GhostB.visible = false
+			$FakeGhost.visible = false
+			$FakeGhostB.visible = false
+			
+		
+		# If we have just entanglement,
+		if (current_pieces[0].entanglement < 0): 
+			$GhostB.visible = true
+			$FakeGhostB.visible = false
 	
 
 # Increments the difficulty upon reaching a new level
@@ -790,8 +789,11 @@ func lock(current_piece: Tetromino):
 		remove_child(current_piece)
 		
 	# If the piece doesn't successfully lock into the grid, game over!
-	elif(playing == true):
-		game_over(current_piece)
+	elif (playing == true):
+		if !is_game_over:
+			game_over()
+		else:
+			pass
 	# Spawns the next piece after this one is locked to the ground.
 		# If we're locking the last piece,
 		# make the new pieces!
@@ -802,7 +804,8 @@ func lock(current_piece: Tetromino):
 			return
 	
 	# Dont' make a new piece!
-	new_piece()
+	if !is_game_over:
+		new_piece()
 
 # Implements holding a piece in the upper left
 func hold():
@@ -959,13 +962,32 @@ func pause(gui=null):
 
 # Called when the player loses
 
-func game_over(current_piece: Tetromino):
-	
-	remove_child(current_piece)
+func game_over():
+	print("game over called")
+	is_game_over = true
 	abort = true
 	pause()
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
+	for piece_list in backlist:
+		for piece in piece_list:
+			remove_child(piece)
+			
+	backlist = []
+	## clean up the rest of precomputed variables
+	probabilities_backlist = []
+	probabilities = []
+	h_backlist = []
+	x_backlist = []
+	h_backlist_eval = []
+	x_backlist_eval = []
+	x_evals = []
+	h_evals = []
+	h_probabilities = []
+	x_probabilities = []
+
+	backlist_thread.wait_to_finish()
+	
 
 # Called when the replay-button is pressed
 func _on_ReplayButton_pressed():
@@ -978,12 +1000,22 @@ func _on_ReplayButton_pressed():
 		for held_piece in held_pieces:
 			remove_child(held_piece)
 			held_piece = null
-	for piece_list in backlist:
-		for piece in piece_list:
-			remove_child(piece)
-	probabilities_backlist = []
-	h_backlist = []
-	x_backlist = []
+			
+	next_pieces = []
+	current_pieces = []
+	held_pieces = []
+	
+	# Other holding variables
+	held_probabilities = []
+	held_h_probabilities = []
+	held_x_probabilities = []
+	held_h_evals = []
+	held_x_evals = []
+	
+	# other variables
+	turns = 0
+	turn_count = 0
+	
 	
 	$Matrix/GridMap.clear()
 	pause($Start)
@@ -1044,7 +1076,7 @@ func evaluate_probabilities(action):
 func _superposition_request():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
-#	print("TESTING, 3-_Superposition_Request, sending request ")
+	print("TESTING, 3-_Superposition_Request, sending request ")
 	$HTTPSuper.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
 
 func _evaluate_superposition(probability_list, action):
@@ -1058,6 +1090,9 @@ func _evaluate_superposition(probability_list, action):
 	else:
 		print("Creating request, action not recognized")
 
+		
+
+
 func _initial_evaluate_superposition():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
@@ -1066,6 +1101,8 @@ func _initial_evaluate_superposition():
 	prob = String(probabilities_backlist.back()[0])
 #		print("TESTING, 12-initial_evaluate_superposition, making eval request") 
 	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
+	print("TESTING: eval request")
+	
 
 func _H_gate_request(probability_list):
 ### Build query
@@ -1102,7 +1139,7 @@ func _create_request_data(probability_list):
 
 func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
-#	print("TESTING, Superposition, response from Server: " + String(response.result))
+	print("TESTING, Superposition, response from Server: " + String(response.result))
 	var to_append_prob = [0,0]
 	var types = [0,0]
 	
@@ -1110,8 +1147,9 @@ func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 		emit_signal("super_response_received", {"prob":to_append_prob, "type": types})
 		return
 
-	## NOT SURE IF THIS WILL WORK
+	## server is down
 	if response_code == 0:
+		print("Server unresponsive")
 		abort()
 		emit_signal("super_response_received", {"prob":to_append_prob, "type": types})
 		return
@@ -1132,24 +1170,24 @@ func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 		
 func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
 	if !abort:
+		print("TESTING: eval response")
 		var response = JSON.parse(body.get_string_from_utf8())
 		
 		if(response.result["result"] == 0):
 			backlist[backlist.size()-1][0].set_fake()
 			backlist[backlist.size()-1][1].set_real()
 			if init_entangled_pieces:
-				init_entangled_pieces = false
 				backlist[backlist.size()-1][2].set_real()
 				backlist[backlist.size()-1][3].set_fake()
 		elif(response.result["result"] == 1):
 			backlist[backlist.size()-1][1].set_fake()
 			backlist[backlist.size()-1][0].set_real()
 			if init_entangled_pieces:
-				init_entangled_pieces = false
 				backlist[backlist.size()-1][3].set_real()
 				backlist[backlist.size()-1][2].set_fake()
 		else:
 			print("Initial Eval Response: Response code not recognized")
+	init_entangled_pieces = false
 	emit_signal("init_eval_response_received")
 
 func _on_HTTPRequest_Hgate_completed(result, response_code, headers, body):
