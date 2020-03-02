@@ -131,6 +131,8 @@ func _ready():
 	## for tutorial
 	connect("resume_after_text",$tutorial, "next_tutorial_piece")
 	
+	$Start.connect("tutorial", self, "new_game")
+	
 
 
 ##################### Handle Piece Backlist
@@ -781,6 +783,9 @@ func _on_LockDelay_timeout():
 ##NOT DONE
 func lock(current_piece: Tetromino):
 	
+
+	if( tutorial ): next_tutorial_screen()
+	
 	current_piece.lock()
 	
 	if(current_piece.is_fake):
@@ -1077,9 +1082,10 @@ func new_tutorial():
 	clear_lists()
 	get_tutorial_pieces()
 	pause($tutorial)
+	new_piece()		# spawn the first piece
 	
 func next_tutorial_piece():
-	new_piece()
+	# new_piece()
 	resume()
 	
 	

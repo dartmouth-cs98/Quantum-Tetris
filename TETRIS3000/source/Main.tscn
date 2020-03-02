@@ -381,6 +381,7 @@ texture = ExtResource( 19 )
 [connection signal="flash_text" from="Stats" to="FlashText" method="print"]
 [connection signal="level_up" from="Stats" to="." method="new_level"]
 [connection signal="start" from="Start" to="." method="new_game"]
+[connection signal="tutorial" from="Start" to="." method="new_game"]
 [connection signal="pressed" from="ReplayButton" to="." method="_on_ReplayButton_pressed"]
 [connection signal="request_completed" from="HTTPSuper" to="." method="_on_HTTPRequest_super_completed"]
 [connection signal="request_completed" from="HTTPH" to="." method="_on_HTTPRequest_Hgate_completed"]
