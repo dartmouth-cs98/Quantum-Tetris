@@ -472,7 +472,7 @@ func new_game(level, tutorial_input = false):
 	autoshift_action = ""
 	$LockDelay.wait_time = 0.5
 	$MidiPlayer.position = 0
-	$Stats.new_game(level)
+	$Stats.new_game(level, tutorial)
 	is_game_over = false
 	
 	next_pieces = backlist[0]
@@ -824,7 +824,7 @@ func lock(current_piece: Tetromino):
 			return
 	
 	# Dont' make a new piece!
-	if !is_game_over:
+	if !is_game_over and !tutorial:
 		new_piece()
 
 # Implements holding a piece in the upper left
@@ -1014,11 +1014,7 @@ func game_over():
 	$FlashText.print("GAME\nOVER")
 	$ReplayButton.visible = true
 	clear_lists()
-	
-<<<<<<< HEAD
-=======
-	# jboog
->>>>>>> d737029310201518e435a26091056846913d1ae8
+
 	$MidiPlayer.game_over()
 	
 
@@ -1086,10 +1082,10 @@ func new_tutorial():
 	clear_lists()
 	get_tutorial_pieces()
 	pause($tutorial)
-	new_piece()		# spawn the first piece
+#	new_piece()		# spawn the first piece
 	
 func next_tutorial_piece():
-	# new_piece()
+	new_piece()
 	resume()
 	
 	
@@ -1301,91 +1297,160 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 	emit_signal("x_eval_response_received", to_send)
 	
 func get_tutorial_pieces(): 
-
-	var pieces = []
-	var probabilities_backlist = []
-	var h_backlist = []
-	var x_backlist = []
-	
-	var h_eval_backlist = []
-	var x_eval_backlist = []
 	
 	# First piece is a cube
-	pieces.append([return_name(3)])
+	var piece_norm = return_name(3).instance()
+	add_child(piece_norm)
+	piece_norm.visible = false
+	backlist.append([piece_norm])
 	probabilities_backlist.append([0, 0, 0, 0])
 	h_backlist.append([0, 0, 0, 0])
 	x_backlist.append([0, 0, 0, 0])
-	h_eval_backlist.append([false, false, false, false])
-	x_eval_backlist.append([false, false, false, false])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
 	
 	
-	# Then three superposition pieces
-	pieces.append([return_name(0), return_name(1)])		# I + J 
-	probabilities_backlist.append([.5, .5, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
-	h_eval_backlist.append([false, false, false, false])
-	x_eval_backlist.append([false, false, false, false])
+	########### Then three superposition pieces
 	
-	pieces.append([return_name(2), return_name(3)])		# L + O
-	probabilities_backlist.append([.8, .2, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
-	h_eval_backlist.append([false, false, false, false])
-	x_eval_backlist.append([false, false, false, false])
-	
-	
-	# Then three entanglement pieces
-	pieces.append([return_name(0), return_name(1), return_name(2), return_name(3)])		# (I + J) + (L + O)
-	probabilities_backlist.append([.8, .2, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
-	h_eval_backlist.append([false, false, false, false])
-	x_eval_backlist.append([false, false, false, false])
-	
-	pieces.append([return_name(0), return_name(2), return_name(4), return_name(6)])		# (I + L) + (S + Z)
-	probabilities_backlist.append([.8, .2, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
-	h_eval_backlist.append([false, false, false, false])
-	x_eval_backlist.append([false, false, false, false])
-	
-	pieces.append([return_name(1), return_name(3), return_name(5), return_name(6)])		# (J + O) + (T + Z)
-	probabilities_backlist.append([.8, .2, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
-	h_eval_backlist.append([false, false, false, false])
-	x_eval_backlist.append([false, false, false, false])
-	
-	
-	pieces.append([return_name(0), return_name(1)])		# I + J
+	var piece0 = return_name(0).instance()
+	var piece1 = return_name(1).instance()
+	add_child(piece0)
+	add_child(piece1)
+	piece0.visible = false
+	piece1.visible = false
+	backlist.append([piece0, piece1])		# I + J
 	probabilities_backlist.append([.3, .7, 0, 0])
 	h_backlist.append([.08, .92, 0, 0])
 	x_backlist.append([.7, .3, 0, 0])
-	h_eval_backlist.append([false, true, false, false])
-	x_eval_backlist.append([true, false, false, false])
+	h_backlist_eval.append([false, true, false, false])
+	x_backlist_eval.append([true, false, false, false])
 	
-	pieces.append([return_name(2), return_name(3)])		# L + O
+	
+	var piece2 = return_name(2).instance()
+	var piece3 = return_name(3).instance()
+	add_child(piece2)
+	add_child(piece3)
+	piece2.visible = false
+	piece3.visible = false
+	backlist.append([piece2,piece3])		# L + O
 	probabilities_backlist.append([.6, .4, 0, 0])
 	h_backlist.append([.98, .02, 0, 0])
 	x_backlist.append([.4, .6, 0, 0])
-	h_eval_backlist.append([true, false, false, false])
-	x_eval_backlist.append([false, true, false, false])
+	h_backlist_eval.append([true, false, false, false])
+	x_backlist_eval.append([false, true, false, false])
 	
 	
-	pieces.append([return_name(0), return_name(1)])		# I + J
+	var piece4 = return_name(0).instance()
+	var piece5 = return_name(1).instance()
+	add_child(piece4)
+	add_child(piece5)
+	piece4.visible = false
+	piece5.visible = false
+	
+	backlist.append([piece4, piece5])		# I + J
 	probabilities_backlist.append([.3, .7, 0, 0])
 	h_backlist.append([.08, .92, 0, 0])
 	x_backlist.append([.7, .3, 0, 0])
-	h_eval_backlist.append([false, true, false, false])
-	x_eval_backlist.append([true, false, false, false])
-	
-	pieces.append([return_name(2), return_name(3)])		# L + O
-	probabilities_backlist.append([.6, .4, 0, 0])
-	h_backlist.append([.98, .02, 0, 0])
-	x_backlist.append([.4, .6, 0, 0])
-	h_eval_backlist.append([true, false, false, false])
-	x_eval_backlist.append([false, true, false, false])
+	h_backlist_eval.append([false, true, false, false])
+	x_backlist_eval.append([true, false, false, false])
 	
 	
-	return [pieces, probabilities_backlist, h_backlist, x_backlist, h_eval_backlist, x_eval_backlist]
+	############ Then three entanglement pieces
+	
+	
+	var piece6 = return_name(0).instance()
+	var piece7 = return_name(1).instance()
+	var piece8 = return_name(0).instance()
+	var piece9 = return_name(1).instance()
+	add_child(piece6)
+	add_child(piece7)
+	add_child(piece8)
+	add_child(piece9)
+	piece6.visible = false
+	piece7.visible = false
+	piece8.visible = false
+	piece9.visible = false
+	
+	backlist.append([piece6,piece7,piece8,piece9])		# (I + J) + (L + O)
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	piece6.entangle(-1)
+	piece7.entangle(-1)
+	piece8.entangle(1)
+	piece9.entangle(1)
+	
+	#Connect each piece to its neighbors
+	piece6.connect_neighbors([piece7, piece8, piece9])
+	piece7.connect_neighbors([piece6, piece8, piece9])
+	piece8.connect_neighbors([piece6, piece7, piece9])
+	piece9.connect_neighbors([piece6, piece7, piece8])
+	
+	
+	var piece10 = return_name(0).instance()
+	var piece11 = return_name(2).instance()
+	var piece12 = return_name(0).instance()
+	var piece13 = return_name(2).instance()
+	add_child(piece10)
+	add_child(piece11)
+	add_child(piece12)
+	add_child(piece13)
+	piece10.visible = false
+	piece11.visible = false
+	piece12.visible = false
+	piece13.visible = false
+	
+	backlist.append([piece10,piece11,piece12,piece13])		# (I + L) + (S + Z)
+	probabilities_backlist.append([.8, .2, .8, .2])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	piece10.entangle(-1)
+	piece11.entangle(-1)
+	piece12.entangle(1)
+	piece13.entangle(1)
+	
+	#Connect each piece to its neighbors
+	piece10.connect_neighbors([piece11, piece12, piece13])
+	piece11.connect_neighbors([piece10, piece12, piece13])
+	piece12.connect_neighbors([piece10, piece11, piece13])
+	piece13.connect_neighbors([piece10, piece11, piece12])
+	
+	
+	var piece14 = return_name(5).instance()
+	var piece15 = return_name(6).instance()
+	var piece16 = return_name(5).instance()
+	var piece17 = return_name(6).instance()
+	add_child(piece14)
+	add_child(piece15)
+	add_child(piece16)
+	add_child(piece17)
+	piece14.visible = false
+	piece15.visible = false
+	piece16.visible = false
+	piece17.visible = false
+	
+	backlist.append([piece14,piece15,piece16,piece17])		
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	piece10.entangle(-1)
+	piece11.entangle(-1)
+	piece12.entangle(1)
+	piece13.entangle(1)
+	
+	#Connect each piece to its neighbors
+	piece10.connect_neighbors([piece11, piece12, piece13])
+	piece11.connect_neighbors([piece10, piece12, piece13])
+	piece12.connect_neighbors([piece10, piece11, piece13])
+	piece13.connect_neighbors([piece10, piece11, piece12])
+	
+
