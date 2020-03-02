@@ -2,6 +2,7 @@ extends "midi/MidiPlayer.gd"
 
 const Tetromino = preload("res://Tetrominos/Tetromino.gd")
 
+
 const LINE_CLEAR_CHANNELS = [3]
 
 var muted_events = []
@@ -51,3 +52,10 @@ func piece_locked(lines):
 
 func _on_LineCLearTimer_timeout():
 	mute_channels(LINE_CLEAR_CHANNELS)
+	
+	
+func game_over(): 
+	self.jboog(true)
+	
+func game_start():
+	self.jboog(false)

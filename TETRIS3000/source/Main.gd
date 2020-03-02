@@ -138,6 +138,8 @@ func handle_backlist(userdata):
 	var num_turns = 20
 	var total_pieces = backlist.size()
 	for i in range(num_turns - total_pieces):
+#		print("TESTING, backlist.size = " + String(backlist.size()))
+
 		var turn_type = count_turns()
 		
 		if abort:
@@ -508,6 +510,7 @@ func new_piece():
 			powerup_mutex.unlock()
 		
 		current_pieces = backlist.pop_front()
+
 		mutex.lock()
 		next_pieces =  backlist[0]
 		probabilities = probabilities_backlist.pop_front()
@@ -636,17 +639,15 @@ func _unhandled_input(event):
 				current_piece.turn(Tetromino.COUNTERCLOCKWISE)
 		if event.is_action_pressed("hold"):
 			hold()
-		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use:
+
+		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and $HGate.use_powerup():
+
 			h_use = true
-			
-			if( get_node("HGate").use_powerup() ): 
-				evaluate_probabilities("hgate")
+			evaluate_probabilities("hgate")
 				
-		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use: 
-			x_use = true
-			
-			if( get_node("XGate").use_powerup() ): 
-				evaluate_probabilities("xgate")
+		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and $XGate.use_powerup(): 
+			x_use = true 
+			evaluate_probabilities("xgate")
 			
 func process_new_action(event):
 	
@@ -971,7 +972,7 @@ func pause(gui=null):
 
 func clear_lists():
 	abort = true
-	
+
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
@@ -1002,6 +1003,7 @@ func game_over():
 	$ReplayButton.visible = true
 	clear_lists()
 	
+
 
 # Called when the replay-button is pressed
 func _on_ReplayButton_pressed():
@@ -1036,6 +1038,12 @@ func _on_ReplayButton_pressed():
 	
 	get_node("HGate").clear()
 	get_node("XGate").clear()
+
+	
+	# jboog
+	$MidiPlayer.game_start()
+
+
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
@@ -1058,7 +1066,7 @@ func get_current_pieces():
 
 func new_tutorial():
 	clear_lists()
-	
+	get_tutorial_pieces()
 	pause($tutorial)
 	
 func next_tutorial_piece():
@@ -1115,6 +1123,7 @@ func _superposition_request():
 func _evaluate_superposition(probability_list, action):
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
+#	print("TESTING eval request")
 	var prob = String(probability_list[0])
 	if(action == "hgate"):
 		$HTTPHEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
@@ -1131,8 +1140,10 @@ func _initial_evaluate_superposition():
 	# Add 'Content-Type' header:
 	var prob
 	prob = String(probabilities_backlist.back()[0])
+
 	#print("TESTING, 12-initial_evaluate_superposition, making eval request") 
 #	print("TESTING: eval request")
+
 	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 	
 	
@@ -1202,6 +1213,7 @@ func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 	emit_signal("super_response_received", {"prob":to_append_prob, "type": types})
 		
 func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
+#	print("TESTING eval request")
 	if !abort:
 #		print("TESTING: eval response")
 		var response = JSON.parse(body.get_string_from_utf8())
@@ -1268,3 +1280,94 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 # Move game over button
 # talk to trevor about how entanglement works, it doesnt 
 
+
+
+func get_tutorial_pieces(): 
+
+	var pieces = []
+	var probabilities_backlist = []
+	var h_backlist = []
+	var x_backlist = []
+	
+	var h_eval_backlist = []
+	var x_eval_backlist = []
+	
+	# First piece is a cube
+	pieces.append([return_name(3)])
+	probabilities_backlist.append([0, 0, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_eval_backlist.append([false, false, false, false])
+	x_eval_backlist.append([false, false, false, false])
+	
+	
+	# Then three superposition pieces
+	pieces.append([return_name(0), return_name(1)])		# I + J 
+	probabilities_backlist.append([.5, .5, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_eval_backlist.append([false, false, false, false])
+	x_eval_backlist.append([false, false, false, false])
+	
+	pieces.append([return_name(2), return_name(3)])		# L + O
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_eval_backlist.append([false, false, false, false])
+	x_eval_backlist.append([false, false, false, false])
+	
+	
+	# Then three entanglement pieces
+	pieces.append([return_name(0), return_name(1), return_name(2), return_name(3)])		# (I + J) + (L + O)
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_eval_backlist.append([false, false, false, false])
+	x_eval_backlist.append([false, false, false, false])
+	
+	pieces.append([return_name(0), return_name(2), return_name(4), return_name(6)])		# (I + L) + (S + Z)
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_eval_backlist.append([false, false, false, false])
+	x_eval_backlist.append([false, false, false, false])
+	
+	pieces.append([return_name(1), return_name(3), return_name(5), return_name(6)])		# (J + O) + (T + Z)
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_eval_backlist.append([false, false, false, false])
+	x_eval_backlist.append([false, false, false, false])
+	
+	
+	pieces.append([return_name(0), return_name(1)])		# I + J
+	probabilities_backlist.append([.3, .7, 0, 0])
+	h_backlist.append([.08, .92, 0, 0])
+	x_backlist.append([.7, .3, 0, 0])
+	h_eval_backlist.append([false, true, false, false])
+	x_eval_backlist.append([true, false, false, false])
+	
+	pieces.append([return_name(2), return_name(3)])		# L + O
+	probabilities_backlist.append([.6, .4, 0, 0])
+	h_backlist.append([.98, .02, 0, 0])
+	x_backlist.append([.4, .6, 0, 0])
+	h_eval_backlist.append([true, false, false, false])
+	x_eval_backlist.append([false, true, false, false])
+	
+	
+	pieces.append([return_name(0), return_name(1)])		# I + J
+	probabilities_backlist.append([.3, .7, 0, 0])
+	h_backlist.append([.08, .92, 0, 0])
+	x_backlist.append([.7, .3, 0, 0])
+	h_eval_backlist.append([false, true, false, false])
+	x_eval_backlist.append([true, false, false, false])
+	
+	pieces.append([return_name(2), return_name(3)])		# L + O
+	probabilities_backlist.append([.6, .4, 0, 0])
+	h_backlist.append([.98, .02, 0, 0])
+	x_backlist.append([.4, .6, 0, 0])
+	h_eval_backlist.append([true, false, false, false])
+	x_eval_backlist.append([false, true, false, false])
+	
+	
+	return [pieces, probabilities_backlist, h_backlist, x_backlist, h_eval_backlist, x_eval_backlist]
