@@ -38,6 +38,7 @@ var backlist = []
 var next_pieces = []
 var current_pieces = []
 var held_pieces = []
+var visualize_pieces = []
 
 ## Other Holding Variables 
 var held_probabilities
@@ -125,7 +126,6 @@ func _ready():
 	backlist_thread.start(self,"handle_backlist")
 	
 
-
 ##################### Handle Piece Backlist
 func handle_backlist(userdata):
 	abort = false
@@ -192,6 +192,7 @@ func count_turns():
 		
 	else:
 		return(0)
+		
 	
 func random_piece( create_super_piece, create_entanglement):
 	# Add first piece
@@ -459,7 +460,6 @@ func new_game(level):
 	$Stats.new_game(level)
 	
 	next_pieces = backlist[0]
-
 	
 	new_piece()
 	resume()
@@ -521,10 +521,12 @@ func new_piece():
 			current_piece.translation = $Matrix/PosEntB.translation
 		else:
 			current_piece.translation = $Matrix/Position3D.translation
+			
 			#$FlashText.print("ERROR - NO ENTANGLEMENT")
 		
 		# Initializes the ghost-piece at the bottom
 		current_piece.move_ghost()
+		
 	# Generates the next piece
 	
 	#Place next piece
@@ -557,12 +559,17 @@ func new_piece():
 
 		$FakeGhost.visible = true
 		$FlashText.print("SUPERPOSITION")
+		visualize(current_pieces)
+		draw_probabilities()
 		
 		# If we have both superposition and entanglement,
 	elif(current_pieces.size() > 2):
 		$GhostB.visible = true
 		$FakeGhostB.visible = true
 		$FlashText.print("ENTANGLEMENT")
+		visualize(current_pieces)
+		draw_probabilities()
+		
 	else:
 		$GhostB.visible = false
 		$FakeGhost.visible = false
@@ -613,9 +620,13 @@ func _unhandled_input(event):
 		if event.is_action_pressed("rotate_clockwise"):
 			for current_piece in current_pieces:
 				current_piece.turn(Tetromino.CLOCKWISE)
+			for v_piece in visualize_pieces:
+				v_piece.turn(Tetromino.CLOCKWISE)
 		if event.is_action_pressed("rotate_counterclockwise"):
 			for current_piece in current_pieces:
 				current_piece.turn(Tetromino.COUNTERCLOCKWISE)
+			for v_piece in visualize_pieces:
+				v_piece.turn(Tetromino.COUNTERCLOCKWISE)
 		if event.is_action_pressed("hold"):
 			hold()
 		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and num_H_gates>0:
@@ -623,13 +634,16 @@ func _unhandled_input(event):
 			
 			if( get_node("HGate").use_powerup() ): 
 				evaluate_probabilities("hgate")
+				draw_probabilities()
+				
 				
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and num_X_gates>0: 
 			x_use = true
 			
 			if( get_node("XGate").use_powerup() ): 
 				evaluate_probabilities("xgate")
-			
+				draw_probabilities()
+
 func process_new_action(event):
 	
 	# movements are the 3 possible ways to move a piece
@@ -794,15 +808,42 @@ func lock(current_piece: Tetromino):
 	# Dont' make a new piece!
 	new_piece()
 
+func visualize(pieces_to_visualize):
+	if pieces_to_visualize.size() > 0:
+		for v_piece in visualize_pieces:
+			v_piece.visible = false
+			remove_child(v_piece)
+		
+		var top_int = pieces_to_visualize[0].get_color_map() - 1
+		var top_piece = return_name(top_int).instance()
+		top_piece.visible = true
+		top_piece.translation = $Visualizer/TopPiece.translation
+		top_piece.scale = $Visualizer/TopPiece.scale
+		add_child(top_piece)
+		
+		var bottom_int = pieces_to_visualize[1].get_color_map() - 1
+		var bottom_piece = return_name(bottom_int).instance()
+		bottom_piece.visible = true
+		bottom_piece.translation = $Visualizer/BottomPiece.translation
+		bottom_piece.scale = $Visualizer/BottomPiece.scale
+		add_child(bottom_piece)
+		
+		visualize_pieces = []
+		visualize_pieces.append(top_piece)
+		visualize_pieces.append(bottom_piece)
+		
+
+func draw_probabilities():
+	$Visualizer/TopProb.text = String(probabilities[0])
+	$Visualizer/BottomProb.text = String(probabilities[1])
+	
 # Implements holding a piece in the upper left
 func hold():
-	
 	# If the current piece is NOT falling
 	# i.e. the current piece and the held piece are not already currently being swapped
 	if not current_piece_held:
 		
 		# Prevents the user from using the hold command again while swapping is happening
-
 		current_piece_held = true
 		# Swap the falling piece and the held piece
 		## SWAP EVERYTHING ELSE HERE
@@ -840,7 +881,7 @@ func hold():
 			for mino in held_piece.minoes:
 				mino.get_node("LockingMesh").visible = false
 				
-			# Places the piece in the upper left box
+			# Places the piece in the hold box
 			if held_pieces.size()<3:
 				held_piece.translation = $Hold/Position3D.translation
 			else:
@@ -849,7 +890,6 @@ func hold():
 				else:
 					held_piece.translation = $Hold/Position3D.translation - Vector3(0,2,0)
 			
-		
 		# If we were holding a piece in the upperleft already,
 		# Initialize the piece that just got swapped in
 		if current_pieces.size()>0:
@@ -889,6 +929,8 @@ func resume():
 	$Matrix/GridMap.visible = true
 	$Hold.visible = true
 	$Next.visible = true
+	$Visualizer.visible = true
+	$XandH.visible = true
 	for current_piece in current_pieces:
 		current_piece.visible = true
 	$Ghost.visible = true
@@ -931,6 +973,8 @@ func pause(gui=null):
 		$Matrix/GridMap.visible = false
 		$Hold.visible = false
 		$Next.visible = false
+		$Visualizer.visible = false
+		$XandH.visible = false
 		for current_piece in current_pieces:
 			current_piece.visible = false
 		$Ghost.visible = false

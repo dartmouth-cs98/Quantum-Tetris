@@ -24,6 +24,7 @@ material = SubResource( 1 )
 size = Vector3( 0.9, 0.9, 0.9 )
 
 [node name="Ghost" type="Spatial"]
+editor/display_folded = true
 script = ExtResource( 1 )
 
 [node name="Mino0" type="Spatial" parent="."]
