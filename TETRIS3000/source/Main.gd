@@ -111,7 +111,7 @@ var turn_count: int = 0
 var abort
 var is_game_over = false
 var tutorial
-
+var tutorial_lock = false
 
 
 ##################### Functions ##################### 
@@ -644,14 +644,11 @@ func _unhandled_input(event):
 		if event.is_action_pressed("hold"):
 			hold()
 
-		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and $HGate.use_powerup():
-
+		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and !x_use and $HGate.use_powerup():
 			h_use = true
 			evaluate_probabilities("hgate")
 				
-
-
-		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and $XGate.use_powerup(): 
+		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and !h_use and $XGate.use_powerup(): 
 			x_use = true 
 			evaluate_probabilities("xgate")
 
@@ -781,11 +778,11 @@ func _on_LockDelay_timeout():
 			
 			
 # Transforms the piece from a falling object to a group of blocks resting on the floor
-##NOT DONE
+
 func lock(current_piece: Tetromino):
 	
 
-	if( tutorial ): next_tutorial_screen()
+	if( tutorial and !tutorial_lock): next_tutorial_screen()
 	
 	current_piece.lock()
 	
@@ -1076,20 +1073,19 @@ func get_current_pieces():
 	
 	
 ########################    Tutorial Functions    ########################
-
-
 func new_tutorial():
 	clear_lists()
 	get_tutorial_pieces()
+	tutorial_lock = false
 	pause($tutorial)
-#	new_piece()		# spawn the first piece
 	
 func next_tutorial_piece():
 	new_piece()
+	tutorial_lock = false
 	resume()
 	
-	
 func next_tutorial_screen():
+	tutorial_lock = true
 	$tutorial.next_text()
 	pause($tutorial)
 	
@@ -1419,7 +1415,6 @@ func get_tutorial_pieces():
 	piece11.connect_neighbors([piece10, piece12, piece13])
 	piece12.connect_neighbors([piece10, piece11, piece13])
 	piece13.connect_neighbors([piece10, piece11, piece12])
-	
 	
 	var piece14 = return_name(5).instance()
 	var piece15 = return_name(6).instance()

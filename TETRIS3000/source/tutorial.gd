@@ -61,13 +61,10 @@ func _input(event):
 func _ready():
 	var next = text_array[0]
 	text(next)
-
-func pass_tutorial(tutorial_array):
-	TUTORIAL_ARRAY = tutorial_array
-
+	
 func next_text():
 	t_index += 1
-
+	
 func text(text):
 	if text == null:
 		emit_signal("resume_after_text")
