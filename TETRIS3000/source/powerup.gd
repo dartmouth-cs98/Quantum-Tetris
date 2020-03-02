@@ -27,16 +27,7 @@ func use_powerup() -> bool:
 	
 	
 func clear(): 
-	num = 0
-	
-	for i in range(4):
-		
-		$MarginContainer/VBoxContainer.get_child(i).visible = false
-		
 
-
-
-
-
-
+	while use_powerup():
+		pass
 

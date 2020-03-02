@@ -14,6 +14,8 @@ const INPUT_ACTIONS = [
 ]
 const CONFIG_FILE = "user://input.cfg"
 
+const button_size = Vector2(121,37)
+
 var action # To register the action the UI is currently handling
 var button # Button node corresponding to the above action
 
@@ -62,6 +64,7 @@ func wait_for_input(action_bind):
 	# See note at the beginning of the script
 	button = get_node("bindings").get_node(action).get_node("Button")
 	button.text = "Press key"
+	button.set_size(button_size)
 	set_process_input(true)
 
 
@@ -75,6 +78,7 @@ func _input(event):
 		# Display the string corresponding to the pressed key
 		var scancode = OS.get_scancode_string(event.scancode)
 		button.text = scancode
+		button.set_size(button_size)
 		# Start by removing previously key binding(s)
 		for old_event in InputMap.get_action_list(action):
 			InputMap.action_erase_event(action, old_event)
@@ -93,6 +97,7 @@ func _ready():
 		# See note at the beginning of the script
 		var button = get_node("bindings").get_node(action).get_node("Button")
 		button.text = OS.get_scancode_string(input_event.scancode)
+		button.set_size(button_size)
 		button.connect("pressed", self, "wait_for_input", [action])
 		
 	hint_text()

@@ -105,14 +105,20 @@ var ghost_fakeB: Node
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
 var is_fake: bool = false
+var is_locked: bool = false
 
 # int
 # 0 -> this piece is not entangled
 # negative -> this piece is entangled into the left side of the grid
 # positive -> right side of the grid
+
+var color_mapping = 0
 var entanglement: int = 0
+var first_hit = true
+var TESTING = false
 
-
+signal switch 
+signal no_switch
 
 #####################################  Functions  ##################################### 
 
@@ -127,6 +133,7 @@ func _ready():
 	ghostB = get_node("../GhostB")
 	ghost_fake = get_node("../FakeGhost")
 	ghost_fakeB = get_node("../FakeGhostB")
+	
 	
 
 ####################### Controlling Piece
@@ -175,8 +182,20 @@ func move(movement: Vector3) -> bool:
 		
 		## i.e. if the move is not possible AND that movement is downwards
 		if movement == DROP_MOVEMENT:
-			
 			# If this piece is real
+			if entanglement > 0 and first_hit:
+				TESTING = true
+				print("switching!")
+				emit_signal("switch")
+			elif entanglement<0 and first_hit:
+				TESTING = true
+				print("not switching!")
+				emit_signal("no_switch")
+			elif entanglement != 0:
+				print("first_hit turned off!")
+			
+			if TESTING:
+				pass
 			if !is_fake:
 				# Begin locking the piece!
 				locking()
@@ -193,7 +212,15 @@ func move(movement: Vector3) -> bool:
 				
 		return false
 		
-		
+func process_switch():
+	
+	first_hit = false
+	is_fake = !is_fake
+	
+func process_no_switch():
+	
+	first_hit = false
+
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
 func turn(direction: int):
@@ -317,6 +344,9 @@ func unlocking():
 		lock_delay.start()
 		
 		
+# Identifies the piece as locked
+func lock(): 
+	is_locked = true;
 ####################### Superposition Functions
 func set_fake():
 	is_fake = true
@@ -333,9 +363,18 @@ func get_is_fake() -> bool:
 func entangle(entangle_int: int): 
 	
 	entanglement = entangle_int
+
+func get_color_map(): 
+	return color_mapping
 	
-	
-	
+func connect_neighbors(neighbors):
+	#Connect within itself
+	connect("switch", self, "process_switch")
+	connect("no_switch", self, "process_no_switch")
+	#Connect to each neighbor
+	for neighbor in neighbors:
+		connect("switch",neighbor,"process_switch")
+		connect("no_switch", neighbor, "process_no_switch")
 	
 	
 	

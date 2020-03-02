@@ -18,6 +18,7 @@ font_data = ExtResource( 4 )
 default_font = SubResource( 2 )
 
 [node name="Start" type="Control"]
+editor/display_folded = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
