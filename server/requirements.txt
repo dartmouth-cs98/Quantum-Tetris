@@ -133,7 +133,7 @@ pyasn1==0.4.7
 pycodestyle==2.5.0
 pycosat==0.6.3
 pycparser==2.19
-pycrypto==2.6.1
+pycryptodomex==3.9.7
 pydot==1.4.1
 pyflakes==2.1.1
 Pygments==2.4.2
