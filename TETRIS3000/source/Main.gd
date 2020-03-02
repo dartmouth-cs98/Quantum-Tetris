@@ -1356,8 +1356,7 @@ func get_tutorial_pieces():
 	
 	
 	############ Then three entanglement pieces
-	
-	
+
 	var piece6 = return_name(0).instance()
 	var piece7 = return_name(1).instance()
 	var piece8 = return_name(0).instance()
@@ -1453,4 +1452,3 @@ func get_tutorial_pieces():
 	piece12.connect_neighbors([piece10, piece11, piece13])
 	piece13.connect_neighbors([piece10, piece11, piece12])
 	
-
