@@ -1015,10 +1015,8 @@ func game_over():
 	$ReplayButton.visible = true
 	clear_lists()
 	
-<<<<<<< HEAD
-=======
+
 	# jboog
->>>>>>> d737029310201518e435a26091056846913d1ae8
 	$MidiPlayer.game_over()
 	
 
@@ -1388,4 +1386,4 @@ func get_tutorial_pieces():
 	x_eval_backlist.append([false, true, false, false])
 	
 	
-	return [pieces, probabilities_backlist, h_backlist, x_backlist, h_eval_backlist, x_eval_backlist]
+	backlist = pieces
