@@ -10,6 +10,17 @@
 
     <title>Quantum Tetris</title>
 
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){
+        w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-TMXJRXK');
+        gtag('config', 'UA-159390685-1');
+    </script>
+    <!-- End Google Tag Manager -->
+
     <link rel="icon" href="./assets/icon/purple_icon.ico" type="image/x-icon">
 
     <!-- Fonts -->
@@ -29,6 +40,11 @@
 </head>
 
 <body id="page-top" data-spy="scroll" data-target="#st-nav">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TMXJRXK"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- Navigation Menu
 ================================================== -->
@@ -91,7 +107,7 @@
                     </span>
                 </div>
                 
-                <button class="btn btn default btn-lg wow fadeInUp hvr-sweep-to-right animated" onclick="window.location.href = './games/Tetris.html';">Play the Game</button>
+                <button id="play-game-button" class="btn btn default btn-lg wow fadeInUp hvr-sweep-to-right animated" onclick="window.location.href = './games/Tetris.html';">Play the Game</button>
 
             </div>
             <!-- /.col-lg-12 -->
@@ -213,7 +229,7 @@
                 <h3 class="wow fadeIn animated">Comfortable with code? <span>Check out our Github.</span></h3>
                 <p class="wow fadeIn animated">Explore the IBM Qiskit backend that powers Quantum Tetris.
                   Learn how to create web-hosted quantum games of your own!</p>
-                <button onclick="location.href='https://github.com/dartmouth-cs98/Quantum-Tetris'" class="btn btn-default wow fadeInRight hvr-sweep-to-right animated">Github</button>
+                <button id="github-button" onclick="location.href='https://github.com/dartmouth-cs98/Quantum-Tetris'" class="btn btn-default wow fadeInRight hvr-sweep-to-right animated">Github</button>
             </div>
             <!-- /.col-md-12 -->
         </div>
