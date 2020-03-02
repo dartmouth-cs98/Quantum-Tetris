@@ -85,6 +85,7 @@ var backlist_thread
 var powerup_thread
 var mutex
 var powerup_mutex
+var hold_threads = []
 
 # Turns
 var turns = 5
@@ -146,8 +147,8 @@ func handle_backlist(userdata):
 				return
 			powerup_thread = Thread.new()
 			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
+			hold_threads.append(powerup_thread)
 
-			print("sending superposition request")
 			# Determine which pieces are fake
 			_initial_evaluate_superposition()
 			yield(self, "init_eval_response_received")
@@ -162,6 +163,7 @@ func handle_backlist(userdata):
 				
 			powerup_thread = Thread.new()
 			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
+			hold_threads.append(powerup_thread)
 			# Determine which pieces are fake
 			init_entangled_pieces = true
 			_initial_evaluate_superposition()
@@ -297,7 +299,7 @@ func random_piece( create_super_piece, create_entanglement):
 	x_backlist_eval.append([true, false, true, false])
 	powerup_mutex.unlock()
 			
-	print("TESTING, 7-Random_Piece, added pieces to backlist")
+#	print("TESTING, 7-Random_Piece, added pieces to backlist")
 	emit_signal("have_pieces")
 	
 func return_name(i):
@@ -963,8 +965,12 @@ func game_over():
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
-			
+	backlist_thread.wait_to_finish()	
 	backlist = []
+	
+	for thread in hold_threads:
+		thread.wait_to_finish()
+	hold_threads = []
 	## clean up the rest of precomputed variables
 	probabilities_backlist = []
 	probabilities = []
@@ -976,8 +982,6 @@ func game_over():
 	h_evals = []
 	h_probabilities = []
 	x_probabilities = []
-
-	backlist_thread.wait_to_finish()
 	
 
 # Called when the replay-button is pressed
@@ -1038,7 +1042,7 @@ func evaluate_probabilities(action):
 		var index = 0
 		$FlashText.print("H GATE")
 		for current_piece in current_pieces:
-			print("TESTING, H Gate pressed,  index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
+#			print("TESTING, H Gate pressed,  index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
 			if h_evals[index]:
 				current_piece.set_fake()
 			else:
@@ -1051,7 +1055,7 @@ func evaluate_probabilities(action):
 		$FlashText.print("X GATE")
 		var index = 0
 		for current_piece in current_pieces:
-			print("TESTING, X Gate pressed, index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
+#			print("TESTING, X Gate pressed, index: " + String(index)+ "changing from: " + String(current_piece.get_is_fake()) + " to: " + String(h_evals[index]))
 			if x_evals[index]:
 				current_piece.set_fake()
 			else:
@@ -1066,7 +1070,7 @@ func evaluate_probabilities(action):
 func _superposition_request():
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
-	print("TESTING, 3-_Superposition_Request, sending request ")
+#	print("TESTING, 3-_Superposition_Request, sending request ")
 	$HTTPSuper.request("https://q-tetris-backend.herokuapp.com/api/createSuperposition",  headers, false, HTTPClient.METHOD_GET)
 
 func _evaluate_superposition(probability_list, action):
@@ -1089,7 +1093,7 @@ func _initial_evaluate_superposition():
 	var prob
 	prob = String(probabilities_backlist.back()[0])
 	#print("TESTING, 12-initial_evaluate_superposition, making eval request") 
-	print("TESTING: eval request")
+#	print("TESTING: eval request")
 	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 	
 	
@@ -1129,7 +1133,7 @@ func _create_request_data(probability_list):
 
 func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 	var response = JSON.parse(body.get_string_from_utf8())
-	print("TESTING, Superposition, response from Server: " + String(response.result))
+#	print("TESTING, Superposition, response from Server: " + String(response.result))
 	var to_append_prob = [0,0]
 	var types = [0,0]
 	
@@ -1160,7 +1164,7 @@ func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 		
 func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
 	if !abort:
-		print("TESTING: eval response")
+#		print("TESTING: eval response")
 		var response = JSON.parse(body.get_string_from_utf8())
 		
 		if(response.result["result"] == 0):
