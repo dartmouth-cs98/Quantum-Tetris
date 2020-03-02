@@ -647,6 +647,7 @@ func _unhandled_input(event):
 			evaluate_probabilities("hgate")
 				
 
+
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and $XGate.use_powerup(): 
 			x_use = true 
 			evaluate_probabilities("xgate")
@@ -978,7 +979,6 @@ func clear_lists():
 
 
 
-
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
@@ -1075,7 +1075,7 @@ func get_current_pieces():
 
 func new_tutorial():
 	clear_lists()
-	
+	get_tutorial_pieces()
 	pause($tutorial)
 	
 func next_tutorial_piece():
