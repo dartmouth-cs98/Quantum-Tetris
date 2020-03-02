@@ -109,6 +109,7 @@ light_energy = 3.0
 [node name="Matrix" type="MeshInstance" parent="."]
 editor/display_folded = true
 transform = Transform( 14, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
+visible = false
 mesh = SubResource( 2 )
 material/0 = null
 
@@ -180,6 +181,7 @@ one_shot = true
 [node name="Hold" type="MeshInstance" parent="."]
 editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 16, 3, 0 )
+visible = false
 mesh = SubResource( 3 )
 material/0 = null
 
@@ -189,6 +191,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 0 )
 [node name="Visualizer" type="MeshInstance" parent="."]
 editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, -7, 16, 0 )
+visible = false
 mesh = SubResource( 3 )
 material/0 = null
 
