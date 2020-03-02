@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://Environment.tres" type="Environment" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
@@ -13,12 +13,13 @@
 [ext_resource path="res://Stats.tscn" type="PackedScene" id=11]
 [ext_resource path="res://controls.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Start.tscn" type="PackedScene" id=13]
-[ext_resource path="res://Tetrominos/Ghost.tscn" type="PackedScene" id=14]
-[ext_resource path="res://powerup.tscn" type="PackedScene" id=15]
-[ext_resource path="res://fonts/TitleFont.tres" type="DynamicFont" id=16]
-[ext_resource path="res://icons/HICON.png" type="Texture" id=17]
-[ext_resource path="res://icons/XICON.png" type="Texture" id=18]
-[ext_resource path="res://tutorial.tscn" type="PackedScene" id=19]
+[ext_resource path="res://fonts/Gamer.ttf" type="DynamicFontData" id=14]
+[ext_resource path="res://Tetrominos/Ghost.tscn" type="PackedScene" id=15]
+[ext_resource path="res://powerup.tscn" type="PackedScene" id=16]
+[ext_resource path="res://fonts/TitleFont.tres" type="DynamicFont" id=17]
+[ext_resource path="res://icons/HICON.png" type="Texture" id=18]
+[ext_resource path="res://icons/XICON.png" type="Texture" id=19]
+[ext_resource path="res://tutorial.tscn" type="PackedScene" id=20]
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_transparent = true
@@ -84,6 +85,7 @@ tracks/2/keys = {
 [sub_resource type="DynamicFont" id=6]
 size = 20
 extra_spacing_bottom = 5
+font_data = ExtResource( 14 )
 
 [node name="Main" type="WorldEnvironment"]
 environment = ExtResource( 1 )
@@ -107,9 +109,7 @@ transform = Transform( 0.332668, 0.771982, -0.541642, 0.579657, 0.285656, 0.7631
 light_energy = 3.0
 
 [node name="Matrix" type="MeshInstance" parent="."]
-editor/display_folded = true
 transform = Transform( 14, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
-visible = false
 mesh = SubResource( 2 )
 material/0 = null
 
@@ -180,63 +180,23 @@ one_shot = true
 
 [node name="Hold" type="MeshInstance" parent="."]
 editor/display_folded = true
-transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 16, 3, 0 )
-visible = false
-mesh = SubResource( 3 )
-material/0 = null
-
-[node name="Position3D" type="Position3D" parent="Hold"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 0 )
-
-[node name="Visualizer" type="MeshInstance" parent="."]
-editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, -7, 16, 0 )
 visible = false
 mesh = SubResource( 3 )
 material/0 = null
 
-[node name="TopPiece" type="Position3D" parent="Visualizer"]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -9, 18, 0 )
-
-[node name="TopProb" type="Label" parent="Visualizer"]
-visible = false
-margin_left = 84.3749
-margin_top = 107.51
-margin_right = 149.375
-margin_bottom = 132.51
-text = "%"
-
-[node name="BottomPiece" type="Position3D" parent="Visualizer"]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -9, 14, 0 )
-
-[node name="BottomProb" type="Label" parent="Visualizer"]
-visible = false
-margin_left = 82.3335
-margin_top = 72.1269
-margin_right = 147.334
-margin_bottom = 97.1269
-text = "%"
-
-[node name="XandH" type="MeshInstance" parent="."]
-editor/display_folded = true
-transform = Transform( 7, 0, 0, 0, 5, 0, 0, 0, 1, -7, 9, 0 )
-visible = false
-mesh = SubResource( 3 )
-material/0 = null
-
-[node name="Position3D" type="Position3D" parent="XandH"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 0 )
+[node name="Position3D" type="Position3D" parent="Hold"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 16, 0 )
 
 [node name="Next" type="MeshInstance" parent="."]
 editor/display_folded = true
-transform = Transform( 7, 0, 0, 0, 12, 0, 0, 0, 1, 16, 13.5, 0 )
+transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 16, 16, 0 )
 visible = false
 mesh = SubResource( 3 )
 material/0 = null
 
 [node name="Position3D" type="Position3D" parent="Next"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 16, 0 )
-visible = false
 
 [node name="DropTimer" type="Timer" parent="."]
 
@@ -293,8 +253,8 @@ anchor_left = 0.0
 anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
-margin_left = 100.0
-margin_top = -200.0
+margin_left = 30.0
+margin_top = -220.0
 margin_right = 140.0
 margin_bottom = -25.0
 
@@ -302,8 +262,6 @@ margin_bottom = -25.0
 visible = false
 
 [node name="Start" parent="." instance=ExtResource( 13 )]
-margin_top = -18.0
-margin_bottom = 22.0
 
 [node name="ReplayButton" type="Button" parent="."]
 visible = false
@@ -319,33 +277,21 @@ custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "play again"
 
-[node name="Ghost" parent="." instance=ExtResource( 14 )]
+[node name="Ghost" parent="." instance=ExtResource( 15 )]
 visible = false
 
-[node name="GhostB" parent="." instance=ExtResource( 14 )]
+[node name="GhostB" parent="." instance=ExtResource( 15 )]
 visible = false
 
-[node name="FakeGhost" parent="." instance=ExtResource( 14 )]
+[node name="FakeGhost" parent="." instance=ExtResource( 15 )]
 visible = false
 
-[node name="FakeGhostB" parent="." instance=ExtResource( 14 )]
+[node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
 visible = false
 
-[node name="VisualizerGhost" parent="." instance=ExtResource( 14 )]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
-visible = false
-
-[node name="VisualizerGhostB" parent="." instance=ExtResource( 14 )]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
-visible = false
-
-[node name="HGate" parent="." instance=ExtResource( 15 )]
+[node name="HGate" parent="." instance=ExtResource( 16 )]
 editor/display_folded = true
 visible = false
-margin_left = 150.0
-margin_top = 400.0
-margin_right = -520.0
-margin_bottom = 20.0
 
 [node name="VBoxContainer" parent="HGate/MarginContainer" index="0"]
 margin_right = 195.0
@@ -353,36 +299,35 @@ margin_right = 195.0
 [node name="Label" parent="HGate/MarginContainer/VBoxContainer" index="0"]
 margin_right = 195.0
 margin_bottom = 34.0
-custom_fonts/font = ExtResource( 16 )
+custom_fonts/font = ExtResource( 17 )
 text = "H Gates"
 
 [node name="Sprite" parent="HGate/MarginContainer/VBoxContainer" index="1"]
 position = Vector2( 25, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 17 )
+texture = ExtResource( 18 )
 
 [node name="Sprite2" parent="HGate/MarginContainer/VBoxContainer" index="2"]
 position = Vector2( 75, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 17 )
+texture = ExtResource( 18 )
 
 [node name="Sprite3" parent="HGate/MarginContainer/VBoxContainer" index="3"]
 position = Vector2( 125, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 17 )
+texture = ExtResource( 18 )
 
 [node name="Sprite4" parent="HGate/MarginContainer/VBoxContainer" index="4"]
 position = Vector2( 175, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 17 )
+texture = ExtResource( 18 )
 
-[node name="XGate" parent="." instance=ExtResource( 15 )]
+[node name="XGate" parent="." instance=ExtResource( 16 )]
 editor/display_folded = true
 visible = false
-margin_left = 150.0
-margin_top = 500.0
-margin_right = -520.0
-margin_bottom = 220.0
+margin_top = 200.0
+margin_right = -900.0
+margin_bottom = -300.0
 
 [node name="VBoxContainer" parent="XGate/MarginContainer" index="0"]
 margin_right = 195.0
@@ -390,28 +335,28 @@ margin_right = 195.0
 [node name="Label" parent="XGate/MarginContainer/VBoxContainer" index="0"]
 margin_right = 195.0
 margin_bottom = 34.0
-custom_fonts/font = ExtResource( 16 )
+custom_fonts/font = ExtResource( 17 )
 text = "X Gates"
 
 [node name="Sprite" parent="XGate/MarginContainer/VBoxContainer" index="1"]
 position = Vector2( 25, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 18 )
+texture = ExtResource( 19 )
 
 [node name="Sprite2" parent="XGate/MarginContainer/VBoxContainer" index="2"]
 position = Vector2( 75, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 18 )
+texture = ExtResource( 19 )
 
 [node name="Sprite3" parent="XGate/MarginContainer/VBoxContainer" index="3"]
 position = Vector2( 125, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 18 )
+texture = ExtResource( 19 )
 
 [node name="Sprite4" parent="XGate/MarginContainer/VBoxContainer" index="4"]
 position = Vector2( 175, 50 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 18 )
+texture = ExtResource( 19 )
 
 [node name="HTTPSuper" type="HTTPRequest" parent="."]
 
@@ -419,13 +364,13 @@ texture = ExtResource( 18 )
 
 [node name="HTTPHEval" type="HTTPRequest" parent="."]
 
-[node name="HTTPInitEval" type="HTTPRequest" parent="."]
-
 [node name="HTTPX" type="HTTPRequest" parent="."]
 
 [node name="HTTPXEval" type="HTTPRequest" parent="."]
 
-[node name="tutorial" parent="." instance=ExtResource( 19 )]
+[node name="HTTPInitEval" type="HTTPRequest" parent="."]
+
+[node name="tutorial" parent="." instance=ExtResource( 20 )]
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]
@@ -440,9 +385,9 @@ texture = ExtResource( 18 )
 [connection signal="request_completed" from="HTTPSuper" to="." method="_on_HTTPRequest_super_completed"]
 [connection signal="request_completed" from="HTTPH" to="." method="_on_HTTPRequest_Hgate_completed"]
 [connection signal="request_completed" from="HTTPHEval" to="." method="_on_HTTPRequest_Heval_completed"]
-[connection signal="request_completed" from="HTTPInitEval" to="." method="_on_HTTPRequest_init_eval_completed"]
 [connection signal="request_completed" from="HTTPX" to="." method="_on_HTTPRequest_Xgate_completed"]
 [connection signal="request_completed" from="HTTPXEval" to="." method="_on_HTTPRequest_Xeval_completed"]
+[connection signal="request_completed" from="HTTPInitEval" to="." method="_on_HTTPRequest_init_eval_completed"]
 
 [editable path="HGate"]
 

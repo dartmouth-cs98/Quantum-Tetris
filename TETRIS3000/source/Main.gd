@@ -106,6 +106,7 @@ signal tutorial_piece
 
 var turn_count: int = 0
 
+
 ## Control game flow
 var abort
 var is_game_over = false
@@ -646,9 +647,12 @@ func _unhandled_input(event):
 			h_use = true
 			evaluate_probabilities("hgate")
 				
+
+
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and $XGate.use_powerup(): 
 			x_use = true 
 			evaluate_probabilities("xgate")
+
 			
 func process_new_action(event):
 	
@@ -974,6 +978,8 @@ func pause(gui=null):
 func clear_lists():
 	abort = true
 
+
+
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
@@ -1004,6 +1010,10 @@ func game_over():
 	$ReplayButton.visible = true
 	clear_lists()
 	
+<<<<<<< HEAD
+=======
+	# jboog
+>>>>>>> d737029310201518e435a26091056846913d1ae8
 	$MidiPlayer.game_over()
 	
 
