@@ -111,7 +111,7 @@ var turn_count: int = 0
 var abort
 var is_game_over = false
 var tutorial
-var first_tutorial = true
+
 
 
 ##################### Functions ##################### 
@@ -129,7 +129,8 @@ func _ready():
 	backlist_thread.start(self,"handle_backlist")
 	
 	## for tutorial
-	connect("resume_after_text",$tutorial, "next_tutorial_piece")
+	$tutorial.connect("resume_after_text", self, "next_tutorial_piece")
+	$tutorial.connect("tutorial_ended", self, "end_tutorial")
 	
 	$Start.connect("tutorial", self, "new_game")
 	
@@ -1014,7 +1015,10 @@ func game_over():
 	$ReplayButton.visible = true
 	clear_lists()
 	
+<<<<<<< HEAD
+=======
 	# jboog
+>>>>>>> d737029310201518e435a26091056846913d1ae8
 	$MidiPlayer.game_over()
 	
 
@@ -1092,8 +1096,12 @@ func next_tutorial_piece():
 func next_tutorial_screen():
 	$tutorial.next_text()
 	pause($tutorial)
-	##AT THE VERY END
-	first_tutorial = true
+	
+	
+func end_tutorial():
+	tutorial = false
+	new_piece()
+	resume()
 	
 ########################   Quantum Functionality   ######################## 
 # switch probabilities and evaluation values
@@ -1291,12 +1299,7 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 			print("Eval Response: Response code not recognized")
 	
 	emit_signal("x_eval_response_received", to_send)
-
-# Move game over button
-# talk to trevor about how entanglement works, it doesnt 
-
-
-
+	
 func get_tutorial_pieces(): 
 
 	var pieces = []
