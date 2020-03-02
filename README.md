@@ -1,6 +1,6 @@
 ##  Quantum Tetris
 
-Quantum Tetris is your traditional tetris game game who has several twists based on the concepts of quantum computing. Additionally, to implement this quantum functionality it uses IBM's qiskit library found [here](https://qiskit.org) which runs in the cloud on IBM's quantum computers.
+Quantum Tetris is your traditional tetris game which has several twists based on the concepts of quantum computing. Additionally, to implement this quantum functionality it uses IBM's qiskit library found [here](https://qiskit.org) which runs in the cloud on IBM's quantum computers.
 
 To play our game you can go here: http://quantumtetris.com
 
@@ -9,6 +9,7 @@ To view our GoDot project you can go here: https://github.com/dartmouth-cs98/GoD
 Backend can accessed via https://q-tetris-backend.herokuapp.com/
 
 Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1).
+
 ## Architecture
 
 The architecture of our project consists of a backend flask server that uses a PostgreSQL database to hold our player info. Our frontend is a simple html webpage that uses various graphics libraries to implement changes. We use GoDot to run our game in browser.
