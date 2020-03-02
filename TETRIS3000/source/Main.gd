@@ -1168,17 +1168,17 @@ func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
 		var response = JSON.parse(body.get_string_from_utf8())
 		
 		if(response.result["result"] == 0):
+			backlist[backlist.size()-1][0].set_real()
+			backlist[backlist.size()-1][1].set_fake()
+			if init_entangled_pieces:
+				backlist[backlist.size()-1][2].set_fake()
+				backlist[backlist.size()-1][3].set_real()
+		elif(response.result["result"] == 1):
 			backlist[backlist.size()-1][0].set_fake()
 			backlist[backlist.size()-1][1].set_real()
 			if init_entangled_pieces:
 				backlist[backlist.size()-1][2].set_real()
 				backlist[backlist.size()-1][3].set_fake()
-		elif(response.result["result"] == 1):
-			backlist[backlist.size()-1][1].set_fake()
-			backlist[backlist.size()-1][0].set_real()
-			if init_entangled_pieces:
-				backlist[backlist.size()-1][3].set_real()
-				backlist[backlist.size()-1][2].set_fake()
 		else:
 			print("Initial Eval Response: Response code not recognized")
 	init_entangled_pieces = false
@@ -1204,9 +1204,9 @@ func _on_HTTPRequest_Heval_completed(result, response_code, headers, body):
 	var to_send
 	if !abort:
 		if(response.result["result"] == 0):
-			to_send=[true, false] #[fake,real]
+			to_send=[false, true] #[real, fake]
 		elif(response.result["result"] == 1):
-			to_send = [false, true] #[real, fake]
+			to_send = [true, false] #[fake, real]
 		else:
 			print("Eval Response: Response code not recognized")
 		
@@ -1218,9 +1218,9 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 	var to_send
 	if !abort:
 		if(response.result["result"] == 0):
-			to_send = [true, false] #[fake, real]
+			to_send=[false, true] #[real, fake]
 		elif(response.result["result"] == 1):
-			to_send = [false, true] #[real, fake] 
+			to_send = [true, false] #[fake, real]
 		else:
 			print("Eval Response: Response code not recognized")
 	
