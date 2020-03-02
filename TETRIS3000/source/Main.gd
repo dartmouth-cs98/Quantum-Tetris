@@ -175,7 +175,7 @@ func handle_backlist(userdata):
 func count_turns():
 	turns -= 1
 
-	if turns == 0:
+	if turns < 1:
 		var coin = randi()%10 + 1
 		turns = randi()%5 + 1
 
@@ -1004,7 +1004,7 @@ func _on_ReplayButton_pressed():
 	held_x_evals = []
 	
 	# other variables
-	turns = 0
+	turns = 4
 	turn_count = 0
 	
 	
