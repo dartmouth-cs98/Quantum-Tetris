@@ -108,6 +108,7 @@ transform = Transform( 0.332668, 0.771982, -0.541642, 0.579657, 0.285656, 0.7631
 light_energy = 3.0
 
 [node name="Matrix" type="MeshInstance" parent="."]
+editor/display_folded = true
 transform = Transform( 14, 0, 0, 0, 20, 0, 0, 0, 1, 4.5, 9.5, 0 )
 mesh = SubResource( 2 )
 material/0 = null
@@ -178,6 +179,7 @@ wait_time = 0.06
 one_shot = true
 
 [node name="Hold" type="MeshInstance" parent="."]
+editor/display_folded = true
 transform = Transform( 7, 0, 0, 0, 7, 0, 0, 0, 1, 16, 3, 0 )
 visible = false
 mesh = SubResource( 3 )

@@ -101,13 +101,17 @@ signal h_eval_response_received
 signal x_eval_response_received
 signal init_eval_response_received
 signal have_pieces
+signal tutorial_piece
 
 
 var turn_count: int = 0
 
 
+## Control game flow
 var abort
 var is_game_over = false
+var tutorial
+var first_tutorial = true
 
 
 ##################### Functions ##################### 
@@ -123,6 +127,9 @@ func _ready():
 	#Start backlist thread
 	backlist_thread = Thread.new()
 	backlist_thread.start(self,"handle_backlist")
+	
+	## for tutorial
+	connect("resume_after_text",$tutorial, "next_tutorial_piece")
 	
 
 
@@ -195,7 +202,7 @@ func count_turns():
 	else:
 		return(0)
 	
-func random_piece( create_super_piece, create_entanglement):
+func random_piece(create_super_piece, create_entanglement):
 	# Add first piece
 	var pieces = []
 	var probs=[0,0,0,0]
@@ -445,12 +452,14 @@ func apply_X(userdata):
 
 ##################### Game Functions
 ## new_game: Start a new game
-func new_game(level):
+func new_game(level, tutorial_input = false):
+	tutorial = tutorial_input
+	
 	# hide the title screen
 	$Start.visible = false
 	# start generating backlist
 	
-	if is_game_over:
+	if is_game_over and !tutorial:
 		abort()
 		is_game_over = false
 		running = true
@@ -465,8 +474,11 @@ func new_game(level):
 	
 	next_pieces = backlist[0]
 	
-	new_piece()
-	resume()
+	if tutorial:
+		new_tutorial()
+	else:
+		new_piece()
+		resume()
 
 # The new piece gets generated
 func new_piece():
@@ -481,7 +493,7 @@ func new_piece():
 		# See res://Tetrominos/Tetromino.gd
 		# Check the backlist
 		# Thread this?
-		if !running:
+		if !running and !tutorial:
 			#Wait for thread to finish
 			# Call new thread here
 			backlist_thread.wait_to_finish()
@@ -491,7 +503,7 @@ func new_piece():
 			#print("TESTING: another one!")
 		
 		#Transfer pieces
-		if backlist.size() < 2:
+		if backlist.size() < 2 and !tutorial:
 			mutex.lock()
 			powerup_mutex.lock()
 			abort()
@@ -591,15 +603,21 @@ func new_level(level):
 # Mapping happens in res://controls.gd
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
-		if playing:
-			pause($controls_ui)
-		else:
-			resume()
+		pass
+#		if playing:
+#			if first_tutorial:
+#				first_tutorial = false
+#				new_tutorial()
+#			else:
+#				next_tutorial_piece()
+#		else:
+#			resume()
 	if event.is_action_pressed("tutorial"):
-		if playing:
-			pause($tutorial)
-		else:
-			resume()
+		new_tutorial()
+#		if playing:
+#			pause($tutorial)
+#		else:
+#			resume()
 	if event.is_action_pressed("toggle_fullscreen"):
 		OS.window_fullscreen = not OS.window_fullscreen
 	if playing:
@@ -622,13 +640,17 @@ func _unhandled_input(event):
 				current_piece.turn(Tetromino.COUNTERCLOCKWISE)
 		if event.is_action_pressed("hold"):
 			hold()
+
 		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and $HGate.use_powerup():
+
 			h_use = true
 			evaluate_probabilities("hgate")
 				
+
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and $XGate.use_powerup(): 
 			x_use = true 
 			evaluate_probabilities("xgate")
+
 			
 func process_new_action(event):
 	
@@ -917,7 +939,7 @@ func resume():
 	get_node("HGate").visible = true
 	get_node("XGate").visible = true
 	
-
+	
 # Run when game gets paused
 func pause(gui=null):
 	playing = false
@@ -951,19 +973,11 @@ func pause(gui=null):
 	get_node("HGate").visible = false
 	get_node("XGate").visible = false
 
-# Called when the player loses
-
-func game_over():
-	print("game over called")
-	is_game_over = true
+func clear_lists():
 	abort = true
-	pause()
-	$FlashText.print("GAME\nOVER")
-	$ReplayButton.visible = true
 
-	
-	# jboog
-	$MidiPlayer.game_over()
+
+
 
 	for piece_list in backlist:
 		for piece in piece_list:
@@ -985,6 +999,18 @@ func game_over():
 	h_evals = []
 	h_probabilities = []
 	x_probabilities = []
+
+# Called when the player loses
+func game_over():
+	print("game over called")
+	is_game_over = true
+	pause()
+	$FlashText.print("GAME\nOVER")
+	$ReplayButton.visible = true
+	clear_lists()
+	
+	# jboog
+	$MidiPlayer.game_over()
 	
 
 
@@ -1043,6 +1069,26 @@ func set_current_pieces(pieces):
 func get_current_pieces():
 	return current_pieces
 	
+	
+########################    Tutorial Functions    ########################
+
+
+func new_tutorial():
+	clear_lists()
+	
+	pause($tutorial)
+	
+func next_tutorial_piece():
+	new_piece()
+	resume()
+	
+	
+func next_tutorial_screen():
+	$tutorial.next_text()
+	pause($tutorial)
+	##AT THE VERY END
+	first_tutorial = true
+	
 ########################   Quantum Functionality   ######################## 
 # switch probabilities and evaluation values
 func evaluate_probabilities(action):
@@ -1075,7 +1121,7 @@ func evaluate_probabilities(action):
 	else:
 		print("Action not recognized")
 	
-########################## Http Request Fuctions
+##########################   Http Request Fuctions   ######################## 
 
 func _superposition_request():
 	var headers = ["Content-Type: application/json"]

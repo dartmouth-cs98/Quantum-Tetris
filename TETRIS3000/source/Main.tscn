@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://Environment.tres" type="Environment" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://fonts/TitleFont.tres" type="DynamicFont" id=17]
 [ext_resource path="res://icons/HICON.png" type="Texture" id=18]
 [ext_resource path="res://icons/XICON.png" type="Texture" id=19]
+[ext_resource path="res://tutorial.tscn" type="PackedScene" id=20]
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_transparent = true
@@ -289,6 +290,7 @@ visible = false
 visible = false
 
 [node name="HGate" parent="." instance=ExtResource( 16 )]
+editor/display_folded = true
 visible = false
 
 [node name="VBoxContainer" parent="HGate/MarginContainer" index="0"]
@@ -367,6 +369,8 @@ texture = ExtResource( 19 )
 [node name="HTTPXEval" type="HTTPRequest" parent="."]
 
 [node name="HTTPInitEval" type="HTTPRequest" parent="."]
+
+[node name="tutorial" parent="." instance=ExtResource( 20 )]
 [connection signal="timeout" from="Matrix/DropTrail/Delay" to="." method="_on_DropTrailDelay_timeout"]
 [connection signal="timeout" from="DropTimer" to="." method="_on_DropTimer_timeout"]
 [connection signal="timeout" from="LockDelay" to="." method="_on_LockDelay_timeout"]
