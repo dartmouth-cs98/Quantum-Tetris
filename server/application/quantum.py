@@ -151,6 +151,8 @@ class Quantum():
 
 		qc.rx(angle, 0)
 		qc.rz(angle, 0)
+		if superposition['piece1']["prob"] < superposition['piece2']["prob"]:
+			qc.z(0)
 		qc.h(0)
 
 		simulator = BasicAer.get_backend("statevector_simulator")
@@ -193,13 +195,13 @@ class Quantum():
 
 	def createPieces(self):
 
-		probability1 = self.random_int(100) / float(100)
+		probability1 = self.getRandNum(100) / float(100)
 		probability2 = 1 - probability1
-		type1=self.random_int(6)
-		type2=self.random_int(6)
+		type1=self.getRandNum(6)
+		type2=self.getRandNum(6)
 
 		while type1==type2:
-			type2=self.random_int(6)
+			type2=self.getRandNum(6)
 
 		return {
 			"piece1": {
