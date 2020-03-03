@@ -3,7 +3,8 @@ extends Control
 signal resume_after_text
 signal tutorial_ended
 
-var TUTORIAL_ARRAY
+var throttle = false
+var running = false
 
 var t_index = 0
 var text_array = ["Welcome to Quantum Tetris!\n\nIt plays just like regular Tetris,\nbut game mechanics are based on quantum principles.\n\n This tutorial will walk you through the games mechanics!! \n\n Press ENTER to continue",
@@ -47,17 +48,24 @@ Entangled qubits can then be separated by great distance and still affect each o
 In theory, this lets entangled qubits communicate faster than the speed of light!
 """,
 null,
-
+"This is the end of the tutorial! Goodluck and have fun!!",
 "end"]
 
 
 func _input(event):
 	if event is InputEventKey:
-		if event.scancode == KEY_ENTER:
+		if event.scancode == KEY_ENTER and !throttle and running:
+			print("TESTING: ")
+			throttle = true
 			t_index += 1
 			var next = text_array[t_index]
 			text(next)
+			if t_index >= text_array.size():
+				running = false 
 	
+func start_tutorial():
+	running = true
+
 func _ready():
 	var next = text_array[0]
 	text(next)
@@ -68,10 +76,13 @@ func next_text():
 func text(text):
 	if text == null:
 		emit_signal("resume_after_text")
+		throttle = false
 		return
 	elif text == "end":
 		emit_signal("tutorial_ended")
+		throttle = false
 		return
 	$body.text = text
+	throttle = false
 	
 	

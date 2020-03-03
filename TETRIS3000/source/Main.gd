@@ -80,13 +80,6 @@ var playing = false
 ## Creating Pieces
 var running = false
 
-## For MultiThreading
-var backlist_thread
-var powerup_thread
-var mutex
-var powerup_mutex
-var hold_threads = []
-
 # Turns
 var turns = 5
 
@@ -120,13 +113,7 @@ func _ready():
 	randomize()
 	running = true
 	
-	# Set mutexs for threads
-	mutex = Mutex.new()
-	powerup_mutex = Mutex.new()
-	
-	#Start backlist thread
-	backlist_thread = Thread.new()
-	backlist_thread.start(self,"handle_backlist")
+	handle_backlist()
 	
 	## for tutorial
 	$tutorial.connect("resume_after_text", self, "next_tutorial_piece")
@@ -137,7 +124,7 @@ func _ready():
 
 
 ##################### Handle Piece Backlist
-func handle_backlist(userdata):
+func handle_backlist():
 	abort = false
 	var num_turns = 20
 	var total_pieces = backlist.size()
@@ -156,10 +143,8 @@ func handle_backlist(userdata):
 			yield(self, "have_pieces")
 			if abort:
 				return
-			powerup_thread = Thread.new()
-			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
-			hold_threads.append(powerup_thread)
-
+			handle_powerups_backlist(backlist.back())
+			
 			# Determine which pieces are fake
 			_initial_evaluate_superposition()
 			yield(self, "init_eval_response_received")
@@ -172,9 +157,7 @@ func handle_backlist(userdata):
 			if abort:
 				return
 				
-			powerup_thread = Thread.new()
-			powerup_thread.start(self,"handle_powerups_backlist", backlist.back())
-			hold_threads.append(powerup_thread)
+			handle_powerups_backlist(backlist.back())
 			# Determine which pieces are fake
 			init_entangled_pieces = true
 			_initial_evaluate_superposition()
@@ -298,17 +281,13 @@ func random_piece(create_super_piece, create_entanglement):
 	if abort:
 		emit_signal("have_pieces")
 		return
-	mutex.lock()
+	
 	backlist.append(pieces)
 	probabilities_backlist.append(probs)
-	mutex.unlock()
-	
-	powerup_mutex.lock()
 	h_backlist.append([0,0,0,0])
 	x_backlist.append([0,0,0,0])
 	h_backlist_eval.append([true, false, true, false])
 	x_backlist_eval.append([true, false, true, false])
-	powerup_mutex.unlock()
 			
 #	print("TESTING, 7-Random_Piece, added pieces to backlist")
 	emit_signal("have_pieces")
@@ -354,9 +333,7 @@ func handle_powerups_backlist(userdata):
 	if abort:
 		return
 	
-	mutex.lock()
 	var piece_probs = probabilities_backlist[backlist.find(pieces)]
-	mutex.unlock()
 			
 	#print("TESTING, handle_powerups_backlist, pieces = "+ String(pieces))
 	if pieces.size()>1 and pieces.size()<3:
@@ -385,7 +362,6 @@ func apply_H(userdata):
 		_H_gate_request([probability_list[0], probability_list[1]])
 		state = yield(self,  "h_response_received")
 	if !abort:
-		powerup_mutex.lock()
 		
 		h_backlist[backlist.find(pieces)][0] = state[0]
 		h_backlist[backlist.find(pieces)][1] = state[1]
@@ -393,7 +369,6 @@ func apply_H(userdata):
 		if entangle:
 			h_backlist[backlist.find(pieces)][2] = state[0]
 			h_backlist[backlist.find(pieces)][3] = state[1]
-		powerup_mutex.unlock()
 	
 	if !abort:
 		#print("TESTING, apply_H (4), entangle is " + String(entangle) + " h_backlist is " +  String(h_backlist[h_backlist.size()-1]))
@@ -402,14 +377,12 @@ func apply_H(userdata):
 		eval_state = yield(self, "h_eval_response_received")
 		#print("TESTING, apply H (5), eval_state = " + String(eval_state) + " entangle is "+ String(entangle))
 	if !abort:
-		powerup_mutex.lock()
-		
+
 		h_backlist_eval[backlist.find(pieces)][0] = (eval_state[0])
 		h_backlist_eval[backlist.find(pieces)][1] = (eval_state[1])
 		if entangle:
 			h_backlist_eval[backlist.find(pieces)][2] = (eval_state[1])
 			h_backlist_eval[backlist.find(pieces)][3] = (eval_state[0])
-		powerup_mutex.unlock()
 	#print("TESTING, apply_H (6), entangle is " + String(entangle) + " h_eval_backlist is " + String(h_backlist_eval[h_backlist_eval.size()-1]))
 		
 func apply_X(userdata):
@@ -428,14 +401,12 @@ func apply_X(userdata):
 
 	if !abort:
 		#print("TESTING, apply_X (3), state = " + String(state) + " entangle is "+ String(entangle))
-		powerup_mutex.lock()
 		x_backlist[backlist.find(pieces)][0] = state[0]
 		x_backlist[backlist.find(pieces)][1] = state[1]
 		
 		if entangle:
 			x_backlist[backlist.find(pieces)][2] = state[0]
 			x_backlist[backlist.find(pieces)][3] = state[1]
-		powerup_mutex.unlock()
 		
 	if !abort:
 		#print("TESTING, apply_X (4), entangle is " + String(entangle) + " x_backlist is " +  String(x_backlist[x_backlist.size()-1]))
@@ -443,13 +414,11 @@ func apply_X(userdata):
 		eval_state = yield(self, "x_eval_response_received")
 	if !abort:
 		#print("TESTING, apply_X (5), eval_state = " + String(eval_state) + " entangle is "+ String(entangle))
-		powerup_mutex.lock()
 		x_backlist_eval[backlist.find(pieces)][0] = (eval_state[0])
 		x_backlist_eval[backlist.find(pieces)][1] = (eval_state[1])
 		if entangle:
 			x_backlist_eval[backlist.find(pieces)][2] = (eval_state[1])
 			x_backlist_eval[backlist.find(pieces)][3] = (eval_state[0])
-		powerup_mutex.unlock()
 		#print("TESTING, apply_X (6), entangle is " + String(entangle) + " x_eval_backlist is " + String(x_backlist_eval[x_backlist_eval.size()-1]))
 		
 
@@ -466,8 +435,7 @@ func new_game(level, tutorial_input = false):
 		abort()
 		is_game_over = false
 		running = true
-		backlist_thread = Thread.new()
-		backlist_thread.start(self,"handle_backlist")
+		handle_backlist()
 	
 	autoshift_action = ""
 	$LockDelay.wait_time = 0.5
@@ -499,34 +467,21 @@ func new_piece():
 		if !running and !tutorial:
 			#Wait for thread to finish
 			# Call new thread here
-			backlist_thread.wait_to_finish()
 			running = true
-			backlist_thread = Thread.new()
-			backlist_thread.start(self,"handle_backlist")
+			handle_backlist()
 			#print("TESTING: another one!")
 		
 		#Transfer pieces
 		if backlist.size() < 2 and !tutorial:
-			mutex.lock()
-			powerup_mutex.lock()
 			abort()
-			mutex.unlock()
-			powerup_mutex.unlock()
-		
-		current_pieces = backlist.pop_front()
 
-		mutex.lock()
+		current_pieces = backlist.pop_front()
 		next_pieces =  backlist[0]
 		probabilities = probabilities_backlist.pop_front()
-		mutex.unlock()
-		
-		powerup_mutex.lock()
 		h_probabilities = h_backlist.pop_front()
 		x_probabilities = x_backlist.pop_front()
-			
 		h_evals = h_backlist_eval.pop_front()
 		x_evals = x_backlist_eval.pop_front()
-		powerup_mutex.unlock()
 		
 		## powerup variables
 		h_use = false
@@ -616,7 +571,8 @@ func _unhandled_input(event):
 #		else:
 #			resume()
 	if event.is_action_pressed("tutorial"):
-		new_tutorial()
+		pass
+		#new_tutorial()
 #		if playing:
 #			pause($tutorial)
 #		else:
@@ -979,18 +935,11 @@ func pause(gui=null):
 
 func clear_lists():
 	abort = true
-
-
-
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
-	backlist_thread.wait_to_finish()	
 	backlist = []
 	
-	for thread in hold_threads:
-		thread.wait_to_finish()
-	hold_threads = []
 	## clean up the rest of precomputed variables
 	probabilities_backlist = []
 	probabilities = []
@@ -1074,6 +1023,7 @@ func get_current_pieces():
 	
 ########################    Tutorial Functions    ########################
 func new_tutorial():
+	$tutorial.start_tutorial()
 	clear_lists()
 	get_tutorial_pieces()
 	tutorial_lock = false
@@ -1308,6 +1258,8 @@ func get_tutorial_pieces():
 	
 	########### Then three superposition pieces
 	
+	############## First Piece
+	
 	var piece0 = return_name(0).instance()
 	var piece1 = return_name(1).instance()
 	add_child(piece0)
@@ -1321,6 +1273,10 @@ func get_tutorial_pieces():
 	h_backlist_eval.append([false, true, false, false])
 	x_backlist_eval.append([true, false, false, false])
 	
+	piece0.set_real()
+	piece1.set_fake()
+	
+	############## Second Piece
 	
 	var piece2 = return_name(2).instance()
 	var piece3 = return_name(3).instance()
@@ -1335,6 +1291,10 @@ func get_tutorial_pieces():
 	h_backlist_eval.append([true, false, false, false])
 	x_backlist_eval.append([false, true, false, false])
 	
+	piece2.set_real()
+	piece3.set_fake()
+	
+	############## Third Piece
 	
 	var piece4 = return_name(0).instance()
 	var piece5 = return_name(1).instance()
@@ -1350,9 +1310,13 @@ func get_tutorial_pieces():
 	h_backlist_eval.append([false, true, false, false])
 	x_backlist_eval.append([true, false, false, false])
 	
+	piece5.set_real()
+	piece4.set_fake()
+	
 	
 	############ Then three entanglement pieces
 
+	############## First Piece
 	var piece6 = return_name(0).instance()
 	var piece7 = return_name(1).instance()
 	var piece8 = return_name(0).instance()
@@ -1366,10 +1330,15 @@ func get_tutorial_pieces():
 	piece8.visible = false
 	piece9.visible = false
 	
+	piece6.set_real()
+	piece7.set_fake()
+	piece9.set_real()
+	piece8.set_fake()
+	
 	backlist.append([piece6,piece7,piece8,piece9])		# (I + J) + (L + O)
-	probabilities_backlist.append([.8, .2, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
+	probabilities_backlist.append([.8, .2, .8, .2])
+	h_backlist.append([.82, .18, .82, .18])
+	x_backlist.append([.2, .8, .2, .8])
 	h_backlist_eval.append([false, false, false, false])
 	x_backlist_eval.append([false, false, false, false])
 	
@@ -1384,7 +1353,7 @@ func get_tutorial_pieces():
 	piece8.connect_neighbors([piece6, piece7, piece9])
 	piece9.connect_neighbors([piece6, piece7, piece8])
 	
-	
+	############## Second Piece
 	var piece10 = return_name(0).instance()
 	var piece11 = return_name(2).instance()
 	var piece12 = return_name(0).instance()
@@ -1398,10 +1367,15 @@ func get_tutorial_pieces():
 	piece12.visible = false
 	piece13.visible = false
 	
+	piece11.set_real()
+	piece10.set_fake()
+	piece12.set_real()
+	piece13.set_fake()
+	
 	backlist.append([piece10,piece11,piece12,piece13])		# (I + L) + (S + Z)
-	probabilities_backlist.append([.8, .2, .8, .2])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
+	probabilities_backlist.append([.6, .4, .6, .4])
+	h_backlist.append([.98, .02, .98, .02])
+	x_backlist.append([.4, .6, .4, .6])
 	h_backlist_eval.append([false, false, false, false])
 	x_backlist_eval.append([false, false, false, false])
 	
@@ -1416,6 +1390,7 @@ func get_tutorial_pieces():
 	piece12.connect_neighbors([piece10, piece11, piece13])
 	piece13.connect_neighbors([piece10, piece11, piece12])
 	
+	############## Third Piece
 	var piece14 = return_name(5).instance()
 	var piece15 = return_name(6).instance()
 	var piece16 = return_name(5).instance()
@@ -1429,10 +1404,15 @@ func get_tutorial_pieces():
 	piece16.visible = false
 	piece17.visible = false
 	
+	piece14.set_real()
+	piece15.set_fake()
+	piece17.set_real()
+	piece16.set_fake()
+	
 	backlist.append([piece14,piece15,piece16,piece17])		
-	probabilities_backlist.append([.8, .2, 0, 0])
-	h_backlist.append([0, 0, 0, 0])
-	x_backlist.append([0, 0, 0, 0])
+	probabilities_backlist.append([0.5, 0.5, 0.5, 0.5])
+	h_backlist.append([1, 0, 1, 0])
+	x_backlist.append([0.5, 0.5, 0.5, 0.5])
 	h_backlist_eval.append([false, false, false, false])
 	x_backlist_eval.append([false, false, false, false])
 	
@@ -1447,3 +1427,5 @@ func get_tutorial_pieces():
 	piece12.connect_neighbors([piece10, piece11, piece13])
 	piece13.connect_neighbors([piece10, piece11, piece12])
 	
+#add final controls for async in case abort does work (check if a) piece in list, or if list is in the right place
+#Smooth over tutorial, possibly using signals?
