@@ -38,12 +38,12 @@ Entanglement is another funky quantum property.  Entangled pieces are polar oppo
 Also, the first set that hits will evaluate to their true pieces based on the probability shown in the visualizer. The second set that lands will evaluate to the opposite piece!
  """,
 null,
-""" Entanglement can happen when two Qubits squeeze microscopically close together.\n\n
+""" Entanglement can happen when two Qubits squeeze microscopically close together.\n
 
-They become Quantumly intertwined, which means they are now married as opposites of each other.\n\n
+They become Quantumly intertwined, which means they are now married as opposites of each other.\n
 
 If you measure an Entangled qubit as 1, its partner is guaranteed to flip to 0 instantaneously. Two sides of the same coin.\n\n
-Entangled qubits can then be separated by great distance and still affect each other.\n\n
+Entangled qubits can then be separated by great distance and still affect each other.\n
 
 In theory, this lets entangled qubits communicate faster than the speed of light!
 """,
@@ -53,18 +53,18 @@ null,
 
 
 func _input(event):
-	
-	if event.is_action_pressed("T"):
-		var new_tutorial_state = not get_tree().paused
-		get_tree().paused = new_tutorial_state
-		visible = new_tutorial_state
-	
+#	if event.is_action_pressed("T"):
+#		var new_tutorial_state = not get_tree().paused
+#		get_tree().paused = new_tutorial_state
+#		visible = new_tutorial_state
 	if event is InputEventKey:
 		if event.scancode == KEY_ENTER and !throttle and running:
 			print("TESTING: ")
 			throttle = true
+
 			t_index += 1
 			var next = text_array[t_index]
+			print("ENTER PRESSED")
 			text(next)
 			if t_index >= text_array.size():
 				running = false 

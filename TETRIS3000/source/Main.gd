@@ -617,19 +617,15 @@ func _unhandled_input(event):
 
 		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and !x_use and $HGate.use_powerup():
 			h_use = true
-			
-			if( get_node("HGate").use_powerup() ): 
-				evaluate_probabilities("hgate")
-				draw_probabilities()
-				
+			evaluate_probabilities("hgate")
+			draw_probabilities()
 				
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and !h_use and $XGate.use_powerup(): 
-			x_use = true
-			
-			if( get_node("XGate").use_powerup() ): 
-				evaluate_probabilities("xgate")
-				draw_probabilities()
-				
+			x_use = true 
+			evaluate_probabilities("xgate")
+			draw_probabilities()
+
+
 func process_new_action(event):
 	
 	# movements are the 3 possible ways to move a piece
