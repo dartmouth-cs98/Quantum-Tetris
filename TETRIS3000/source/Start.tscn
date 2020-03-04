@@ -89,3 +89,4 @@ margin_bottom = 204.0
 custom_fonts/font = ExtResource( 5 )
 text = "How to Play"
 [connection signal="pressed" from="PlayButton" to="." method="_on_PlayButton_pressed"]
+[connection signal="pressed" from="HowToButton" to="." method="_on_HowToButton_pressed"]
