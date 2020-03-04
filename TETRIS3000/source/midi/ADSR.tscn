@@ -1,15 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://midi/ADSR.gd" type="Script" id=1]
+[ext_resource path="res://midi/JBOOG.wav" type="AudioStream" id=1]
+[ext_resource path="res://midi/ADSR.gd" type="Script" id=2]
 
 [node name="ADSR" type="AudioStreamPlayer"]
-
-stream = null
-volume_db = 0.0
-autoplay = false
-mix_target = 0
-bus = "Master"
-script = ExtResource( 1 )
-_sections_unfolded = [ "Pause", "Transform", "Z Index" ]
-
-
+stream = ExtResource( 1 )
+script = ExtResource( 2 )

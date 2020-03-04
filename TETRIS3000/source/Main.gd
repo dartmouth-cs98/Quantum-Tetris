@@ -102,14 +102,17 @@ signal h_eval_response_received
 signal x_eval_response_received
 signal init_eval_response_received
 signal have_pieces
+signal tutorial_piece
 
 
 var turn_count: int = 0
-var num_H_gates: int = 0
-var num_X_gates: int = 0
 
+
+## Control game flow
 var abort
 var is_game_over = false
+var tutorial
+var tutorial_lock = false
 
 
 ##################### Functions ##################### 
@@ -126,6 +129,12 @@ func _ready():
 	backlist_thread = Thread.new()
 	backlist_thread.start(self,"handle_backlist")
 	
+	## for tutorial
+	$tutorial.connect("resume_after_text", self, "next_tutorial_piece")
+	$tutorial.connect("tutorial_ended", self, "end_tutorial")
+	
+	$Start.connect("tutorial", self, "new_game")
+	
 
 ##################### Handle Piece Backlist
 func handle_backlist(userdata):
@@ -133,6 +142,8 @@ func handle_backlist(userdata):
 	var num_turns = 20
 	var total_pieces = backlist.size()
 	for i in range(num_turns - total_pieces):
+#		print("TESTING, backlist.size = " + String(backlist.size()))
+
 		var turn_type = count_turns()
 		
 		if abort:
@@ -195,7 +206,7 @@ func count_turns():
 		return(0)
 		
 	
-func random_piece( create_super_piece, create_entanglement):
+func random_piece(create_super_piece, create_entanglement):
 	# Add first piece
 	var pieces = []
 	var probs=[0,0,0,0]
@@ -445,12 +456,14 @@ func apply_X(userdata):
 
 ##################### Game Functions
 ## new_game: Start a new game
-func new_game(level):
+func new_game(level, tutorial_input = false):
+	tutorial = tutorial_input
+	
 	# hide the title screen
 	$Start.visible = false
 	# start generating backlist
 	
-	if is_game_over:
+	if is_game_over and !tutorial:
 		abort()
 		is_game_over = false
 		running = true
@@ -460,13 +473,16 @@ func new_game(level):
 	autoshift_action = ""
 	$LockDelay.wait_time = 0.5
 	$MidiPlayer.position = 0
-	$Stats.new_game(level)
+	$Stats.new_game(level, tutorial)
 	is_game_over = false
 	
 	next_pieces = backlist[0]
 	
-	new_piece()
-	resume()
+	if tutorial:
+		new_tutorial()
+	else:
+		new_piece()
+		resume()
 
 # The new piece gets generated
 func new_piece():
@@ -481,7 +497,7 @@ func new_piece():
 		# See res://Tetrominos/Tetromino.gd
 		# Check the backlist
 		# Thread this?
-		if !running:
+		if !running and !tutorial:
 			#Wait for thread to finish
 			# Call new thread here
 			backlist_thread.wait_to_finish()
@@ -491,7 +507,7 @@ func new_piece():
 			#print("TESTING: another one!")
 		
 		#Transfer pieces
-		if backlist.size() < 2:
+		if backlist.size() < 2 and !tutorial:
 			mutex.lock()
 			powerup_mutex.lock()
 			abort()
@@ -499,6 +515,7 @@ func new_piece():
 			powerup_mutex.unlock()
 		
 		current_pieces = backlist.pop_front()
+
 		mutex.lock()
 		next_pieces =  backlist[0]
 		probabilities = probabilities_backlist.pop_front()
@@ -597,15 +614,22 @@ func new_level(level):
 # Mapping happens in res://controls.gd
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):
-		if playing:
-			pause($controls_ui)
-		else:
-			resume()
+		pass
+#		if playing:
+#			if first_tutorial:
+#				first_tutorial = false
+#				new_tutorial()
+#			else:
+#				next_tutorial_piece()
+#		else:
+#			resume()
 	if event.is_action_pressed("tutorial"):
-		if playing:
-			pause($tutorial)
-		else:
-			resume()
+		pass
+		#new_tutorial()
+#		if playing:
+#			pause($tutorial)
+#		else:
+#			resume()
 	if event.is_action_pressed("toggle_fullscreen"):
 		OS.window_fullscreen = not OS.window_fullscreen
 	if playing:
@@ -635,20 +659,16 @@ func _unhandled_input(event):
 				
 		if event.is_action_pressed("hold"):
 			hold()
-		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use:
+
+		if event.is_action_pressed("hgate") and current_pieces.size()>1 and !h_use and !x_use and $HGate.use_powerup():
 			h_use = true
-			
-			if( get_node("HGate").use_powerup() ): 
-				evaluate_probabilities("hgate")
-				draw_probabilities()
+			evaluate_probabilities("hgate")
+			draw_probabilities()
 				
-				
-		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use: 
-			x_use = true
-			
-			if( get_node("XGate").use_powerup() ): 
-				evaluate_probabilities("xgate")
-				draw_probabilities()
+		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and !h_use and $XGate.use_powerup(): 
+			x_use = true 
+			evaluate_probabilities("xgate")
+			draw_probabilities()
 
 func process_new_action(event):
 	
@@ -775,8 +795,11 @@ func _on_LockDelay_timeout():
 			
 			
 # Transforms the piece from a falling object to a group of blocks resting on the floor
-##NOT DONE
+
 func lock(current_piece: Tetromino):
+	
+
+	if( tutorial and !tutorial_lock): next_tutorial_screen()
 	
 	current_piece.lock()
 	
@@ -815,7 +838,7 @@ func lock(current_piece: Tetromino):
 			return
 	
 	# Dont' make a new piece!
-	if !is_game_over:
+	if !is_game_over and !tutorial:
 		new_piece()
 
 func visualize(pieces_to_visualize):
@@ -980,7 +1003,7 @@ func resume():
 	get_node("HGate").visible = true
 	get_node("XGate").visible = true
 	
-
+	
 # Run when game gets paused
 func pause(gui=null):
 	playing = false
@@ -1019,15 +1042,8 @@ func pause(gui=null):
 	get_node("HGate").visible = false
 	get_node("XGate").visible = false
 
-# Called when the player loses
-
-func game_over():
-	print("game over called")
-	is_game_over = true
+func clear_lists():
 	abort = true
-	pause()
-	$FlashText.print("GAME\nOVER")
-	$ReplayButton.visible = true
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
@@ -1048,7 +1064,19 @@ func game_over():
 	h_evals = []
 	h_probabilities = []
 	x_probabilities = []
+
+# Called when the player loses
+func game_over():
+	print("game over called")
+	is_game_over = true
+	pause()
+	$FlashText.print("GAME\nOVER")
+	$ReplayButton.visible = true
+	clear_lists()
+
+	$MidiPlayer.game_over()
 	
+
 
 # Called when the replay-button is pressed
 func _on_ReplayButton_pressed():
@@ -1083,6 +1111,12 @@ func _on_ReplayButton_pressed():
 	
 	get_node("HGate").clear()
 	get_node("XGate").clear()
+
+	
+	# jboog
+	$MidiPlayer.game_start()
+
+
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
@@ -1098,6 +1132,30 @@ func set_current_pieces(pieces):
 	
 func get_current_pieces():
 	return current_pieces
+	
+	
+########################    Tutorial Functions    ########################
+func new_tutorial():
+	clear_lists()
+	get_tutorial_pieces()
+	tutorial_lock = false
+	pause($tutorial)
+	
+func next_tutorial_piece():
+	new_piece()
+	tutorial_lock = false
+	resume()
+	
+func next_tutorial_screen():
+	tutorial_lock = true
+	$tutorial.next_text()
+	pause($tutorial)
+	
+	
+func end_tutorial():
+	tutorial = false
+	new_piece()
+	resume()
 	
 ########################   Quantum Functionality   ######################## 
 # switch probabilities and evaluation values
@@ -1131,7 +1189,7 @@ func evaluate_probabilities(action):
 	else:
 		print("Action not recognized")
 	
-########################## Http Request Fuctions
+##########################   Http Request Fuctions   ######################## 
 
 func _superposition_request():
 	var headers = ["Content-Type: application/json"]
@@ -1142,6 +1200,7 @@ func _superposition_request():
 func _evaluate_superposition(probability_list, action):
 	var headers = ["Content-Type: application/json"]
 	# Add 'Content-Type' header:
+#	print("TESTING eval request")
 	var prob = String(probability_list[0])
 	if(action == "hgate"):
 		$HTTPHEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
@@ -1158,8 +1217,10 @@ func _initial_evaluate_superposition():
 	# Add 'Content-Type' header:
 	var prob
 	prob = String(probabilities_backlist.back()[0])
+
 	#print("TESTING, 12-initial_evaluate_superposition, making eval request") 
 #	print("TESTING: eval request")
+
 	$HTTPInitEval.request("https://q-tetris-backend.herokuapp.com/api/determineSuperposition?prob=" + prob,  headers, false, HTTPClient.METHOD_GET)
 	
 	
@@ -1229,6 +1290,7 @@ func _on_HTTPRequest_super_completed(result, response_code, headers, body):
 	emit_signal("super_response_received", {"prob":to_append_prob, "type": types})
 		
 func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
+#	print("TESTING eval request")
 	if !abort:
 #		print("TESTING: eval response")
 		var response = JSON.parse(body.get_string_from_utf8())
@@ -1291,7 +1353,159 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 			print("Eval Response: Response code not recognized")
 	
 	emit_signal("x_eval_response_received", to_send)
+	
+func get_tutorial_pieces(): 
+	
+	# First piece is a cube
+	var piece_norm = return_name(3).instance()
+	add_child(piece_norm)
+	piece_norm.visible = false
+	backlist.append([piece_norm])
+	probabilities_backlist.append([0, 0, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	
+	########### Then three superposition pieces
+	
+	var piece0 = return_name(0).instance()
+	var piece1 = return_name(1).instance()
+	add_child(piece0)
+	add_child(piece1)
+	piece0.visible = false
+	piece1.visible = false
+	backlist.append([piece0, piece1])		# I + J
+	probabilities_backlist.append([.3, .7, 0, 0])
+	h_backlist.append([.08, .92, 0, 0])
+	x_backlist.append([.7, .3, 0, 0])
+	h_backlist_eval.append([false, true, false, false])
+	x_backlist_eval.append([true, false, false, false])
+	
+	
+	var piece2 = return_name(2).instance()
+	var piece3 = return_name(3).instance()
+	add_child(piece2)
+	add_child(piece3)
+	piece2.visible = false
+	piece3.visible = false
+	backlist.append([piece2,piece3])		# L + O
+	probabilities_backlist.append([.6, .4, 0, 0])
+	h_backlist.append([.98, .02, 0, 0])
+	x_backlist.append([.4, .6, 0, 0])
+	h_backlist_eval.append([true, false, false, false])
+	x_backlist_eval.append([false, true, false, false])
+	
+	
+	var piece4 = return_name(0).instance()
+	var piece5 = return_name(1).instance()
+	add_child(piece4)
+	add_child(piece5)
+	piece4.visible = false
+	piece5.visible = false
+	
+	backlist.append([piece4, piece5])		# I + J
+	probabilities_backlist.append([.3, .7, 0, 0])
+	h_backlist.append([.08, .92, 0, 0])
+	x_backlist.append([.7, .3, 0, 0])
+	h_backlist_eval.append([false, true, false, false])
+	x_backlist_eval.append([true, false, false, false])
+	
+	
+	############ Then three entanglement pieces
 
-# Move game over button
-# talk to trevor about how entanglement works, it doesnt 
-
+	var piece6 = return_name(0).instance()
+	var piece7 = return_name(1).instance()
+	var piece8 = return_name(0).instance()
+	var piece9 = return_name(1).instance()
+	add_child(piece6)
+	add_child(piece7)
+	add_child(piece8)
+	add_child(piece9)
+	piece6.visible = false
+	piece7.visible = false
+	piece8.visible = false
+	piece9.visible = false
+	
+	backlist.append([piece6,piece7,piece8,piece9])		# (I + J) + (L + O)
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	piece6.entangle(-1)
+	piece7.entangle(-1)
+	piece8.entangle(1)
+	piece9.entangle(1)
+	
+	#Connect each piece to its neighbors
+	piece6.connect_neighbors([piece7, piece8, piece9])
+	piece7.connect_neighbors([piece6, piece8, piece9])
+	piece8.connect_neighbors([piece6, piece7, piece9])
+	piece9.connect_neighbors([piece6, piece7, piece8])
+	
+	
+	var piece10 = return_name(0).instance()
+	var piece11 = return_name(2).instance()
+	var piece12 = return_name(0).instance()
+	var piece13 = return_name(2).instance()
+	add_child(piece10)
+	add_child(piece11)
+	add_child(piece12)
+	add_child(piece13)
+	piece10.visible = false
+	piece11.visible = false
+	piece12.visible = false
+	piece13.visible = false
+	
+	backlist.append([piece10,piece11,piece12,piece13])		# (I + L) + (S + Z)
+	probabilities_backlist.append([.8, .2, .8, .2])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	piece10.entangle(-1)
+	piece11.entangle(-1)
+	piece12.entangle(1)
+	piece13.entangle(1)
+	
+	#Connect each piece to its neighbors
+	piece10.connect_neighbors([piece11, piece12, piece13])
+	piece11.connect_neighbors([piece10, piece12, piece13])
+	piece12.connect_neighbors([piece10, piece11, piece13])
+	piece13.connect_neighbors([piece10, piece11, piece12])
+	
+	var piece14 = return_name(5).instance()
+	var piece15 = return_name(6).instance()
+	var piece16 = return_name(5).instance()
+	var piece17 = return_name(6).instance()
+	add_child(piece14)
+	add_child(piece15)
+	add_child(piece16)
+	add_child(piece17)
+	piece14.visible = false
+	piece15.visible = false
+	piece16.visible = false
+	piece17.visible = false
+	
+	backlist.append([piece14,piece15,piece16,piece17])		
+	probabilities_backlist.append([.8, .2, 0, 0])
+	h_backlist.append([0, 0, 0, 0])
+	x_backlist.append([0, 0, 0, 0])
+	h_backlist_eval.append([false, false, false, false])
+	x_backlist_eval.append([false, false, false, false])
+	
+	piece10.entangle(-1)
+	piece11.entangle(-1)
+	piece12.entangle(1)
+	piece13.entangle(1)
+	
+	#Connect each piece to its neighbors
+	piece10.connect_neighbors([piece11, piece12, piece13])
+	piece11.connect_neighbors([piece10, piece12, piece13])
+	piece12.connect_neighbors([piece10, piece11, piece13])
+	piece13.connect_neighbors([piece10, piece11, piece12])
+	

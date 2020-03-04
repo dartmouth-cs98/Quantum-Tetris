@@ -27,5 +27,7 @@ func use_powerup() -> bool:
 	
 	
 func clear(): 
+
 	while use_powerup():
 		pass
+

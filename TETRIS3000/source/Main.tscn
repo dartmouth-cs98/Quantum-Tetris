@@ -329,14 +329,6 @@ visible = false
 [node name="FakeGhostB" parent="." instance=ExtResource( 15 )]
 visible = false
 
-[node name="VisualizerGhost" parent="." instance=ExtResource( 15 )]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
-visible = false
-
-[node name="VisualizerGhostB" parent="." instance=ExtResource( 15 )]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
-visible = false
-
 [node name="HGate" parent="." instance=ExtResource( 16 )]
 editor/display_folded = true
 visible = false
