@@ -36,6 +36,8 @@ var random_bag = []
 ## Arrays to Hold Pieces
 var backlist = []
 var next_pieces = []
+var next_pieces2 = []
+var next_pieces3 = []
 var current_pieces = []
 var held_pieces = []
 var visualize_pieces = []
@@ -100,6 +102,8 @@ signal tutorial_piece
 
 var turn_count: int = 0
 
+#Visualizer Red Line
+var LineDrawer = preload("res://DrawLine3D.gd").new()
 
 ## Control game flow
 var abort
@@ -111,6 +115,7 @@ var tutorial_lock = false
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
+	add_child(LineDrawer)
 	randomize()
 	running = true
 	
@@ -122,6 +127,10 @@ func _ready():
 	
 	$Start.connect("tutorial", self, "new_game")
 	
+
+##################### called every frame
+func _process(delta):
+	check_red_line()
 
 ##################### Handle Piece Backlist
 func handle_backlist():
@@ -287,8 +296,8 @@ func random_piece(create_super_piece, create_entanglement):
 	probabilities_backlist.append(probs)
 	h_backlist.append([0,0,0,0])
 	x_backlist.append([0,0,0,0])
-	h_backlist_eval.append([true, false, true, false])
-	x_backlist_eval.append([true, false, true, false])
+	h_backlist_eval.append([true, false, false, true])
+	x_backlist_eval.append([false, true, true, false])
 			
 #	print("TESTING, 7-Random_Piece, added pieces to backlist")
 	emit_signal("have_pieces")
@@ -445,6 +454,8 @@ func new_game(level, tutorial_input = false):
 	is_game_over = false
 	
 	next_pieces = backlist[0]
+	next_pieces2 = backlist[1]
+	next_pieces3 = backlist[2]
 	
 	if tutorial:
 		new_tutorial()
@@ -461,6 +472,9 @@ func new_piece():
 		if( turn_count % 3 == 0): get_node("HGate").add_powerup()
 		if( turn_count % 5 == 0): get_node("XGate").add_powerup()
 	
+		#Transfer pieces
+		if backlist.size() < 4 and !tutorial:
+			abort()
 		# current_piece, next_piece, etc. are all Tetromino objects
 		# See res://Tetrominos/Tetromino.gd
 		# Check the backlist
@@ -471,13 +485,13 @@ func new_piece():
 			running = true
 			handle_backlist()
 			#print("TESTING: another one!")
-		
-		#Transfer pieces
-		if backlist.size() < 2 and !tutorial:
-			abort()
-
 		current_pieces = backlist.pop_front()
-		next_pieces =  backlist[0]
+		if backlist.size()>0:
+			next_pieces =  backlist[0]
+		if backlist.size()>1:
+			next_pieces2 = backlist[1]
+		if backlist.size()>2:
+			next_pieces3 = backlist[2]
 		probabilities = probabilities_backlist.pop_front()
 		h_probabilities = h_backlist.pop_front()
 		x_probabilities = x_backlist.pop_front()
@@ -490,7 +504,6 @@ func new_piece():
 		x_use = false 
 		#Move current pieces into position
 		for current_piece in current_pieces:
-			
 			current_piece.visible = true
 			if( current_piece.entanglement < 0 ):
 				current_piece.translation = $Matrix/PosEntA.translation
@@ -509,18 +522,60 @@ func new_piece():
 			next_piece.visible = true
 			if(next_pieces.size()>2):
 				next_piece.translation = $Next/Position3D.translation
+				next_piece.scale = Vector3(0.6,0.6,0.6)
 				if next_piece.entanglement < 0:
-					next_piece.translation = $Next/Position3D.translation + (Vector3(1,0,0))
+					next_piece.translation = $Next/Position3D.translation + (Vector3(-1.5,0,0))
 				else:
-					next_piece.translation = $Next/Position3D.translation + (Vector3(1,-4,0))
+					next_piece.translation = $Next/Position3D.translation + (Vector3(1.5,0,0))
 			else:
 				# This places the next piece in the upper-right box
 				next_piece.translation = $Next/Position3D.translation
+
+		for next_piece2 in next_pieces2: 
+			next_piece2.visible = true
+			if(next_pieces2.size()>2):
+				next_piece2.translation = $Next/Position3D2.translation
+				next_piece2.scale = Vector3(0.6,0.6,0.6)
+				if next_piece2.entanglement < 0:
+					next_piece2.translation = $Next/Position3D2.translation + (Vector3(-1.5,0,0))
+				else:
+					next_piece2.translation = $Next/Position3D2.translation + (Vector3(1.5,0,0))
+			else:
+				# This places the next piece in the upper-right box
+				next_piece2.translation = $Next/Position3D2.translation
+				
+		for next_piece3 in next_pieces3: 
+			next_piece3.visible = true
+			if(next_pieces3.size()>2):
+				next_piece3.translation = $Next/Position3D3.translation
+				next_piece3.scale = Vector3(0.6,0.6,0.6)
+				if next_piece3.entanglement < 0:
+					next_piece3.translation = $Next/Position3D3.translation + (Vector3(-1.5,0,0))
+				else:
+					next_piece3.translation = $Next/Position3D3.translation + (Vector3(1.5,0,0))
+			else:
+				# This places the next piece in the upper-right box
+				next_piece3.translation = $Next/Position3D3.translation
+
+
+		if backlist.size() > 2:
+			var back_pieces = backlist[2]
+			for back_piece in back_pieces: 
+				if(back_pieces.size()>2):
+					back_piece.translation = $Next/Position3D3.translation
+					back_piece.scale = Vector3(0.6,0.6,0.6)
+					if back_piece.entanglement < 0:
+						back_piece.translation = $Next/Position3D3.translation + (Vector3(-1.5,0,0))
+					else:
+						back_piece.translation = $Next/Position3D3.translation + (Vector3(1.5,0,0))
+				else:
+					# This places the next piece in the upper-right box
+					back_piece.translation = $Next/Position3D3.translation
 		
 		## Place current pieces
 		# THERE is a 0-magnitude 3D-vector
 		for current_piece in current_pieces:
-			
+			current_piece.scale = Vector3(1,1,1)
 			# Checks whether the piece has room to spawn
 			if $Matrix/GridMap.possible_positions(current_piece.get_translations(), THERE, current_piece.entanglement):
 				$DropTimer.start()
@@ -529,32 +584,36 @@ func new_piece():
 			# If the piece can't spawn, you lose!
 			elif !is_game_over:
 				game_over()
+	if !abort:
+		if (current_pieces.size() > 1 && current_pieces.size()<3):
+	
+			$FakeGhost.visible = true
+			$FlashText.print("SUPERPOSITION")
+			visualize(current_pieces)
+			draw_probabilities()
+			for piece in current_pieces:
+				piece.connect("lock", self, "visualize_locking")
 			
-	if (current_pieces.size() > 1 && current_pieces.size()<3):
-
-		$FakeGhost.visible = true
-		$FlashText.print("SUPERPOSITION")
-		visualize(current_pieces)
-		draw_probabilities()
-		
-		# If we have both superposition and entanglement,
-	elif(current_pieces.size() > 2):
-		$GhostB.visible = true
-		$FakeGhostB.visible = true
-		$FlashText.print("ENTANGLEMENT")
-		visualize(current_pieces)
-		draw_probabilities()
-		
-	else:
-		$GhostB.visible = false
-		$FakeGhost.visible = false
-		$FakeGhostB.visible = false
-		clear_visualizer()
-		
-		# If we have just entanglement,
-		if (current_pieces[0].entanglement < 0): 
+			# If we have both superposition and entanglement,
+		elif(current_pieces.size() > 2):
 			$GhostB.visible = true
+			$FakeGhostB.visible = true
+			$FlashText.print("ENTANGLEMENT")
+			visualize(current_pieces)
+			draw_probabilities()
+			for piece in current_pieces:
+				piece.connect("lock", self, "visualize_locking")
+			
+		else:
+			$GhostB.visible = false
+			$FakeGhost.visible = false
 			$FakeGhostB.visible = false
+			clear_visualizer()
+			
+			# If we have just entanglement,
+			if (current_pieces[0].entanglement < 0):
+				$GhostB.visible = true
+				$FakeGhostB.visible = false
 	
 
 # Increments the difficulty upon reaching a new level
@@ -568,6 +627,9 @@ func new_level(level):
 # Handles all of the keyboard-inputs
 # Mapping happens in res://controls.gd
 func _unhandled_input(event):
+	#Transfer pieces
+	if backlist.size() < 4 and !tutorial:
+		abort()
 	if event.is_action_pressed("pause"):
 		pass
 #		if playing:
@@ -718,14 +780,12 @@ func hard_drop():
 	for i in range(Tetromino.NB_MINOES):
 		get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
 		
-		
 
 	$Matrix/DropTrail.visible = true
 	$Matrix/DropTrail/Delay.start()
 	$LockDelay.stop()
 	for current_piece in current_pieces:
 		lock(current_piece)
-
 
 # I can't find this timer.
 # Maybe it was removed?
@@ -748,16 +808,12 @@ func _on_LockDelay_timeout():
 	for current_piece in current_pieces:
 		if not $Matrix/GridMap.possible_positions(current_piece.get_translations(), movements["soft_drop"], current_piece.entanglement):
 			lock(current_piece)
-			
-			
+
 # Transforms the piece from a falling object to a group of blocks resting on the floor
 
 func lock(current_piece: Tetromino):
-	
-
 	if( tutorial and !tutorial_lock): next_tutorial_screen()
 	
-	current_piece.lock()
 	
 	if(current_piece.is_fake):
 		remove_child(current_piece)
@@ -771,6 +827,7 @@ func lock(current_piece: Tetromino):
 		var super = ""
 		if(current_pieces.size() > 1):
 			if(current_pieces[1].is_fake): super = "SUPER"
+			
 		
 		$Stats.piece_locked(lines_cleared, t_spin, super)
 		
@@ -788,6 +845,7 @@ func lock(current_piece: Tetromino):
 		# If we're locking the last piece,
 		# make the new pieces!
 		
+	current_piece.lock()
 	# If any of the pieces aren't locked yet, 
 	for current_piece in current_pieces :
 		if( !current_piece.is_locked ):
@@ -797,6 +855,7 @@ func lock(current_piece: Tetromino):
 	if !is_game_over and !tutorial:
 		new_piece()
 
+# transposes the correct pieces to the visualizer
 func visualize(pieces_to_visualize):
 	if pieces_to_visualize.size() > 0:
 		for v_piece in visualize_pieces:
@@ -822,25 +881,59 @@ func visualize(pieces_to_visualize):
 		visualize_pieces.append(bottom_piece)
 		
 
+# draws aline to indicate probability in the Bloch Sphere
+func draw_red_line():
+	if !is_game_over:
+		var degree = 270 + 180*probabilities[0]
+		var radian = degree * PI/180
+		
+		var endx = cos(radian) * $Visualizer/BlochSphere/Sphere.radius*7.5 + ($Visualizer/BlochSphere/Sphere.translation.x)*-1
+		var endy = sin(radian) * $Visualizer/BlochSphere/Sphere.radius*7.5 + ($Visualizer/BlochSphere/Sphere.translation.y-0.2)*-1
+		var endpoint = Vector3(endx,endy,0)
+		DrawLine3D.DrawLine($Visualizer/BlochSphere/Sphere.translation*-1, endpoint, Color(1, 0, 0), 0.01)
+
+#redraws the line every frame while the visualizer is on screen
+func check_red_line():
+	if $Visualizer/BlochSphere.visible:
+		draw_red_line()
+		
+# draws the probabilities in the visualizer
 func draw_probabilities():
-	$Visualizer/TopProb.visible = true
-	$Visualizer/BottomProb.visible = true
-	if probabilities.size() > 0:
+	if !is_game_over:
+		$Visualizer/TopProb.visible = true
+		$Visualizer/BottomProb.visible = true
+		$Visualizer/BlochSphere.visible = true
 		$Visualizer/TopProb.text = String(probabilities[0])
 		$Visualizer/BottomProb.text = String(probabilities[1])
+		draw_red_line()
 	
+# removes pieces and hides the visualizer
 func clear_visualizer():
 	for v_piece in visualize_pieces:
 		remove_child(v_piece)
 	visualize_pieces = []
 	$Visualizer/TopProb.visible = false
 	$Visualizer/BottomProb.visible = false
+	$Visualizer/BlochSphere.visible = false
 	
+#redraws the probabilities when the piece evaluates
+func visualize_locking():
+	if current_pieces[0].is_fake:
+		probabilities[0] = 0
+	else:
+		probabilities[0] = 1
+	if current_pieces[1].is_fake:
+		probabilities[1] = 0
+	else:
+		probabilities[1] = 1
+	draw_probabilities()
+
 # Implements holding a piece in the upper left
 func hold():
 	# If the current piece is NOT falling
 	# i.e. the current piece and the held piece are not already currently being swapped
 	if not current_piece_held:
+		clear_visualizer()
 		
 		# Prevents the user from using the hold command again while swapping is happening
 		current_piece_held = true
@@ -885,9 +978,11 @@ func hold():
 				held_piece.translation = $Hold/Position3D.translation
 			else:
 				if held_piece.entanglement<0:
-					held_piece.translation = $Hold/Position3D.translation + Vector3(0,2,0)
+					held_piece.scale = $Hold/Position3D.scale * (Vector3(0.6,0.6,0.6))
+					held_piece.translation = $Hold/Position3D.translation + Vector3(-1.5,0,0)
 				else:
-					held_piece.translation = $Hold/Position3D.translation - Vector3(0,2,0)
+					held_piece.scale = $Hold/Position3D.scale * (Vector3(0.6,0.6,0.6))
+					held_piece.translation = $Hold/Position3D.translation + Vector3(1.5,0,0)
 			
 		# If we were holding a piece in the upperleft already,
 		# Initialize the piece that just got swapped in
@@ -897,6 +992,7 @@ func hold():
 					current_piece.translation = $Matrix/Position3D.translation
 					current_piece.move_ghost()
 				else:
+					current_piece.scale = Vector3(1,1,1)
 					if current_piece.entanglement<0:
 						current_piece.translation = $Matrix/PosEntA.translation
 					else:
@@ -909,9 +1005,12 @@ func hold():
 		
 		if current_pieces.size()>1:
 			$FakeGhost.visible = true
+			visualize(current_pieces)
+			draw_probabilities()
 			if current_pieces.size()>2:
 				$GhostB.visible = true
 				$FakeGhostB.visible = true
+		
 		
 
 # Called when game is resumed after being paused
@@ -927,11 +1026,14 @@ func resume():
 	$Matrix.visible = true
 	$Matrix/GridMap.visible = true
 	$Hold.visible = true
+	$Hold/Label.visible = true
 	$Next.visible = true
+	$Next/Label.visible = true
 	$Visualizer.visible = true
 	if visualize_pieces.size() > 0:
 		$Visualizer/TopProb.visible = true
 		$Visualizer/BottomProb.visible = true
+		$Visualizer/BlochSphere.visible = true
 	$XandH.visible = true
 	for current_piece in current_pieces:
 		current_piece.visible = true
@@ -954,7 +1056,10 @@ func resume():
 			held_piece.visible = true
 	for next_piece in next_pieces:
 		next_piece.visible = true
-		
+	for next_piece2 in next_pieces2:
+		next_piece2.visible = true
+	for next_piece3 in next_pieces3:
+		next_piece3.visible = true
 		
 	get_node("HGate").visible = true
 	get_node("XGate").visible = true
@@ -976,10 +1081,13 @@ func pause(gui=null):
 		$Matrix.visible = false
 		$Matrix/GridMap.visible = false
 		$Hold.visible = false
+		$Hold/Label.visible = false
 		$Next.visible = false
+		$Next/Label.visible = false
 		$Visualizer.visible = false
 		$Visualizer/TopProb.visible = false
 		$Visualizer/BottomProb.visible = false
+		$Visualizer/BlochSphere.visible = false
 		$XandH.visible = false
 		for current_piece in current_pieces:
 			current_piece.visible = false
@@ -992,6 +1100,10 @@ func pause(gui=null):
 				held_piece.visible = false
 		for next_piece in next_pieces:
 			next_piece.visible = false
+		for next_piece2 in next_pieces2:
+			next_piece2.visible = false
+		for next_piece3 in next_pieces3:
+			next_piece3.visible = false
 		for v_piece in visualize_pieces:
 			v_piece.visible = false
 			
@@ -1000,10 +1112,15 @@ func pause(gui=null):
 
 func clear_lists():
 	abort = true
+	clear_visualizer()
 	for piece_list in backlist:
 		for piece in piece_list:
 			remove_child(piece)
 	backlist = []
+	
+	for current_piece in current_pieces:
+		remove_child(current_piece)
+	current_pieces = []
 	
 	## clean up the rest of precomputed variables
 	probabilities_backlist = []
@@ -1016,6 +1133,7 @@ func clear_lists():
 	h_evals = []
 	h_probabilities = []
 	x_probabilities = []
+
 
 # Called when the player loses
 func game_over():
@@ -1035,15 +1153,18 @@ func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
 	for next_piece in next_pieces:
 		remove_child(next_piece)
-	for current_piece in current_pieces:
-		remove_child(current_piece)
+	for next_piece2 in next_pieces2:
+		remove_child(next_piece2)
+	for next_piece3 in next_pieces3:
+		remove_child(next_piece3)
 	if held_pieces.size()>0:
 		for held_piece in held_pieces:
 			remove_child(held_piece)
 			held_piece = null
 			
 	next_pieces = []
-	current_pieces = []
+	next_pieces2 = []
+	next_pieces3 = []
 	held_pieces = []
 	
 	# Other holding variables
@@ -1248,16 +1369,16 @@ func _on_HTTPRequest_init_eval_completed(result, response_code, headers, body):
 #		print("TESTING: eval response")
 		var response = JSON.parse(body.get_string_from_utf8())
 		
-		if(response.result["result"] == 0):
+		if(response.result["result"] == 0 and backlist[backlist.size()-1].size()>1):
 			backlist[backlist.size()-1][0].set_real()
 			backlist[backlist.size()-1][1].set_fake()
-			if init_entangled_pieces:
+			if init_entangled_pieces and backlist[backlist.size()-1].size()>2:
 				backlist[backlist.size()-1][2].set_fake()
 				backlist[backlist.size()-1][3].set_real()
-		elif(response.result["result"] == 1):
+		elif(response.result["result"] == 1 and backlist[backlist.size()-1].size()>1):
 			backlist[backlist.size()-1][0].set_fake()
 			backlist[backlist.size()-1][1].set_real()
-			if init_entangled_pieces:
+			if init_entangled_pieces and backlist[backlist.size()-1].size()>2:
 				backlist[backlist.size()-1][2].set_real()
 				backlist[backlist.size()-1][3].set_fake()
 		else:

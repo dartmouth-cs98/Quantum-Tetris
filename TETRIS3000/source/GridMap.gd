@@ -74,7 +74,7 @@ func possible_positions(initial_translations, movement, entanglement): # Set of 
 
 ### lock
 ## Function: Transfer a pieces minos to the gridmap. 
-func lock(piece):
+func lock(piece: Tetromino):
 	var minoes_over_grid = 0
 	for position in piece.get_translations():
 		if position.y >= nb_lines:
@@ -83,7 +83,7 @@ func lock(piece):
 		# This function seems to lock the piece into the grid
 		# However, it appears to affect all pieces in the grid
 		var colored_mino = piece.get_color_map()
-		set_cell_item(position.x, position.y, 0, colored_mino)
+		if( !piece.is_locked): set_cell_item(position.x, position.y, 0, colored_mino)
 	return minoes_over_grid < Tetromino.NB_MINOES
 
 

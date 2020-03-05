@@ -25,6 +25,10 @@ run/main_scene="res://Main.tscn"
 boot_splash/image="res://splash.png"
 config/icon="res://icons/48.png"
 
+[autoload]
+
+DrawLine3D="*res://DrawLine3D.gd"
+
 [display]
 
 window/size/width=1280

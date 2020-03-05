@@ -119,6 +119,7 @@ var TESTING = false
 
 signal switch 
 signal no_switch
+signal lock
 
 #####################################  Functions  ##################################### 
 
@@ -199,6 +200,7 @@ func move(movement: Vector3) -> bool:
 			if !is_fake:
 				# Begin locking the piece!
 				locking()
+				emit_signal("lock")
 				
 			else:
 				
