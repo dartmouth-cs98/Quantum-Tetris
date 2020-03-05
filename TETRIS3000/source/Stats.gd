@@ -40,7 +40,7 @@ func load_user_data():
 		save_game.close()
 	
 # Implements starting the new game
-func new_game(start_level):
+func new_game(start_level, tutorial):
 	level = start_level - 1
 	goal = 0
 	score = 0
@@ -48,16 +48,17 @@ func new_game(start_level):
 	time = 0
 	$VBC/Time.text = "0:00:00"
 	combos = -1
-	new_level()
+	new_level(tutorial)
 
 
 # Called whenever the player reaches a new level
-func new_level():
+func new_level(tutorial=false):
 	level += 1
 	goal += 5 * level
 	$VBC/Level.text = str(level)
 	$VBC/Goal.text = str(goal)
-	emit_signal("flash_text", "Level\n%d"%level)
+	if !tutorial:
+		emit_signal("flash_text", "Level\n%d"%level)
 	emit_signal("level_up", level)
 
 

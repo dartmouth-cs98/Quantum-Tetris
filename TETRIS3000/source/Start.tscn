@@ -38,7 +38,7 @@ margin_bottom = -69.0
 custom_fonts/font = ExtResource( 2 )
 custom_colors/font_color = Color( 0.443137, 0.709804, 0.819608, 0.533333 )
 custom_colors/font_color_shadow = Color( 1, 1, 1, 0.101333 )
-text = "TETRIS"
+text = "QUANTUM"
 align = 1
 
 [node name="Label2" type="Label" parent="."]
@@ -51,7 +51,7 @@ margin_bottom = -19.0
 custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 0.443137, 0.709804, 0.819608, 0.533333 )
 custom_colors/font_color_shadow = Color( 1, 1, 1, 0.101333 )
-text = "3000"
+text = "TETRIS"
 align = 1
 
 [node name="SpinBox" type="SpinBox" parent="."]
@@ -83,9 +83,10 @@ text = "Play"
 
 [node name="HowToButton" type="Button" parent="."]
 margin_left = -65.0
-margin_top = 152.0
+margin_top = 158.0
 margin_right = 105.0
-margin_bottom = 192.0
+margin_bottom = 204.0
 custom_fonts/font = ExtResource( 5 )
 text = "How to Play"
 [connection signal="pressed" from="PlayButton" to="." method="_on_PlayButton_pressed"]
+[connection signal="pressed" from="HowToButton" to="." method="_on_HowToButton_pressed" binds= [ 1, true ]]
