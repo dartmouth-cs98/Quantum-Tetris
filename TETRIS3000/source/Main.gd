@@ -926,7 +926,13 @@ func visualize_locking():
 		probabilities[1] = 0
 	else:
 		probabilities[1] = 1
+		
 	draw_probabilities()
+	
+	# Remove any fake pieces
+	for piece in current_pieces: 
+		if( piece.is_fake ): piece.locking()
+			
 
 # Implements holding a piece in the upper left
 func hold():
