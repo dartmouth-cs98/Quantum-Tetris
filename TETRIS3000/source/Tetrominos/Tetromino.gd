@@ -197,9 +197,11 @@ func move(movement: Vector3) -> bool:
 			
 			if TESTING:
 				pass
+			
+				
+			# Begin locking the piece!
+			locking()
 			if !is_fake:
-				# Begin locking the piece!
-				locking()
 				emit_signal("lock")
 				
 			else:
@@ -283,18 +285,8 @@ func turn(direction: int):
 ### move_ghost
 func move_ghost(var vanish: bool = false):
 	
-	var this_ghost: Node
+	var this_ghost: Node = get_ghost()
 	
-	if (!is_fake):
-		if (entanglement >= 0):
-			this_ghost = ghost
-		else:
-			this_ghost = ghostB
-	else:
-		if (entanglement >= 0):
-			this_ghost = ghost_fake
-		else:
-			this_ghost = ghost_fakeB
 	
 	if( vanish ):
 		this_ghost.visible = false
@@ -315,6 +307,8 @@ func move_ghost(var vanish: bool = false):
 		
 		
 		
+		
+		
 	# this_ghost is the "Ghost" scene
 	# See res://Tetrominos/Ghost.tscn
 	this_ghost.set_translations(get_translations())
@@ -322,6 +316,24 @@ func move_ghost(var vanish: bool = false):
 	while grid_map.possible_positions(this_ghost.get_translations(), DROP_MOVEMENT, entanglement):
 		this_ghost.translate(DROP_MOVEMENT)
 		
+		
+func get_ghost() -> Node:
+	
+	var this_ghost: Node
+	
+	if (!is_fake):
+		if (entanglement >= 0):
+			this_ghost = ghost
+		else:
+			this_ghost = ghostB
+	else:
+		if (entanglement >= 0):
+			this_ghost = ghost_fake
+		else:
+			this_ghost = ghost_fakeB
+			
+	return this_ghost
+	
 		
 		
 ####################### Scoring
@@ -335,6 +347,11 @@ func t_spin():
 	
 # Starts locking timer
 func locking():
+	
+	# become invisible when touching down if fake
+	if( is_fake ): 
+		self.visible = false
+		get_ghost().visible = false
 	
 	if lock_delay.is_stopped():
 		lock_delay.start()

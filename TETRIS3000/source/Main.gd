@@ -1075,6 +1075,12 @@ func pause(gui=null):
 	$AutoShiftTimer.stop()
 	$Stats/Clock.stop()
 	$Stats.time = OS.get_system_time_secs() - $Stats.time
+	
+	$Ghost.visible = false
+	$GhostB.visible = false
+	$FakeGhost.visible = false
+	$FakeGhostB.visible = false
+	
 	if gui:
 		gui.visible = true
 		$Stats.visible = false
@@ -1091,10 +1097,7 @@ func pause(gui=null):
 		$XandH.visible = false
 		for current_piece in current_pieces:
 			current_piece.visible = false
-		$Ghost.visible = false
-		$GhostB.visible = false
-		$FakeGhost.visible = false
-		$FakeGhostB.visible = false
+
 		if held_pieces.size()>0:
 			for held_piece in held_pieces:
 				held_piece.visible = false
