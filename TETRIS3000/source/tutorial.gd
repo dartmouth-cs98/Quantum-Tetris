@@ -63,6 +63,9 @@ func _input(event):
 			throttle = true
 
 			t_index += 1
+
+
+
 			var next = text_array[t_index]
 			print("ENTER PRESSED")
 			text(next)

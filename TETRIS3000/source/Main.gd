@@ -903,8 +903,10 @@ func draw_probabilities():
 		$Visualizer/TopProb.visible = true
 		$Visualizer/BottomProb.visible = true
 		$Visualizer/BlochSphere.visible = true
-		$Visualizer/TopProb.text = String(probabilities[0])
-		$Visualizer/BottomProb.text = String(probabilities[1])
+		var top_p = probabilities[0] * 100
+		var bottom_p = probabilities[1] * 100
+		$Visualizer/TopProb.text = String(top_p) + " %"
+		$Visualizer/BottomProb.text = String(bottom_p) + " %"
 		draw_red_line()
 	
 # removes pieces and hides the visualizer
