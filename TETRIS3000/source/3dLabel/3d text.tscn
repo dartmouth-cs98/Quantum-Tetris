@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://3dLabel/SIsilicon.3d.text/label_3d.gd" type="Script" id=1]
+[ext_resource path="res://3dLabel/SIsilicon.3d.text/icon_label_3d.svg" type="Texture" id=2]
+
+[node name="Spatial" type="Spatial"]
+
+[node name="Label3D" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05194, 0 )
+script = ExtResource( 1 )
+__meta__ = {
+"_editor_icon": ExtResource( 2 )
+}
+text = "Hello!
+This is my 3D text plugin."
+extrude = 0.1
+align = 2

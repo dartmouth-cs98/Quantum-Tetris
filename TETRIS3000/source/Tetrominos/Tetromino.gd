@@ -96,17 +96,34 @@ var grid_map
 var lock_delay
 
 # ghost pieces
-var ghost
-var ghost_fake
+var ghost: Node
+var ghostB: Node	# For a real entangled piece
+var ghost_fake: Node
+var ghost_fakeB: Node
+
 
 # Boolean
 # True -> between the 2 superimposed pieces, this is the fake one.
-var is_fake = false
+var is_fake: bool = false
+var is_locked: bool = false
 
+# int
+# 0 -> this piece is not entangled
+# negative -> this piece is entangled into the left side of the grid
+# positive -> right side of the grid
+
+var color_mapping = 0
+var entanglement: int = 0
+var first_hit = true
+var TESTING = false
+
+signal switch 
+signal no_switch
+signal lock
 
 #####################################  Functions  ##################################### 
 
-####################### Start Game or Level
+
 ### _ready - assign all nodes to associated variables
 func _ready():
 	for i in range(NB_MINOES):
@@ -114,7 +131,10 @@ func _ready():
 	grid_map = get_node("../Matrix/GridMap")
 	lock_delay = get_node("../LockDelay")
 	ghost = get_node("../Ghost")
+	ghostB = get_node("../GhostB")
 	ghost_fake = get_node("../FakeGhost")
+	ghost_fakeB = get_node("../FakeGhostB")
+	
 	
 
 ####################### Controlling Piece
@@ -139,65 +159,118 @@ func get_translations():
 ### move
 ## Input: Vector, see movements in main.
 ## Function: Translate a piece. 
-func move(movement):
-	#possible 
-	if grid_map.possible_positions(get_translations(), movement):
+func move(movement: Vector3) -> bool:
+	
+	# If the move is possible, 
+	# This is where you have to stop entangled pieces from moving through the middle-axis!
+	if grid_map.possible_positions(get_translations(), movement, entanglement):
 		translate(movement)
 		unlocking()
 		rotated_last = false
-		move_ghost()
+		
+		# If the piece still has at least 3 spaces below it, 
+		if (grid_map.possible_positions(get_translations(), Vector3(0, -3, 0), entanglement)):
+			move_ghost() # Keep the ghost visible
+		
+		# If it doesn't have that space, 
+		else: 
+			move_ghost(true) # Make the ghost disappear
+		
 		return true
+		
 	# the move is not possible
 	else:
 		
 		## i.e. if the move is not possible AND that movement is downwards
 		if movement == DROP_MOVEMENT:
-			
 			# If this piece is real
+			if entanglement > 0 and first_hit:
+				TESTING = true
+				print("switching!")
+				emit_signal("switch")
+			elif entanglement<0 and first_hit:
+				TESTING = true
+				emit_signal("no_switch")
+			
+			if TESTING:
+				pass
+			
+				
+			# Begin locking the piece!
+			locking()
 			if !is_fake:
-				# Begin locking the piece!
-				locking()
+				emit_signal("lock")
 				
 			else:
 				
-				# Removes itself from the array of current pieces
-				var piece_array = get_parent().get_current_pieces()
-				piece_array.pop_back();
-				get_parent().set_current_pieces(piece_array)
-				
-				# ... and removes itself from the scene-tree!
+				# ...and removes itself from the scene-tree!
 				# (along with its ghost)
-				ghost_fake.visible = false
-				get_parent().remove_child(self)
-			
-			
+				if(entanglement >= 0):
+					ghost_fake.visible = false
+				else:
+					ghost_fakeB.visible = false
+					
+				
 		return false
+		
+func process_switch():
+	
+	first_hit = false
+	is_fake = !is_fake
+	
+func process_no_switch():
+	
+	first_hit = false
+
 ### turn
 ## Input: Direction is either CLOCKWISE or COUNTERCLOCKWISE
-func turn(direction):
+func turn(direction: int):
 	# Get current positions
 	var translations = get_translations()
 	var rotated_translations = [translations[0]]
 	var center = translations[0]
+	
 	# Check if rotation is possible
 	for i in range(1, NB_MINOES):
+		
+		# Logic for moving the cubes correctly for a rotation
 		var rt = translations[i] - center
 		rt = Vector3(-1*direction*rt.y, direction*rt.x, 0)
 		rt += center
 		rotated_translations.append(rt)
+		
 	# Superposition list: split by orientations then turn of direction.
 	var movements = super_rotation_system[orientation][direction]
+	
+	# Only loops until success
 	for i in range(movements.size()):
-		if grid_map.possible_positions(rotated_translations, movements[i]):
+		if grid_map.possible_positions(rotated_translations, movements[i], 0):
 			
 			#Set new orientation
 			# Rotate the piece's position by either +1 or -1
 			orientation = (orientation - direction) % 4
+			
+			# Actually moves the piece
 			set_translations(rotated_translations)
 			
-			
+			# Moves the piece back in bounds if it's rotated out of bounds!
 			translate(movements[i])
-			unlocking()
+			
+			# If the piece is still somehow in an illegal position,
+			# (This happens in the center with entanglement)
+			if grid_map.possible_positions(rotated_translations, movements[i], 0):
+				if( entanglement < 0 && grid_map.possible_positions(rotated_translations, Vector3(-1, 0, 0), 0)):
+					# Kick the piece to the left if it's entangled left 
+					# (and if it can be kicked left)
+					translate(Vector3(-1, 0, 0))
+				elif( entanglement > 0 && grid_map.possible_positions(rotated_translations, Vector3(1, 0, 0), 0)):
+					# Kick the piece to the right if it's entangled right
+					# (and if it can be kicked right)
+					translate(Vector3(1, 0, 0))
+					
+			
+			# Now piece doesn't infinitely spin
+			# unlocking()
 			rotated_last = true
 			if i == 4:
 				rotation_point_5_used = true
@@ -207,20 +280,59 @@ func turn(direction):
 	
 ####################### Ghost
 ### move_ghost
-func move_ghost():
-	if is_fake:
-		ghost_fake.set_translations(get_translations())
-		while grid_map.possible_positions(ghost_fake.get_translations(), DROP_MOVEMENT):
-			ghost_fake.translate(DROP_MOVEMENT)
-		pass
-	else:
-		# ghost is the "Ghost" scene
-		# See res://Tetrominos/Ghost.tscn
-		ghost.set_translations(get_translations())
-		# While possible, keep dropping piece. 
-		while grid_map.possible_positions(ghost.get_translations(), DROP_MOVEMENT):
-			ghost.translate(DROP_MOVEMENT)
+func move_ghost(var vanish: bool = false):
 	
+	var this_ghost: Node = get_ghost()
+	
+	
+	if( vanish ):
+		this_ghost.visible = false
+		
+		# Vanishes the superimposed counterpart as well
+		if( this_ghost == ghost_fake ): ghost.visible = false
+		elif( this_ghost == ghost ): ghost_fake.visible = false
+		elif( this_ghost == ghost_fakeB ): ghostB.visible = false
+		elif( this_ghost == ghostB ): ghost_fakeB.visible = false
+			
+	else: 
+		# Makes the ghost visible again if the piece somehow gets space under it again
+		this_ghost.visible = true
+		
+		# Superimposed counterpart also reappears
+		if( this_ghost == ghost_fake ): ghost.visible = true
+		elif( this_ghost == ghost_fakeB ): ghostB.visible = true
+		
+		
+		
+		
+		
+	# this_ghost is the "Ghost" scene
+	# See res://Tetrominos/Ghost.tscn
+	this_ghost.set_translations(get_translations())
+	# While possible, keep dropping piece. 
+	while grid_map.possible_positions(this_ghost.get_translations(), DROP_MOVEMENT, entanglement):
+		this_ghost.translate(DROP_MOVEMENT)
+		
+		
+func get_ghost() -> Node:
+	
+	var this_ghost: Node
+	
+	if (!is_fake):
+		if (entanglement >= 0):
+			this_ghost = ghost
+		else:
+			this_ghost = ghostB
+	else:
+		if (entanglement >= 0):
+			this_ghost = ghost_fake
+		else:
+			this_ghost = ghost_fakeB
+			
+	return this_ghost
+	
+		
+		
 ####################### Scoring
 # Returns an empty string.
 # Used effectively as a boolean
@@ -233,6 +345,12 @@ func t_spin():
 # Starts locking timer
 func locking():
 	
+	# become invisible when touching down if fake
+	if( is_fake ): 
+		self.visible = false
+		get_ghost().visible = false
+		remove_child(self)
+	
 	if lock_delay.is_stopped():
 		lock_delay.start()
 	for mino in minoes:
@@ -243,10 +361,47 @@ func unlocking():
 		lock_delay.start()
 		
 		
+# Identifies the piece as locked
+func lock(): 
+	is_locked = true;
 ####################### Superposition Functions
 func set_fake():
 	is_fake = true
+
+func set_real():
+	is_fake = false
 	
-func get_is_fake():
+func get_is_fake() -> bool:
 	return is_fake
+	
+	
+####################### Entanglement functions
+
+func entangle(entangle_int: int): 
+	
+	entanglement = entangle_int
+	
+	
+func disentangle():
+	
+	get_ghost().visible = false
+	
+	entanglement = 0
+	
+	get_ghost().visible = true
+
+func get_color_map(): 
+	return color_mapping
+	
+func connect_neighbors(neighbors):
+	#Connect within itself
+	connect("switch", self, "process_switch")
+	connect("no_switch", self, "process_no_switch")
+	#Connect to each neighbor
+	for neighbor in neighbors:
+		connect("switch",neighbor,"process_switch")
+		connect("no_switch", neighbor, "process_no_switch")
+	
+	
+	
 	

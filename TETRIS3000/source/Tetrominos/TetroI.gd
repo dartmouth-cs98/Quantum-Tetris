@@ -1,6 +1,18 @@
 extends "Tetromino.gd"
 
+####################### Setting piece color
+
+func assignColor():
+	for mino in minoes:
+		var material = load("res://Tetrominos/Mino/TetroIMaterial.tres")
+		mino.get_node("MinoMesh").set_material_override(material)
+
+func _ready():
+	assignColor()
+	color_mapping = 1
+
 func _init():
+	assignColor()
 	super_rotation_system = [
 	    {
 	        COUNTERCLOCKWISE: [
@@ -67,4 +79,3 @@ func _init():
 			],
 	    },
 	]
-	

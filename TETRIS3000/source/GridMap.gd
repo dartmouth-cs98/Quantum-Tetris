@@ -5,7 +5,6 @@ const Tetromino = preload("res://Tetrominos/Tetromino.gd")
 const ExplodingMino = preload("res://Tetrominos/Mino/ExplodingMino.tscn")
 
 const EMPTY_CELL = -1
-const MINO = 0
 
 var exploding_minoes = []
 var nb_collumns
@@ -22,15 +21,26 @@ func _ready():
 			exploding_minoes[y][x].translation = Vector3(x, y, 0)
 
 func clear():
-	for used_cell in get_used_cells():
-		set_cell_item(used_cell.x, used_cell.y, used_cell.z, EMPTY_CELL)
+	get_tree().reload_current_scene()
+		
+
 
 ### is_free_cell
 ## Input: A Vector 
-func is_free_cell(cell): #3D Vector
+func is_free_cell(cell, entanglement): #3D Vector
+	
+	# The two boundaries restricting the piece's lateral movement
+	var left_bound = -2
+	var right_bound = nb_collumns -2 
+	
+	if( entanglement < 0 ): right_bound = 5
+	elif( entanglement > 0 ): left_bound = 5
+	
 	return (
-		# Within grid columns (not at side edge)
-		0 <= cell.x and cell.x < nb_collumns
+	
+		# Right here is where you set the bounds for entanglement!!
+		# Within grid collumns (not at side edge)
+		left_bound <= cell.x and cell.x < right_bound
 		# Above the bottom
 		and cell.y >= 0
 		# The cell is empty - built in GridMesh Function
@@ -38,19 +48,24 @@ func is_free_cell(cell): #3D Vector
 	)
 ### possible_positions
 ## Function: Check if position is available. 
-func possible_positions(initial_translations, movement): # Set of vectors with cur position (global) and movement vector 
+func possible_positions(initial_translations, movement, entanglement): # Set of vectors with cur position (global) and movement vector 
 	var position
 	var test_translations = []
 	
-	# For each possible orientation,
+	# For each block in the piece,
 	for i in range(4):
+		# The hypothetical new position of the cube
 		position = initial_translations[i] + movement
-		if is_free_cell(position):
+		
+		# Checks here whether the move is possible
+		if is_free_cell(position, entanglement):
 			test_translations.append(position)
 		# one of the cells is full
 		else:
 			break
-	# if test_translations has the same size, then no break so all cells are empty.
+			
+	# if test_translations has the same size, then no break,
+	# so all 4 cubes can do this translation
 	if test_translations.size() == Tetromino.NB_MINOES:
 		return test_translations
 	else:
@@ -58,24 +73,32 @@ func possible_positions(initial_translations, movement): # Set of vectors with c
 
 ### lock
 ## Function: Transfer a pieces minos to the gridmap. 
-func lock(piece):
+func lock(piece: Tetromino):
 	var minoes_over_grid = 0
 	for position in piece.get_translations():
 		if position.y >= nb_lines:
 			minoes_over_grid += 1
-		set_cell_item(position.x, position.y, 0, MINO)
+			
+		# This function seems to lock the piece into the grid
+		# However, it appears to affect all pieces in the grid
+		var colored_mino = piece.get_color_map()
+		if( !piece.is_locked): set_cell_item(position.x, position.y, 0, colored_mino)
 	return minoes_over_grid < Tetromino.NB_MINOES
 
 
 ### clear_lines
 func clear_lines():
 	var lines_cleared = 0
+	
+	# For each row, 
 	for y in range(nb_lines-1, -1, -1):
 		# Assume the line is full.
 		var line_cleared = true
+		
+		# For each block in this row, 
 		# If there is an empty space, move to the next line.
-		for x in range(nb_collumns):
-			if not get_cell_item(x, y, 0) == MINO:
+		for x in range(-2, nb_collumns-2):
+			if get_cell_item(x, y, 0) == INVALID_CELL_ITEM:
 				line_cleared = false
 				break
 		# If the line is clear, move every block down one.

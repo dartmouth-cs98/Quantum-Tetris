@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://controls.gd" type="Script" id=1]
 [ext_resource path="res://fonts/TitleFont.tres" type="DynamicFont" id=2]
@@ -11,6 +11,8 @@
 [ext_resource path="res://icons/harddrop.png" type="Texture" id=9]
 [ext_resource path="res://icons/hold.png" type="Texture" id=10]
 [ext_resource path="res://icons/pause.png" type="Texture" id=11]
+[ext_resource path="res://icons/HICON.png" type="Texture" id=12]
+[ext_resource path="res://icons/XICON.png" type="Texture" id=13]
 
 [node name="controls_ui" type="Control"]
 anchor_left = 0.5
@@ -229,6 +231,44 @@ text = "Press key"
 position = Vector2( 34, 19 )
 scale = Vector2( 0.8, 0.8 )
 texture = ExtResource( 11 )
+
+[node name="hgate" type="Control" parent="bindings"]
+margin_left = 220.0
+margin_top = 265.0
+margin_right = 260.0
+margin_bottom = 305.0
+
+[node name="Button" type="Button" parent="bindings/hgate"]
+margin_left = 84.0
+margin_top = -1.0
+margin_right = 178.0
+margin_bottom = 36.0
+custom_fonts/font = ExtResource( 3 )
+text = "Press Key"
+
+[node name="h" type="Sprite" parent="bindings/hgate"]
+position = Vector2( 34, 19 )
+scale = Vector2( 0.55, 0.55 )
+texture = ExtResource( 12 )
+
+[node name="xgate" type="Control" parent="bindings"]
+margin_left = 20.0
+margin_top = 265.0
+margin_right = 60.0
+margin_bottom = 305.0
+
+[node name="Button" type="Button" parent="bindings/xgate"]
+margin_left = 80.0
+margin_top = -1.0
+margin_right = 174.0
+margin_bottom = 36.0
+custom_fonts/font = ExtResource( 3 )
+text = "Press key"
+
+[node name="x" type="Sprite" parent="bindings/xgate"]
+position = Vector2( 34, 19 )
+scale = Vector2( 0.55, 0.55 )
+texture = ExtResource( 13 )
 
 [node name="hint" type="Label" parent="."]
 margin_left = -220.0

@@ -44,6 +44,9 @@ signal appeared_marker( marker )
 signal appeared_cue_point( cue_point )
 signal looped
 
+
+var jboog: AudioStreamPlayer
+
 func _ready( ):
 	self._prepare_to_play( )
 	if self.playing:
@@ -53,6 +56,14 @@ func _ready( ):
 	初期化
 """
 func _prepare_to_play( ):
+	
+	jboog = AudioStreamPlayer.new()
+	self.add_child(jboog)
+	
+	# jboog
+	# jboog.stream = load("res://midi/JBOOG.wav")
+	jboog.stream = load("res://midi/Mario.wav")
+	
 	# ファイル読み込み
 	if self.smf_data == null:
 		var smf_reader = SMF.new( )
@@ -208,6 +219,7 @@ func seek( to_position ):
 func stop( ):
 	self._stop_all_notes( )
 	self.playing = false
+
 
 """
 	テンポ設定
@@ -398,3 +410,8 @@ func get_now_playing_polyphony( ):
 		if audio_stream_player.playing:
 			polyphony += 1
 	return polyphony
+
+
+func jboog(var play_jboog: bool = true):
+	if(play_jboog): jboog.play()
+	else: jboog.stop()

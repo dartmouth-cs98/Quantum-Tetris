@@ -1,0 +1,55 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://tutorial.gd" type="Script" id=1]
+[ext_resource path="res://fonts/data-control/data-latin.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://fonts/data-control/data-unifon.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 48
+font_data = ExtResource( 3 )
+
+[node name="tutorial" type="Control"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -30.0
+margin_top = 20.0
+margin_right = 10.0
+margin_bottom = 60.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+script = ExtResource( 1 )
+__meta__ = {
+"__editor_plugin_screen__": "2D"
+}
+
+[node name="body" type="Label" parent="."]
+margin_left = -216.0
+margin_top = -113.0
+margin_right = 284.0
+margin_bottom = 166.0
+custom_fonts/font = SubResource( 1 )
+text = "TEXT
+"
+align = 1
+autowrap = true
+uppercase = true
+
+[node name="Tutorial" type="Label" parent="."]
+margin_left = -220.0
+margin_top = -190.0
+margin_right = 280.0
+margin_bottom = -151.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0.443137, 0.709804, 0.819608, 0.533333 )
+custom_colors/font_color_shadow = Color( 1, 1, 1, 0.0968627 )
+text = "tutorial"
+align = 1
+valign = 1
