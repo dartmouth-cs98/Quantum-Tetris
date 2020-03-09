@@ -190,10 +190,7 @@ func move(movement: Vector3) -> bool:
 				emit_signal("switch")
 			elif entanglement<0 and first_hit:
 				TESTING = true
-				print("not switching!")
 				emit_signal("no_switch")
-			elif entanglement != 0:
-				print("first_hit turned off!")
 			
 			if TESTING:
 				pass
