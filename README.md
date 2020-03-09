@@ -53,6 +53,7 @@ If you get an error trying to run the server in Pycharm like "ModuleNotFoundErro
 ### How to Set Up Front End
 * Navigate to the `webapp` directory
 * Run the following commands
+* Yarn will continue to run in the terminal, so start a new terminal or window to run additional commands.
 ```
 yarn
 yarn start
