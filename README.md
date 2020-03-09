@@ -1,4 +1,5 @@
-##  Quantum Tetris
+#  Quantum Tetris
+## https://medium.com/@tglasgow31/quantum-tetris-6452a0c96227
 
 Quantum Tetris is your traditional tetris game which has several twists based on the concepts of quantum computing. Additionally, to implement this quantum functionality it uses IBM's qiskit library found [here](https://qiskit.org) which runs in the cloud on IBM's quantum computers.
 
@@ -9,6 +10,12 @@ To view our GoDot project you can go here: https://github.com/dartmouth-cs98/GoD
 Backend can accessed via https://q-tetris-backend.herokuapp.com/
 
 Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1).
+
+
+## Game in Action!
+![](https://media.giphy.com/media/jsrwsYTNwA7JEmerLJ/giphy.gif)
+
+For more gameplay examples click [here.](https://github.com/dartmouth-cs98/Quantum-Tetris/wiki/Gameplay-In-Action!)
 
 ## Installation of Game on your computer
 * Go to our web page to find the download links for both Mac and Windows
