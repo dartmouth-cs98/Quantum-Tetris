@@ -13,6 +13,8 @@ Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetr
 ## Game in Action!
 ![](https://media.giphy.com/media/jsrwsYTNwA7JEmerLJ/giphy.gif)
 
+For more gameplay examples click ![here!](https://github.com/dartmouth-cs98/Quantum-Tetris/wiki/Gameplay-In-Action!)
+
 ## Installation of Game on your computer
 * Go to our web page to find the download links for both Mac and Windows
 * If you are having issues opening the application due to an untrusted publisher, go to [here](https://answers.microsoft.com/en-us/windows/forum/windows_10-security-winpc/unblock-an-untrusted-publisher-in-windows-10/e964eea4-d357-4e56-aacc-94088642c7ac#pagerTop) for windows and [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) for Mac users. 
