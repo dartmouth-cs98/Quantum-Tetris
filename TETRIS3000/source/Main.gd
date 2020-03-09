@@ -751,7 +751,18 @@ func hard_drop():
 		
 		
 	# This code and below should be executed only once
-	var translations = current_pieces[0].get_translations()
+	var trailed_piece: Tetromino = current_pieces[0]
+	
+	# We want the trail to always happen on the real piece
+	if( trailed_piece.is_fake ): 
+		for current_piece in current_pieces: 
+		
+			if( current_piece.is_fake == false ): 
+				trailed_piece = current_piece
+				break
+		
+	# var translations = current_pieces[0].get_translations()
+	var translations = trailed_piece.get_translations()
 	for i in range(Tetromino.NB_MINOES):
 		get_node("Matrix/DropTrail/"+str(i)).translation = translations[i]
 		
