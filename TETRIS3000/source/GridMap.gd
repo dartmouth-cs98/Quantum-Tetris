@@ -21,8 +21,7 @@ func _ready():
 			exploding_minoes[y][x].translation = Vector3(x, y, 0)
 
 func clear():
-	for used_cell in get_used_cells():
-		set_cell_item(used_cell.x, used_cell.y, used_cell.z, EMPTY_CELL)
+	get_tree().reload_current_scene()
 		
 
 

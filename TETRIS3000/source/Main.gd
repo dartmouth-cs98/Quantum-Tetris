@@ -1196,7 +1196,7 @@ func _on_ReplayButton_pressed():
 	turn_count = 0
 	
 	
-	#$Matrix/GridMap.clear()
+	$Matrix/GridMap.clear()
 	pause($Start)
 	
 	get_node("HGate").clear()
