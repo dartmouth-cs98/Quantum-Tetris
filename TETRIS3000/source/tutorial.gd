@@ -12,7 +12,7 @@ var text_array = ["Welcome to Quantum Tetris!\n\nIt plays just like regular Tetr
 null,
 """The next piece is a Superposition piece. \n\n Superposition is a special Quantum property. 
 Superposition pieces are actually two pieces at once, with a certain probability of becoming one piece or the other the moment it lands.
-You can look to the Quantum visualizer for a probability reading, but you can’t know for sure which it will be until you place it down!
+You can look to the Quantum visualizer for a probability reading, but you cannot know for sure which it will be until you place it down!
 """, 
 null,
 """Quantum computers can affect the probabilities that superposition pieces are either one piece or the other. \n\n These actions are called gates. For our game, we have X and H gates. \n
