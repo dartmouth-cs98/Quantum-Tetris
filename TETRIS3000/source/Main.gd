@@ -611,7 +611,13 @@ func _unhandled_input(event):
 	if backlist.size() < 4 and !tutorial:
 		abort()
 	if event.is_action_pressed("pause"):
-		pass
+		if playing:
+			if tutorial:
+				pause($tutorial)
+			else:
+				pause($controls_ui)
+		else:
+			resume()
 	if event.is_action_pressed("toggle_fullscreen"):
 		OS.window_fullscreen = not OS.window_fullscreen
 	if playing:
@@ -1198,7 +1204,6 @@ func _notification(what):
 		MainLoop.NOTIFICATION_WM_FOCUS_OUT:
 			if playing:
 				pause($controls_ui)
-				pause($tutorial)
 
 func set_current_pieces(pieces):
 	current_pieces = pieces
