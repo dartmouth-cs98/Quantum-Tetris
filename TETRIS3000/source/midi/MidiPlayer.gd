@@ -59,7 +59,10 @@ func _prepare_to_play( ):
 	
 	jboog = AudioStreamPlayer.new()
 	self.add_child(jboog)
-	jboog.stream = load("res://midi/JBOOG.wav")
+	
+	# jboog
+	# jboog.stream = load("res://midi/JBOOG.wav")
+	jboog.stream = load("res://midi/Mario.wav")
 	
 	# ファイル読み込み
 	if self.smf_data == null:

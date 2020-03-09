@@ -349,6 +349,7 @@ func locking():
 	if( is_fake ): 
 		self.visible = false
 		get_ghost().visible = false
+		remove_child(self)
 	
 	if lock_delay.is_stopped():
 		lock_delay.start()
@@ -379,6 +380,15 @@ func get_is_fake() -> bool:
 func entangle(entangle_int: int): 
 	
 	entanglement = entangle_int
+	
+	
+func disentangle():
+	
+	get_ghost().visible = false
+	
+	entanglement = 0
+	
+	get_ghost().visible = true
 
 func get_color_map(): 
 	return color_mapping
