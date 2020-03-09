@@ -20,7 +20,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="TETRIS 3000"
+config/name="Quantum Tetris"
 run/main_scene="res://Main.tscn"
 boot_splash/image="res://splash.png"
 config/icon="res://icons/48.png"

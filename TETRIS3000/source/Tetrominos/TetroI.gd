@@ -4,7 +4,7 @@ extends "Tetromino.gd"
 
 func assignColor():
 	for mino in minoes:
-		var material = load("res://Tetrominos/TetroIMaterial.tres")
+		var material = load("res://Tetrominos/Mino/TetroIMaterial.tres")
 		mino.get_node("MinoMesh").set_material_override(material)
 
 func _ready():
