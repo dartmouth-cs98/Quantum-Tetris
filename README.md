@@ -13,7 +13,7 @@ Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetr
 ## Game in Action!
 ![](https://media.giphy.com/media/jsrwsYTNwA7JEmerLJ/giphy.gif)
 
-For more gameplay examples click ![here!](https://github.com/dartmouth-cs98/Quantum-Tetris/wiki/Gameplay-In-Action!)
+For more gameplay examples click [here.](https://github.com/dartmouth-cs98/Quantum-Tetris/wiki/Gameplay-In-Action!)
 
 ## Installation of Game on your computer
 * Go to our web page to find the download links for both Mac and Windows
