@@ -1224,7 +1224,6 @@ func new_tutorial():
 	pause($tutorial)
 	
 func next_tutorial_piece():
-	print("YEET")
 	new_piece()
 	tutorial_lock = false
 	resume()
