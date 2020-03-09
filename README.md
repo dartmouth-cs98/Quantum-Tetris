@@ -83,6 +83,4 @@ Trevor Glasgow, Oliver Levy, Henry Hilton and Rafael Brantley
 Tim Tregubov and Charles Palmer
 
 ## Resources
-
-* Quantum Computing Notes: https://github.com/dartmouth-cs98/19f-quantum-gaming/wiki/Quantum-Computing-Notes
 * Game Library Notes: https://github.com/dartmouth-cs98/19f-quantum-gaming/wiki/Game-Libraries-Research
