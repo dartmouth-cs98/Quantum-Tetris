@@ -26,7 +26,7 @@ cd Quantum-Tetris/
 #### Conda
 * The easiest way to manage all of our packages that we will need is with a Conda environment.
 * If you don't have one yet, you can set one up [here](https://anaconda.org/)
-* Once you set up your conda environment run the following commands.
+* Once you set up your conda environment run the following commandsm using your chosen name in place of %NAMEOFENV%.
 ```
 conda create -n %NAMEOFENV% python=3
 conda activate %NAMEOFENV%
