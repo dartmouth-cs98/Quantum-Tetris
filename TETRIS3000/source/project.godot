@@ -106,7 +106,6 @@ hgate={
 
 [rendering]
 
-quality/driver/driver_name="GLES2"
 quality/filters/use_nearest_mipmap_filter=true
 environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://Environment.tres"
