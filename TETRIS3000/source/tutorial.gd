@@ -75,7 +75,6 @@ func next_text():
 	
 func text(text):
 	if text == null:
-		print("called YEET")
 		emit_signal("resume_after_text")
 		running = false 
 	elif text == "end":
