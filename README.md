@@ -10,6 +10,10 @@ Backend can accessed via https://q-tetris-backend.herokuapp.com/
 
 Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetris?node-id=0%3A1).
 
+## Installation of Game on your computer
+* Go to our web page to find the download links for both Mac and Windows
+* If you are having issues opening the application due to an untrusted publisher, go to https://answers.microsoft.com/en-us/windows/forum/windows_10-security-winpc/unblock-an-untrusted-publisher-in-windows-10/e964eea4-d357-4e56-aacc-94088642c7ac#pagerTop for windows and https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac for Mac users. 
+
 ## Architecture
 
 The architecture of our project consists of a backend flask server that uses a PostgreSQL database to hold our player info. Our frontend is a simple html webpage that uses various graphics libraries to implement changes. We use GoDot to run our game in browser.
@@ -76,6 +80,7 @@ yarn start
 #### Back end
 * To deploy any local changes to heroku, you can type `yarn heroku` while in the project's root directory.
 * *Since the heroku URL is used in the GoDot game export, it is impossible to have full integration locally. Test all changes to the backend via Postman and use the above command to deploy to heroku*
+
 ## Authors
 Trevor Glasgow, Oliver Levy, Henry Hilton and Rafael Brantley
 
