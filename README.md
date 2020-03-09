@@ -12,7 +12,7 @@ Link to [mockups](https://www.figma.com/file/ry3c6LBXIAP5A63igUO6YE/Quantum-Tetr
 
 ## Installation of Game on your computer
 * Go to our web page to find the download links for both Mac and Windows
-* If you are having issues opening the application due to an untrusted publisher, go to [here](https://answers.microsoft.com/en-us/windows/forum/windows_10-security-winpc/unblock-an-untrusted-publisher-in-windows-10/e964eea4-d357-4e56-aacc-94088642c7ac#pagerTop)for windows and [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) for Mac users. 
+* If you are having issues opening the application due to an untrusted publisher, go to [here](https://answers.microsoft.com/en-us/windows/forum/windows_10-security-winpc/unblock-an-untrusted-publisher-in-windows-10/e964eea4-d357-4e56-aacc-94088642c7ac#pagerTop) for windows and [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) for Mac users. 
 
 ## Architecture
 
