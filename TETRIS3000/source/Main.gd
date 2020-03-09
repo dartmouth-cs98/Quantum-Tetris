@@ -112,6 +112,9 @@ var tutorial
 var tutorial_lock = false
 
 
+var current_level: int
+
+
 ##################### Functions ##################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
@@ -435,6 +438,10 @@ func apply_X(userdata):
 ##################### Game Functions
 ## new_game: Start a new game
 func new_game(level, tutorial_input = false):
+	
+	current_level = level
+	
+	
 	tutorial = tutorial_input
 	
 	# hide the title screen
@@ -617,11 +624,16 @@ func new_piece():
 	
 
 # Increments the difficulty upon reaching a new level
-func new_level(level):
+func new_level(level, update_level: bool = true):
+	
+	if(update_level): current_level = level
+	
 	if level <= 15:
 		$DropTimer.wait_time = pow(0.8 - ((level-1)*0.007), level-1)
 	else:
 		$LockDelay.wait_time = 0.5 * pow(0.9, level-15)
+		
+
 
 
 # Handles all of the keyboard-inputs
@@ -681,11 +693,16 @@ func _unhandled_input(event):
 			h_use = true
 			evaluate_probabilities("hgate")
 			draw_probabilities()
+			
+			# Halves the fall-speed
+			new_level(current_level/2, false)
 				
 		if event.is_action_pressed("xgate") and current_pieces.size()>1 and !x_use and !h_use and $XGate.use_powerup(): 
 			x_use = true 
 			evaluate_probabilities("xgate")
 			draw_probabilities()
+			
+			new_level(current_level/2, false)
 
 
 func process_new_action(event):
@@ -814,6 +831,8 @@ func _on_LockDelay_timeout():
 func lock(current_piece: Tetromino):
 	if( tutorial and !tutorial_lock): next_tutorial_screen()
 	
+	# Resets the speed of fall
+	new_level(current_level, false)
 	
 	if(current_piece.is_fake):
 		remove_child(current_piece)
@@ -903,8 +922,8 @@ func draw_probabilities():
 		$Visualizer/TopProb.visible = true
 		$Visualizer/BottomProb.visible = true
 		$Visualizer/BlochSphere.visible = true
-		$Visualizer/TopProb.text = String(probabilities[0])
-		$Visualizer/BottomProb.text = String(probabilities[1])
+		$Visualizer/TopProb.text = String(probabilities[0] * 100) + "%"
+		$Visualizer/BottomProb.text = String(probabilities[1] * 100) + "%"
 		draw_red_line()
 	
 # removes pieces and hides the visualizer
@@ -931,7 +950,14 @@ func visualize_locking():
 	
 	# Remove any fake pieces
 	for piece in current_pieces: 
-		if( piece.is_fake ): piece.locking()
+	
+		# Disentangle all the remaining pieces
+		if( piece.entanglement > 0): piece.entangle(0)
+	
+		# Remove the fake piece
+		if( piece.is_fake ): 
+			piece.locking()
+			remove_child(piece)
 			
 
 # Implements holding a piece in the upper left
