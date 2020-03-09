@@ -81,6 +81,3 @@ Trevor Glasgow, Oliver Levy, Henry Hilton and Rafael Brantley
 
 ## Acknowledgments
 Tim Tregubov and Charles Palmer
-
-## Resources
-* Game Library Notes: https://github.com/dartmouth-cs98/19f-quantum-gaming/wiki/Game-Libraries-Research
