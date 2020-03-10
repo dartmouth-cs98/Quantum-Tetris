@@ -1,6 +1,6 @@
 # Quantum Tetris GoDot Code
 ## Introduction
-Welcome to Quantum Tetris game code! We built the project using Godot v3.1.1. To look at the project in GoDot, import the project.godot file with the GoDot console. 
+Welcome to Quantum Tetris! We built the project using Godot v3.1.1. To look at the project in GoDot, import the project.godot file with the GoDot console. 
 
 ## General 
 
