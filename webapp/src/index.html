@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Quantum Tetris</title>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){
+        w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-TMXJRXK');
+        gtag('config', 'UA-159390685-1');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <link rel="icon" href="./assets/icon/purple_icon.ico" type="image/x-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700%7CTitillium+Web:200,300,400,600,700&amp;subset=latin-ext" rel="stylesheet">
+    <link href="./assets/fonts/material-icons/material-icons.css" rel="stylesheet">
+    <link href="./assets/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Libraries CSS -->
+    <link href="./assets/css/libraries/bootstrap.css" rel="stylesheet">
+    <link href="./assets/css/libraries/bootstrap.css" rel="stylesheet">
+    <link href="./assets/css/libraries/animate.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="./assets/css/custom/theme.css" rel="stylesheet">
+    <link href="./assets/css/custom/colors.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target="#st-nav">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TMXJRXK"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Navigation Menu
+================================================== -->
+<header>
+    <div id="st-logo">
+        <a href="#0">
+          <!-- <img src="./assets/images/logo-normal.png" alt="Logo"> -->
+        </a>
+    </div>
+</header>
+
+<div id="st-nav">
+    <a href="#0" class="st-nav-trigger">
+        Menu<span></span>
+    </a>
+
+    <nav id="st-main-nav">
+        <ul>
+            <li>
+                <a class="page-scroll hvr-underline-from-center" href="#about">Why Tetris?</a>
+            </li>
+            <li>
+                <a class="page-scroll hvr-underline-from-center" href="#how-to-play">How To Play</a>
+            </li>
+            <li>
+                <a class="page-scroll hvr-underline-from-center" href="#call-to">Github</a>
+            </li>
+            <li>
+                <a class="page-scroll hvr-underline-from-center" href="#our-work">The Team</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<!-- /#st-nav -->
+
+<!-- Landing Hero Section
+================================================== -->
+<section id="landing" class="hero-section-video">
+    <div class="video-overlay"></div>
+
+    <!-- /.video-overlay -->
+    <div class="hero-video">
+        <video autoplay loop poster="" id="bgvid" muted playsinline>
+            <source src="./assets/video/START.mp4" type="video/mp4">
+            <source src="" type="video/webm">
+        </video>
+    </div>
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="hero-logo">
+                    <div id="particles-js"></div>
+                </div>
+                <div class="typed-text">
+                    <span class="skilltechtypetext">
+                        <span class="typed-cursor">|</span>
+                    </span>
+                </div>
+                
+                <button id="download-mac" class="btn btn default btn-lg wow fadeInUp hvr-sweep-to-right animated" button type="submit" onclick="window.open('./games/QuantumTetris.dmg')">Mac OS X Download</button>
+                <button id="download-windows" class="btn btn default btn-lg wow fadeInUp hvr-sweep-to-right animated" button type="submit" onclick="window.open('./games/QuantumTetris.exe')">Windows Download</button>
+
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.hero-section -->
+
+
+<!-- About Section
+================================================== -->
+<section id="about" class="about-section">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="about-text">
+                    <h2 class="wow fadeIn animated"><span>Tetris</span> on a Quantum Computer</h2>
+                    <p class="wow fadeIn animated">We searched for fun video games in the Quantum space and found nothing but chess and puzzles.
+                    So we built Quantum Tetris, and made it our mission to teach Quantum principles in a familiar game format. Confused by Quantum? Check out this video by Kurzgesagt and the Australian Academy of Sciences:</p>
+
+                                          <!-- /.YOUTUBE embed-->
+
+                    <div class="mockup image-center">
+                        <!--<img class="wow slideInUp animated" src="./assets/images/ipads-center.png" alt="ipad"> -->
+                        <div class="YT_container wow slideInUp animated">
+                            <iframe src="https://www.youtube.com/embed/JhHMJCUmq28?rel=0&modestbranding=1&autohide=1&showinfo=0&controls=0" 
+                            frameborder="0" allowfullscreen class="YT_video"></iframe>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
+<!-- /.about-section -->
+
+<!-- How to Play Sectionls
+================================================== -->
+<section id="how-to-play" class="services-section">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-12 service-headline">
+                <h2 class="wow fadeIn animated">How to <span>Play</span></h2>
+                <p class="wow fadeIn animated">
+                    Click section headers to learn more about the topic.
+                </p>
+            </div>
+            <!-- /.service-headline -->
+
+        <!--   Left Side Content   -->
+            <div class="col-md-12 service-content">
+                <div class="left">
+                    <div class="service wow fadeIn animated">
+                        <div class="text">
+                            <a href="https://youtu.be/L_UPHsGR6fM?t=30" target="_blank">Basic Tetris Rules</a>
+                            <p style="margin-bottom:50px"> Quantum Tetris plays just like regular tetris! Blocks fall one at a time, it's up to you to rotate and position them. Fill a full row to clear it. If blocks reach the screen top, then it's Game Over! </p>
+                        </div>
+                    </div>
+                    <div class="service wow fadeIn animated">
+                        <div class="text">
+                                <a href="https://www.youtube.com/watch?v=UjaAxUO6-Uw"target="_blank">Quantum Superposition Pieces</a>
+                                <p>Superposition pieces exist in two states at once! While falling, they can be one of two pieces based on their quantum probability in the top left box. The only way to force a superposition piece to stay in one state is to 'measure' by placing it down on the tetris stack.</p>
+                        </div>
+                    </div>
+                </div>
+
+        <!--    INSET IMAGE    -->
+                <div class="service-image">
+                    <img src="./assets/images/tetris_gameplay.jpg" alt="tetris_gameplay">
+                </div>
+
+        <!--    Right Side Content    -->
+                <div class="right">
+                    <div class="service-2 wow fadeIn animated">
+                        <div class="text">
+                            <a href="./assets/images/controls.png" target="_blank">Controls</a>
+                            <p style="margin-bottom:50px">Position pieces with LEFT and RIGHT arrow keys. Rotate pieces with UP. Hold DOWN to fast fall, SPACE to instant drop. Press X or H to use power-ups!</p>
+                        </div>
+                    </div>
+                    <div class="service-2 wow fadeIn animated">
+                        <div class="text">
+                                <a href="https://www.youtube.com/watch?v=6Dp27XYjHuk" target="_blank">Quantum Entanglement</a>
+                                <p>Some Superposition pieces come in entangled pairs! They are NOTs of each other, so they move as mirror images. When the first piece lands, it measures as 1 and the other piece flips to 0! Checkout the visualizer to guess which piece the first to land will become. </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- .service-content -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
+<!-- /.service-section -->
+
+<!-- Call To Action Section
+================================================== -->
+<section id="call-to" class="call-to-section">
+
+    <div class="call-to-layer"></div>
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-12">
+                <h3 class="wow fadeIn animated">Comfortable with code? <span>Check out our Github.</span></h3>
+                <p class="wow fadeIn animated">Explore the IBM Qiskit backend that powers Quantum Tetris.
+                  Learn how to create Quantum games of your own!</p>
+                <button id="github-button" onclick="location.href='https://github.com/dartmouth-cs98/Quantum-Tetris'" class="btn btn-default wow fadeInRight hvr-sweep-to-right animated">Github</button>
+            </div>
+            <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
+<!-- /.call-to-section -->
+
+<!-- Our Work Section
+================================================== -->
+
+<section id="our-work" class="our-work-section">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-md-12 see-work">
+                <h2 class="wow fadeInLeft animated">The Team</h2>
+            </div>
+
+            <div class="col-md-12 portfolio-images">
+
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="portfolio-img first">
+                        <img class="img-responsive" src="assets/images/Trevor.jpg"
+                             alt="porftofilio thumbnail">
+                        <div class="sweep-left"></div>
+                        <div class="sweep-from-center">
+                            <div class="sweep-layer">
+                                <div class="sweep-content">
+                                    <h3><a href="https://www.linkedin.com/in/trevor-glasgow-5b4a82132/">LinkedIn</a></h3>
+                                    <h3><a href="https://github.com/Trevor-Dartmouth">Github</a></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sweep-right"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="portfolio-img second">
+                        <img class="img-responsive" src="assets/images/Henry.jpg"
+                        alt="porftofilio thumbnail">
+                   <div class="sweep-left"></div>
+                   <div class="sweep-from-center">
+                       <div class="sweep-layer">
+                           <div class="sweep-content">
+                               <h3><a href="https://www.linkedin.com/in/henry-hilton/">LinkedIn</a></h3>
+                               <h3><a href="https://github.com/henryhilton15">Github</a></h3>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="sweep-right"></div>
+               </div>
+
+           </div>
+
+
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="portfolio-img third">
+                        <img class="img-responsive" src="assets/images/Rafa.jpg"
+                        alt="porftofilio thumbnail">
+                   <div class="sweep-left"></div>
+                   <div class="sweep-from-center">
+                       <div class="sweep-layer">
+                           <div class="sweep-content">
+                               <h3><a href="https://www.linkedin.com/in/rafaelbrantley/">LinkedIn</a></h3>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="sweep-right"></div>
+               </div>
+
+           </div>
+
+
+                <div class="col-md-3 col-sm-6 col-xs-6">
+                    <div class="portfolio-img fourth">
+                        <img class="img-responsive" src="assets/images/Oliver.jpg"
+                        alt="porftofilio thumbnail">
+                   <div class="sweep-left"></div>
+                   <div class="sweep-from-center">
+                       <div class="sweep-layer">
+                           <div class="sweep-content">
+                               <h3><a href="https://www.linkedin.com/in/oliver-levy-9a7728126/">LinkedIn</a></h3>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="sweep-right"></div>
+               </div>
+
+           </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer
+================================================== -->
+<footer>
+    <p><a href="http://cs98.me/"> CS98 19F-20W</a></p>
+</footer>
+
+<!-- Scripts
+================================================== -->
+<!-- jQuery -->
+<script src="./assets/js/libraries/jquery-2.2.4.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="./assets/js/libraries/bootstrap.js"></script>
+
+<!-- JavaScript Libraries -->
+<script src="./assets/js/libraries/typed.js"></script>
+<script src="./assets/js/libraries/wow.js"></script>
+<script src="./assets/js/libraries/particles.js"></script>
+<script src="./assets/js/libraries/waypoint.js"></script>
+<script src="./assets/js/libraries/jquery.counterup.js"></script>
+<!-- Custom Particle Theme JavaScript -->
+<script>
+    var sentences = ["Play Tetris", "Learn Quantum", "Feel the Future"];
+</script>
+<script src="./assets/js/theme/particle-theme-light.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+$color-1 = magenta;
+$color-2 = cyan;
+
+html,body
+  height 100%;
+  
+body
+  display grid;
+  width 100%;
+  font-family: Inconsolata, monospace;
+    
+  div#error
+    position relative;
+    margin auto; padding: 20px;
+    z-index 2;
+    
+    div#box
+      position absolute; top 0; left 0;
+      width 100%; height 100%;
+      border 1px solid #000;
+      
+      &:before, &:after
+        content '';
+        position absolute; top 0; left 0;
+        width 100%; height 100%;
+        box-shadow inset 0px 0px 0px 1px #000;
+        mix-blend-mode: multiply;
+        animation dance 2s infinite steps(1);
+      
+      &:before
+        clip-path: polygon(0 0, 65% 0, 35% 100%, 0 100%)
+        box-shadow inset 0px 0px 0px 1px currentColor;
+        color $color-1;
+      
+      &:after
+        clip-path: polygon(65% 0, 100% 0, 100% 100%, 35% 100%);
+        animation-duration: 0.5s;
+        animation-direction: alternate;
+        box-shadow inset 0px 0px 0px 1px currentColor;
+        color $color-2;
+      
+    h3
+      position relative;
+      font-size: 5vw; font-weight: 700;
+      text-transform uppercase;
+      animation: blink 1.3s infinite steps(1);
+      
+      &:before, &:after
+        content 'ERROR 500';
+        position absolute; top -1px; left 0;
+        mix-blend-mode: soft-light;
+        animation dance 2s infinite steps(2);
+      
+      &:before
+          clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%)
+          color: $color-1;
+          animation: shiftright 2s steps(2) infinite;
+        &:after
+          clip-path: polygon(0 100%, 100% 100%, 100% 50%, 0 50%)
+          color: $color-2;
+          animation: shiftleft 2s steps(2) infinite;
+    
+    p
+      position relative
+      margin-bottom 8px;
+      
+      span
+        position relative;
+        display inline-block;
+        font-weight: bold;
+        color: #000;
+        animation blink 3s steps(1) infinite;
+        
+        &:before, &:after
+          content 'unstable';
+          position absolute;
+          top -1px; left 0;
+          mix-blend-mode multiply;
+          
+        &:before
+          clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%)
+          color: $color-1;
+          animation: shiftright 1.5s steps(2) infinite;
+        &:after
+          clip-path: polygon(0 100%, 100% 100%, 100% 50%, 0 50%)
+          color: $color-2;
+          animation: shiftleft 1.7s steps(2) infinite;
+        
+@keyframes dance
+  0%, 84%, 94%
+    transform skew(0deg);
+  85%
+    transform skew(5deg);
+  90%
+    transform skew(-5deg);
+  98%
+    transform skew(3deg);
+
+@keyframes shiftleft
+  0%, 87%, 100%
+    transform translate(0,0) skew(0deg);
+  84%, 90%
+    transform translate(-8px,0) skew(20deg);
+
+@keyframes shiftright
+  0%, 87%, 100%
+    transform translate(0,0) skew(0deg);
+  84%, 90%
+    transform translate(8px,0) skew(20deg);
+
+@keyframes blink
+  0%, 50%, 85%, 100%
+    color #000;
+  87%, 95%
+    color transparent;

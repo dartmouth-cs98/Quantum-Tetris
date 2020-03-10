@@ -1,0 +1,14 @@
+{
+  "name": "CS98_Quantum_Tetris",
+  "version": "1",
+  "description": "CS-98 Yarn Package",
+  "license": "MIT",
+  "scripts": {
+    "heroku": "git subtree push --prefix server heroku master",
+    "server-setup": "cd ./server; ./setup.sh",
+    "server": "cd ./server; flask init-db; flask run; cd .."
+  },
+  "dependencies": {
+    "serialize-javascript": "^2.1.1"
+  }
+}
