@@ -11,7 +11,7 @@ const TetroT = preload("res://Tetrominos/TetroT.tscn")
 const TetroZ = preload("res://Tetrominos/TetroZ.tscn")
 
 
-##################### Constants and Varibles ##################### 
+####################################   Constants and Variables    ################################### 
 const THERE = Vector3(0, 0, 0)
 
 #three directions
@@ -115,7 +115,7 @@ var tutorial_lock = false
 var current_level: int
 
 
-##################### Functions ##################### 
+####################################    _ready and _process    ################################### 
 ## _ready: Randomize random number generator seeds
 func _ready():
 	add_child(LineDrawer)
@@ -136,7 +136,7 @@ func _ready():
 func _process(delta):
 	check_red_line()
 
-##################### Handle Piece Backlist
+###############################   Piece, Probabilities and Powerups Queues    ################################
 func handle_backlist():
 	abort = false
 	var num_turns = 20
@@ -408,7 +408,7 @@ func apply_X(userdata):
 			x_backlist_eval[backlist.find(pieces)][3] = (eval_state[0])
 		
 
-##################### Game Functions
+####################################   New Game, Levels and Pieces    ################################### 
 ## new_game: Start a new game
 func new_game(level, tutorial_input = false):
 	
@@ -603,7 +603,7 @@ func new_level(level, update_level: bool = true):
 		
 
 
-
+####################################    Handle Input and Piece Movement    ################################### 
 # Handles all of the keyboard-inputs
 # Mapping happens in res://controls.gd
 func _unhandled_input(event):
@@ -851,6 +851,7 @@ func lock(current_piece: Tetromino):
 	if !is_game_over and !tutorial:
 		new_piece()
 
+####################################    Visualize Probabilities    ################################### 
 # transposes the correct pieces to the visualizer
 func visualize(pieces_to_visualize):
 	if pieces_to_visualize.size() > 0:
@@ -941,7 +942,7 @@ func visualize_locking():
 			piece.locking()
 			remove_child(piece)
 			
-
+####################################    Hold    ################################### 
 # Implements holding a piece in the upper left
 func hold():
 	# If the current piece is NOT falling
@@ -1026,7 +1027,7 @@ func hold():
 				$FakeGhostB.visible = true
 		
 		
-
+####################################   Pause and Resume    ################################### 
 # Called when game is resumed after being paused
 func resume():
 	playing = true
@@ -1127,6 +1128,8 @@ func pause(gui=null):
 	get_node("HGate").visible = false
 	get_node("XGate").visible = false
 
+####################################   Game Over, Reset and Notification Functions    ################################### 
+# Clear the piece, probabilities and powerup queues
 func clear_lists():
 	abort = true
 	clear_visualizer()
@@ -1165,7 +1168,7 @@ func game_over():
 	
 
 
-# Called when the replay-button is pressed
+# Called when the replay-button is pressed, reset the game
 func _on_ReplayButton_pressed():
 	$ReplayButton.visible = false
 	for next_piece in next_pieces:
@@ -1205,8 +1208,6 @@ func _on_ReplayButton_pressed():
 	
 	# jboog
 	$MidiPlayer.game_start()
-
-
 	
 # Implemented in every Godot object
 # See https://docs.godotengine.org/en/3.1/getting_started/workflow/best_practices/godot_notifications.html
@@ -1223,7 +1224,7 @@ func get_current_pieces():
 	return current_pieces
 	
 	
-########################    Tutorial Functions    ########################
+####################################   Tutorial Functions (except pieces, see bottom)   ################################### 
 func new_tutorial():
 	$tutorial.start_tutorial()
 	clear_lists()
@@ -1251,7 +1252,7 @@ func end_tutorial():
 	new_piece()
 	resume()
 	
-########################   Quantum Functionality   ######################## 
+####################################   Handle Powerups (X and H Gates)    ################################### 
 # switch probabilities and evaluation values
 func evaluate_probabilities(action):
 	if action == "hgate":
@@ -1281,7 +1282,8 @@ func evaluate_probabilities(action):
 	else:
 		print("Action not recognized")
 	
-##########################   Http Request Fuctions   ######################## 
+
+####################################   HTTP Request and Response Functions    ################################### 
 
 func _superposition_request():
 	var headers = ["Content-Type: application/json"]
@@ -1435,9 +1437,10 @@ func _on_HTTPRequest_Xeval_completed(result, response_code, headers, body):
 	
 	emit_signal("x_eval_response_received", to_send)
 	
-func get_tutorial_pieces(): 
 	
-	# First piece is a cube
+	####################################   Generate Tutorial Pieces    ################################### 
+func get_tutorial_pieces(): 
+	##################  First piece is a cube
 	var piece_norm = return_name(3).instance()
 	add_child(piece_norm)
 	piece_norm.visible = false
@@ -1449,7 +1452,7 @@ func get_tutorial_pieces():
 	x_backlist_eval.append([false, false, false, false])
 	
 	
-	########### Then three superposition pieces
+	################## Then three superposition pieces
 	
 	############## First Piece
 	
@@ -1507,7 +1510,7 @@ func get_tutorial_pieces():
 	piece4.set_fake()
 	
 	
-	############ Then three entanglement pieces
+	##################  Then three entanglement pieces
 
 	############## First Piece
 	var piece6 = return_name(0).instance()

@@ -8,14 +8,9 @@
 
 config_version=4
 
-_global_script_classes=[ {
-"base": "Reference",
-"class": "ArrayUtils",
-"language": "GDScript",
-"path": "res://3dLabel/SIsilicon.3d.text/array_utils.gd"
-} ]
+_global_script_classes=[  ]
 _global_script_class_icons={
-"ArrayUtils": ""
+
 }
 
 [application]
