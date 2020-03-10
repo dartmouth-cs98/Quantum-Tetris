@@ -34,7 +34,9 @@ Certain functions to move and lock pieces into the GridMap can be found in Tetro
 
 
 ## Credits
-Our game code and graphics are based on TETRIS3000! You can find the original game here. 
+Our game code and graphics are based on TETRIS3000! You can find the original game here.
+
 [Downloads](https://github.com/adrienmalin/TETRIS3000/releases)
+
 [Play in browser](https://adrienmalin.github.io/TETRIS3000/web/TETRIS3000.html) (Firefox recommanded)
 
