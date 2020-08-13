@@ -9,6 +9,6 @@
     "server": "cd ./server; flask init-db; flask run; cd .."
   },
   "dependencies": {
-    "serialize-javascript": "^2.1.1"
+    "serialize-javascript": "^4.0.0"
   }
 }
