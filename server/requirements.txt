@@ -80,7 +80,7 @@ lazy-object-proxy==1.4.2
 libarchive-c==2.8
 llvmlite==0.29.0
 locket==0.2.0
-lxml==4.3.4
+lxml==4.6.2
 Mako==1.1.0
 MarkupSafe==1.1.1
 marshmallow==3.2.1
