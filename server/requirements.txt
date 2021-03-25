@@ -153,7 +153,7 @@ python-dateutil==2.8.1
 python-editor==1.0.4
 pytz==2019.3
 PyWavelets==1.0.3
-PyYAML==5.1.2
+PyYAML==5.4
 pyzmq==18.1.0
 qiskit==0.13.0
 qiskit-aer==0.3.2
