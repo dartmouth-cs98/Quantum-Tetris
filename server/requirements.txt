@@ -205,7 +205,7 @@ unicodecsv==0.14.1
 urllib3==1.25.6
 wcwidth==0.1.7
 webencodings==0.5.1
-websockets==7.0
+websockets==9.1
 Werkzeug==0.15.4
 widgetsnbextension==3.5.1
 wrapt==1.11.2
